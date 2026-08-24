@@ -1,5 +1,5 @@
 ---
-import { getCollection, getEntry } from "astro:content";
+import { getCollection } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 import { picsum } from "../../lib/utils";
 
@@ -17,7 +17,6 @@ const related = (await getCollection("blog"))
 
 const readTime = Math.ceil(post.body.split(/\s+/).length / 200);
 
-// Inline SVG icons
 const icons = {
   calendar: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>',
   clock: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
@@ -34,10 +33,8 @@ const fmtDate = (d) => d.toLocaleDateString("en-IN", { year: "numeric", month: "
         <span set:html={icons.arrowLeft} /> All Articles
       </a>
 
-      <!-- hero -->
       <img src={image || picsum(`blog-${post.id}`, 1200, 600)} alt={title} class="mt-6 aspect-video w-full rounded-3xl object-cover shadow-lift" />
 
-      <!-- meta -->
       <div class="mt-8 flex flex-wrap items-center gap-3 text-sm text-sandal/70 dark:text-cream/60">
         <span class="chip bg-saffron/10 font-semibold text-saffron">{category}</span>
         <span class="flex items-center gap-1"><span set:html={icons.calendar} /> {fmtDate(pubDate)}</span>
@@ -48,22 +45,19 @@ const fmtDate = (d) => d.toLocaleDateString("en-IN", { year: "numeric", month: "
       <h1 class="mt-4 font-display text-3xl font-bold leading-tight tracking-tight sm:text-5xl">{title}</h1>
       <p class="mt-4 text-lg leading-relaxed text-sandal-deep/80 dark:text-cream/70">{description}</p>
 
-      <!-- content -->
       <div class="prose prose-lg mt-10 max-w-none dark:prose-invert prose-headings:font-display prose-headings:font-bold prose-a:text-saffron prose-a:no-underline hover:prose-a:underline">
         <Content />
       </div>
 
-      <!-- share -->
       <div class="mt-12 flex items-center justify-between border-y border-golden/20 py-5">
         <p class="font-display text-sm font-semibold">Share this article</p>
-        <button onclick="navigator.share({title:'{title}', url: location.href}).catch(()=>navigator.clipboard.writeText(location.href))" class="btn btn-ghost !py-2 !text-xs">
+        <button onclick="navigator.share({title, url: location.href}).catch(()=>navigator.clipboard.writeText(location.href))" class="btn btn-ghost !py-2 !text-xs">
           <span set:html={icons.share} /> Share / Copy Link
         </button>
       </div>
     </div>
   </article>
 
-  <!-- related -->
   {related.length > 0 && (
     <section class="section">
       <div class="container-x">
