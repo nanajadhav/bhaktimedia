@@ -9,6 +9,7 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props;
+const { Content } = await post.render();
 const { title, description, pubDate, image, author, category } = post.data;
 const related = (await getCollection("blog"))
   .filter((p) => p.id !== post.id && p.data.category === category)
