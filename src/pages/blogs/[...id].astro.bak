@@ -1,6 +1,6 @@
 ---
-import { getCollection } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
+import { getCollection } from "astro:content";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog");
@@ -11,53 +11,18 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props;
-
-// Astro 5: render the post to get Content component
-const { Content } = await post.render();
-
-const { title, description, pubDate, category, author, image } = post.data;
-
-const formattedDate = new Date(pubDate).toLocaleDateString("en-IN", {
-  year: "numeric",
-  month: "long",
-  day: "numeric",
-});
+const { title } = post.data;
 ---
 
-<Layout title={title} description={description}>
-  <article class="section !pt-8">
-    <div class="container-x max-w-4xl">
-      <a href="/blogs" class="inline-flex items-center gap-2 text-sm font-semibold text-saffron hover:gap-3 transition-all">
-        ← All Articles
-      </a>
-
-      {image && (
-        <img 
-          src={image} 
-          alt={title} 
-          class="mt-6 aspect-video w-full rounded-3xl object-cover shadow-lift" 
-        />
-      )}
-
-      <div class="mt-8 flex flex-wrap items-center gap-3 text-sm text-sandal/70 dark:text-cream/60">
-        <span class="chip bg-saffron/10 font-semibold text-saffron">{category}</span>
-        <span>📅 {formattedDate}</span>
-        {author && <span class="text-sandal/60">• {author}</span>}
-      </div>
-
-      <h1 class="mt-4 font-display text-3xl font-bold leading-tight tracking-tight sm:text-5xl">
-        {title}
-      </h1>
-
-      {description && (
-        <p class="mt-4 text-lg leading-relaxed text-sandal-deep/80 dark:text-cream/70">
-          {description}
-        </p>
-      )}
-
-      <div class="prose prose-lg mt-10 max-w-none dark:prose-invert">
-        <Content />
-      </div>
+<Layout title={title} description="Blog coming soon">
+  <section class="section">
+    <div class="container-x max-w-2xl text-center">
+      <span class="text-6xl">🪔</span>
+      <h1 class="mt-6 font-display text-3xl font-bold">Blog Coming Soon</h1>
+      <p class="mt-4 text-sandal-deep/75 dark:text-cream/65">
+        Hum abhi articles polish kar rahe hain. Jaldi hi divine wisdom yahan aayegi!
+      </p>
+      <a href="/" class="btn btn-primary mt-8 inline-flex">← Back to Home</a>
     </div>
-  </article>
+  </section>
 </Layout>
