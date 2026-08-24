@@ -1,0 +1,38 @@
+---
+import { Image } from "astro:assets";
+import { ArrowRight, Bell } from "@lucide/astro";
+import SectionHeading from "./SectionHeading.astro";
+import { deities } from "../data/site";
+import { picsum } from "../lib/utils";
+---
+<section class="section pattern-sacred bg-cream/60 dark:bg-night-soft/30">
+  <div class="container-x">
+    <SectionHeading align="center" eyebrow="Featured Deities" dev="? ?????? ???? ???? ?"
+      description="Poster series, reels and digital shrines celebrating the deities closest to every heart.">
+      <Fragment slot="title">Divine Presence, <span class="text-gradient">Digital Glory</span></Fragment>
+    </SectionHeading>
+
+    <div class="mt-14 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+      {deities.map((d, i) => (
+        <article data-reveal style={`--rd:${(i % 3) * 100}ms`} class="group text-center">
+          <div class="relative overflow-hidden rounded-b-3xl rounded-t-full border border-golden/30 shadow-soft transition duration-500 group-hover:shadow-gold">
+            <Image src={picsum(d.seed, 640, 800)} width={640} height={800} alt={d.name} loading="lazy"
+                   class="aspect-[3/4] w-full object-cover transition duration-700 group-hover:scale-105" />
+            <div class="absolute inset-0 bg-gradient-to-t from-ink/75 via-transparent to-transparent" aria-hidden="true"></div>
+            <span class="absolute bottom-4 left-1/2 w-full -translate-x-1/2 px-4 font-dev text-2xl text-goldsoft drop-shadow-lg">
+              {d.dev}
+            </span>
+            <Bell class="absolute right-6 top-6 size-5 origin-top text-goldsoft opacity-0 transition group-hover:animate-swing group-hover:opacity-100" />
+          </div>
+          <h3 class="mt-5 font-display text-xl font-semibold">{d.name}</h3>
+          <p class="mx-auto mt-2 max-w-xs font-dev text-sm italic leading-relaxed text-sandal dark:text-golden/80">
+            “{d.quote}”
+          </p>
+          <a href="/gallery" class="btn btn-ghost mt-5 !px-5 !py-2 !text-xs">
+            Explore <ArrowRight class="size-3.5" />
+          </a>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,81 @@
+---
+import { Image } from "astro:assets";
+import Layout from "../layouts/Layout.astro";
+import PageHeader from "../components/PageHeader.astro";
+import CTA from "../components/CTA.astro";
+import { videos, site } from "../data/site";
+import { picsum } from "../lib/utils";
+
+// Inline SVG icons as HTML strings
+const icons = {
+  play: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>',
+  youtube: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"/><path d="m10 15 5-3-5-3z"/></svg>',
+  eye: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>',
+  clock: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+};
+
+const [featured, ...rest] = videos;
+---
+<Layout title="YouTube" description="Cinematic aartis, bhajans and temple films — the BhaktiMedia YouTube channel.">
+  <PageHeader eyebrow="YouTube" title="Where Aarti Meets Cinema" dev="॥ दृश्य ध्वनि भक्ती ॥"
+    description="Full-length aartis, bhajan sessions and temple documentaries — planned, shot, edited and grown by BhaktiMedia." />
+
+  <section class="section !pt-10">
+    <div class="container-x">
+      <!-- featured video -->
+      <a data-reveal href={site.socials.youtube} target="_blank" rel="noopener"
+         class="card group relative block overflow-hidden">
+        <Image src={picsum(featured.seed, 1280, 720)} width={1280} height={720} alt={featured.title}
+               class="aspect-video w-full object-cover transition duration-700 group-hover:scale-[1.02]" />
+        <span class="absolute inset-0 bg-gradient-to-t from-ink/80 via-transparent to-transparent" aria-hidden="true"></span>
+        <span class="absolute inset-0 grid place-items-center">
+          <span class="grid size-20 place-items-center rounded-full bg-gradient-to-br from-saffron to-golden text-white shadow-glow transition duration-300 group-hover:scale-110">
+            <span set:html={icons.play} />
+          </span>
+        </span>
+        <span class="absolute bottom-5 left-6 right-6">
+          <span class="chip bg-saffron text-white">Latest Upload</span>
+          <span class="mt-2 block font-display text-xl font-bold text-white sm:text-2xl">{featured.title}</span>
+          <span class="mt-1 flex items-center gap-4 text-xs text-cream/80">
+            <span class="flex items-center gap-1"><span set:html={icons.eye} /> {featured.views}</span>
+            <span class="flex items-center gap-1"><span set:html={icons.clock} /> {featured.duration}</span>
+            <span>{featured.age}</span>
+          </span>
+        </span>
+      </a>
+
+      <!-- grid -->
+      <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {rest.map((v, i) => (
+          <a data-reveal style={`--rd:${(i % 3) * 90}ms`} href={site.socials.youtube} target="_blank" rel="noopener"
+             class="card group overflow-hidden transition duration-300 hover:-translate-y-1 hover:shadow-lift">
+            <div class="relative overflow-hidden">
+              <Image src={picsum(v.seed, 640, 360)} width={640} height={360} alt="" loading="lazy"
+                     class="aspect-video w-full object-cover transition duration-700 group-hover:scale-105" />
+              <span class="absolute bottom-2 right-2 rounded bg-black/75 px-1.5 py-0.5 text-[11px] font-semibold text-white">{v.duration}</span>
+            </div>
+            <div class="p-5">
+              <h3 class="font-display font-semibold leading-snug transition group-hover:text-saffron">{v.title}</h3>
+              <p class="mt-2 text-xs text-sandal/70 dark:text-cream/50">{v.views} · {v.age}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+
+      <!-- subscribe band -->
+      <div data-reveal class="mt-12 flex flex-col items-center justify-between gap-6 rounded-3xl bg-gradient-to-r from-ink to-[#3a1200] p-8 text-cream sm:flex-row md:p-10">
+        <div class="flex items-center gap-5">
+          <span class="grid size-14 place-items-center rounded-2xl bg-gradient-to-br from-saffron to-golden text-white shadow-glow">
+            <span set:html={icons.youtube} />
+          </span>
+          <div>
+            <p class="font-display text-xl font-bold">Subscribe to BhaktiMedia</p>
+            <p class="text-sm text-cream/60">New aartis & bhajans every Tuesday & Saturday 🪔</p>
+          </div>
+        </div>
+        <a href={site.socials.youtube} target="_blank" rel="noopener" class="btn btn-primary shrink-0">Subscribe Now</a>
+      </div>
+    </div>
+  </section>
+  <CTA />
+</Layout>

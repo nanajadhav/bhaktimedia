@@ -1,0 +1,68 @@
+---
+import { Image } from "astro:assets";
+import { ZoomIn, ArrowRight } from "@lucide/astro";
+import SectionHeading from "./SectionHeading.astro";
+import { galleryItems } from "../data/site";
+import { picsum } from "../lib/utils";
+
+interface Props { limit?: number; showFilters?: boolean; }
+const { limit = galleryItems.length, showFilters = true } = Astro.props;
+const items = galleryItems.slice(0, limit);
+const cats = ["all", ...new Set(galleryItems.map((g) => g.cat))];
+---
+<section id="gallery" class="section">
+  <div class="container-x">
+    <SectionHeading align="center" eyebrow="Gallery" dev="? ?????? ????????? ?"
+      description="Posters, temple moments, festival frames and AI devotion — a living archive of our work.">
+      <Fragment slot="title">Moments of <span class="text-gradient">Devotion</span></Fragment>
+    </SectionHeading>
+
+    {showFilters && (
+      <div data-reveal class="mt-10 flex flex-wrap justify-center gap-2">
+        {cats.map((c) => (
+          <button data-filter-btn={c} aria-pressed={c === "all" ? "true" : "false"} class="filter-btn capitalize">
+            {c}
+          </button>
+        ))}
+      </div>
+    )}
+
+    <div class="mt-10 columns-1 gap-5 sm:columns-2 lg:columns-3">
+      {items.map((g, i) => (
+        <button data-reveal data-lightbox data-cat={g.cat}
+                data-src={picsum(g.seed, 1200, Math.round((1200 * g.h) / g.w))} data-title={g.title}
+                style={`--rd:${(i % 3) * 70}ms`}
+                class="group relative mb-5 block w-full break-inside-avoid overflow-hidden rounded-2xl border border-sandal/10 text-left shadow-soft transition duration-300 hover:shadow-lift">
+          <Image src={picsum(g.seed, g.w, g.h)} width={g.w} height={g.h} alt={g.title} loading="lazy"
+                 class="w-full object-cover transition duration-700 group-hover:scale-[1.04]" />
+          <span class="absolute inset-0 bg-gradient-to-t from-ink/70 via-transparent opacity-0 transition duration-300 group-hover:opacity-100" aria-hidden="true"></span>
+          <span class="absolute inset-x-0 bottom-0 flex translate-y-2 items-center justify-between p-4 opacity-0 transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+            <span>
+              <span class="block font-display text-sm font-semibold text-white">{g.title}</span>
+              <span class="block text-xs text-goldsoft">{g.cat}</span>
+            </span>
+            <span class="grid size-9 place-items-center rounded-full bg-white/20 backdrop-blur">
+              <ZoomIn class="size-4 text-white" />
+            </span>
+          </span>
+        </button>
+      ))}
+    </div>
+
+    {limit < galleryItems.length && (
+      <div class="mt-6 text-center">
+        <a href="/gallery" class="btn btn-primary">View Full Gallery <ArrowRight class="size-4" /></a>
+      </div>
+    )}
+  </div>
+</section>
+
+<dialog id="lightbox" class="m-auto w-[min(94vw,900px)]">
+  <figure class="rounded-3xl bg-night/90 p-3 shadow-lift">
+    <img alt="" class="max-h-[76vh] w-full rounded-2xl object-contain" />
+    <figcaption class="flex items-center justify-between gap-4 px-2 py-3">
+      <span data-lb-title class="text-sm text-cream/80"></span>
+      <form method="dialog"><button class="btn btn-glass !px-5 !py-2 text-cream">Close ?</button></form>
+    </figcaption>
+  </figure>
+</dialog>

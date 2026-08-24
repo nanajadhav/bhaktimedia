@@ -1,0 +1,29 @@
+---
+interface Props { class?: string; id: string }
+const { id, class: cls = "" } = Astro.props;
+---
+<svg viewBox="0 0 120 110" aria-hidden="true" class={cls}>
+  <defs>
+    <radialGradient id={`${id}-glow`} cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFD98A" stop-opacity="0.85" />
+      <stop offset="100%" stop-color="#FFD98A" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id={`${id}-flame`} x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#FF6B00" />
+      <stop offset="60%" stop-color="#F5B041" />
+      <stop offset="100%" stop-color="#FFF8F0" />
+    </linearGradient>
+    <linearGradient id={`${id}-bowl`} x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F5B041" />
+      <stop offset="100%" stop-color="#8B4513" />
+    </linearGradient>
+  </defs>
+  <circle cx="60" cy="30" r="30" fill={`url(#${id}-glow)`} class="animate-rays" />
+  <g class="animate-flicker" style="transform-origin: 60px 44px;">
+    <ellipse cx="60" cy="28" rx="9" ry="17" fill={`url(#${id}-flame)`} />
+    <ellipse cx="60" cy="33" rx="4" ry="9" fill="#FFF8F0" opacity="0.85" />
+  </g>
+  <ellipse cx="60" cy="60" rx="42" ry="8" fill="#8B4513" />
+  <path d="M18 62c7 22 77 22 84 0-16 8-68 8-84 0z" fill={`url(#${id}-bowl)`} />
+  <ellipse cx="60" cy="59" rx="34" ry="5" fill="#F5B041" opacity="0.7" />
+</svg>

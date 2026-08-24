@@ -1,0 +1,301 @@
+---
+import Layout from "../layouts/Layout.astro";
+import PageHeader from "../components/PageHeader.astro";
+import CTA from "../components/CTA.astro";
+import { deityGallery } from "../data/gallery";
+import { picsum } from "../lib/utils";
+---
+<Layout title="Divine Gallery" description="Deity-wise devotional gallery — stock-style downloads, ratios, related images aur watermark protection.">
+  <PageHeader eyebrow="Divine Gallery" title="Darshan In Every Frame" dev="॥ दर्शन गैलरी ॥"
+    description="Deity chuno, ratio dekho, download karo. Free = watermark preview • Premium = full HD clean." />
+
+  <!-- data for JS -->
+  <script type="application/json" id="gallery-data" set:html={JSON.stringify(
+    deityGallery.map((d) => ({ id: d.id, name: d.name, dev: d.dev, images: d.images }))
+  )} />
+
+  <section class="section !pt-2">
+    <div class="container-x">
+
+      <!-- ══════════ CATEGORY BAR ══════════ -->
+      <div id="cat-bar" class="no-scrollbar sticky top-24 z-30 -mx-2 flex gap-2 overflow-x-auto rounded-2xl border border-golden/20 bg-temple/85 p-2 backdrop-blur-xl dark:bg-night/85">
+        <button data-cat="all" aria-pressed="true" class="filter-btn flex shrink-0 items-center gap-2">
+          <span class="grid size-7 place-items-center rounded-full bg-gradient-to-br from-saffron to-golden font-dev text-sm text-white">ॐ</span>
+          All Deities
+        </button>
+        {deityGallery.map((d) => (
+          <button data-cat={d.id} aria-pressed="false" class="filter-btn flex shrink-0 items-center gap-2">
+            <img src={picsum(d.seed, 64, 64)} alt="" class="size-7 rounded-full object-cover ring-1 ring-golden/50" />
+            {d.name}
+          </button>
+        ))}
+      </div>
+
+      <!-- count + plan -->
+      <div class="mt-6 flex flex-wrap items-center justify-between gap-3">
+        <p id="gallery-count" class="text-sm text-sandal/70 dark:text-cream/60"></p>
+        <div class="flex items-center gap-2">
+          <span id="plan-chip" class="chip bg-ink/10 text-ink dark:bg-white/10 dark:text-cream">🆓 Free — watermark downloads</span>
+          <button id="btn-premium" class="btn btn-gold !px-4 !py-1.5 !text-xs">⭐ Go Premium (demo)</button>
+        </div>
+      </div>
+
+      <!-- ══════════ MASONRY GRID ══════════ -->
+      <div id="gallery-grid" class="mt-4 columns-2 gap-4 md:columns-3 xl:columns-4">
+        {deityGallery.map((d) =>
+          d.images.map((img) => (
+            <figure data-deity={d.id} data-seed={img.seed} data-w={img.w} data-h={img.h}
+                    data-ratio={img.ratio} data-title={`${d.name} — ${img.title}`}
+                    class="group relative mb-4 block w-full break-inside-avoid overflow-hidden rounded-2xl border border-sandal/10 shadow-soft transition duration-300 hover:shadow-lift dark:border-white/10">
+              <button data-lightbox class="block w-full text-left">
+                <img src={picsum(img.seed, img.w, img.h)} alt={img.title} loading="lazy"
+                     class="w-full object-cover transition duration-700 group-hover:scale-[1.04]" />
+                <span class="chip absolute left-3 top-3 bg-ink/60 text-[10px] text-white backdrop-blur">{img.ratio}</span>
+                <span class="absolute inset-x-0 bottom-0 translate-y-2 bg-gradient-to-t from-ink/85 to-transparent px-4 pb-3 pt-10 opacity-0 transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+                  <span class="block font-dev text-sm text-goldsoft">{d.dev}</span>
+                  <span class="block font-display text-sm font-semibold text-white">{img.title}</span>
+                </span>
+              </button>
+              <button data-download aria-label="Download image"
+                class="absolute right-3 top-3 grid size-9 place-items-center rounded-full bg-white/90 text-ink opacity-0 shadow-soft backdrop-blur transition hover:bg-saffron hover:text-white group-hover:opacity-100">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>
+              </button>
+            </figure>
+          ))
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ LIGHTBOX (stock-style) ══════════ -->
+  <dialog id="lightbox" class="m-auto w-[min(94vw,900px)] rounded-3xl border border-golden/30 bg-night/95 p-3 text-cream shadow-lift">
+    <figure>
+      <img id="lb-img" class="max-h-[62vh] w-full rounded-2xl object-contain" alt="" />
+      <figcaption class="flex flex-wrap items-center justify-between gap-3 px-2 py-3">
+        <span>
+          <span id="lb-title" class="block font-display text-sm font-semibold"></span>
+          <span id="lb-ratio" class="text-xs text-goldsoft"></span>
+        </span>
+        <span class="flex items-center gap-2">
+          <button id="lb-download" class="btn btn-primary !px-5 !py-2 !text-xs">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>
+            Download
+          </button>
+          <form method="dialog"><button class="btn btn-glass !py-2 !text-cream">✕</button></form>
+        </span>
+      </figcaption>
+      <!-- related images -->
+      <div class="px-2 pb-2">
+        <p class="text-[10px] uppercase tracking-widest text-cream/50">Related — same deity</p>
+        <div id="lb-related" class="no-scrollbar mt-2 flex gap-2 overflow-x-auto"></div>
+      </div>
+    </figure>
+  </dialog>
+
+  <!-- download toast -->
+  <p id="dl-status" class="pointer-events-none fixed bottom-6 left-1/2 z-[95] hidden -translate-x-1/2 whitespace-nowrap rounded-full bg-ink/90 px-5 py-2.5 text-sm font-medium text-white shadow-lift backdrop-blur dark:bg-white/90 dark:text-ink"></p>
+
+  <CTA />
+</Layout>
+
+<script is:inline>
+(() => {
+  const $ = (s) => document.querySelector(s);
+  const $$ = (s) => document.querySelectorAll(s);
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const DATA = JSON.parse($("#gallery-data").textContent);
+  const isPremium = () => localStorage.getItem("bm-premium") === "1";
+
+  /* ---------- toast ---------- */
+  let toastTimer;
+  function toast(msg) {
+    const el = $("#dl-status");
+    el.textContent = msg;
+    el.classList.remove("hidden");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.add("hidden"), 3500);
+  }
+
+  /* ---------- premium demo toggle ---------- */
+  function refreshPlan() {
+    const chip = $("#plan-chip"), btn = $("#btn-premium");
+    if (isPremium()) {
+      chip.textContent = "⭐ Premium — full HD, no watermark";
+      chip.className = "chip bg-golden/20 text-sandal dark:text-golden";
+      btn.textContent = "Switch to Free (demo)";
+    } else {
+      chip.textContent = "🆓 Free — watermark downloads";
+      chip.className = "chip bg-ink/10 text-ink dark:bg-white/10 dark:text-cream";
+      btn.textContent = "⭐ Go Premium (demo)";
+    }
+  }
+  $("#btn-premium").addEventListener("click", () => {
+    localStorage.setItem("bm-premium", isPremium() ? "0" : "1");
+    refreshPlan();
+    toast(isPremium() ? "⭐ Premium activated! Ab full HD clean downloads" : "Free plan active — watermark downloads");
+  });
+  refreshPlan();
+
+  /* ---------- category filtering ---------- */
+  function setCat(id) {
+    $$("#cat-bar [data-cat]").forEach((c) => c.setAttribute("aria-pressed", String(c.dataset.cat === id)));
+    let n = 0, name = "";
+    $$("[data-deity]").forEach((el) => {
+      const show = id === "all" || el.dataset.deity === id;
+      el.classList.toggle("hidden", !show);
+      if (show) {
+        n++;
+        if (!reduced) el.animate([{ opacity: 0, transform: "scale(0.97)" }, { opacity: 1, transform: "none" }], { duration: 320, easing: "ease-out" });
+      }
+    });
+    if (id !== "all") name = $(`#cat-bar [data-cat="${id}"]`)?.textContent.trim() || "";
+    $("#gallery-count").textContent = id === "all"
+      ? `🪔 ${n} divine frames — sab deities, har ratio mein`
+      : `🪔 ${n} frames — ${name} darshan`;
+  }
+  $$("#cat-bar [data-cat]").forEach((c) => c.addEventListener("click", () => setCat(c.dataset.cat)));
+  setCat("all");
+
+  /* ---------- watermark (canvas) ---------- */
+  function drawWatermark(ctx, w, h) {
+    ctx.save();
+    const size = Math.max(16, Math.floor(w / 20));
+    ctx.font = `600 ${size}px Poppins, sans-serif`;
+    ctx.fillStyle = "#ffffff";
+    ctx.globalAlpha = 0.3;
+    ctx.translate(w / 2, h / 2);
+    ctx.rotate(-Math.PI / 7);
+    const text = "BhaktiMedia.in  ॐ";
+    for (let y = -h; y < h; y += size * 6)
+      for (let x = -w; x < w; x += size * 10)
+        ctx.fillText(text, x, y);
+    ctx.restore();
+  }
+
+  function loadImg(blob) {
+    return new Promise((res, rej) => {
+      const url = URL.createObjectURL(blob);
+      const i = new Image();
+      i.onload = () => res({ i, url });
+      i.onerror = rej;
+      i.src = url;
+    });
+  }
+
+  /* ---------- stock-style download ---------- */
+  async function download(item) {
+    const premium = isPremium();
+    const width = premium ? 1600 : 640; // free = low size
+    const url = `https://picsum.photos/seed/${item.seed}/${width}/${Math.round((width * item.h) / item.w)}`;
+    toast(premium ? "⬇️ Full HD download ho raha hai..." : "⬇️ Watermark preview download ho raha hai...");
+    try {
+      const res = await fetch(url);
+      const blob = await res.blob();
+      const { i, url: objUrl } = await loadImg(blob);
+      const canvas = document.createElement("canvas");
+      canvas.width = i.width; canvas.height = i.height;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(i, 0, 0);
+      if (!premium) drawWatermark(ctx, canvas.width, canvas.height);
+      canvas.toBlob((b) => {
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(b);
+        a.download = `bhaktimedia-${item.seed}-${premium ? "fullhd" : "preview-watermark"}.jpg`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+        URL.revokeObjectURL(objUrl);
+        toast(premium ? "✅ Full HD clean download complete!" : "✅ Preview downloaded — Premium lo, watermark hatayein ⭐");
+      }, "image/jpeg", 0.92);
+    } catch {
+      toast("⚠️ Download failed — dobara try karo");
+    }
+  }
+
+  // grid download buttons
+  $$("[data-download]").forEach((btn) =>
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const f = btn.closest("figure");
+      download({ seed: f.dataset.seed, w: f.dataset.w, h: f.dataset.h });
+    })
+  );
+
+  /* ---------- lightbox + related + burned watermark ---------- */
+  let current = null;
+
+  async function openLightbox(item) {
+    current = item;
+    $("#lb-title").textContent = item.title;
+    $("#lb-ratio").textContent = isPremium()
+      ? `Ratio ${item.ratio} • ${item.deityName} • ⭐ Premium clean preview`
+      : `Ratio ${item.ratio} • ${item.deityName} • 🛡️ Protected preview`;
+    renderRelated();
+    $("#lightbox").showModal();
+
+    // Watermark BURN into preview — right-click save = watermarked milegi
+    const lbImg = $("#lb-img");
+    lbImg.classList.add("opacity-40");
+    const width = 1200;
+    const rawUrl = `https://picsum.photos/seed/${item.seed}/${width}/${Math.round((width * item.h) / item.w)}`;
+    try {
+      const res = await fetch(rawUrl);
+      const blob = await res.blob();
+      const { i, url } = await loadImg(blob);
+      const canvas = document.createElement("canvas");
+      canvas.width = i.width; canvas.height = i.height;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(i, 0, 0);
+      if (!isPremium()) drawWatermark(ctx, canvas.width, canvas.height);
+      const old = lbImg.src;
+      lbImg.src = canvas.toDataURL("image/jpeg", 0.9);
+      if (old.startsWith("blob:")) URL.revokeObjectURL(old);
+      URL.revokeObjectURL(url);
+    } catch {
+      lbImg.src = rawUrl;
+    }
+    lbImg.alt = item.title;
+    lbImg.classList.remove("opacity-40");
+  }
+
+  function renderRelated() {
+    const deity = DATA.find((d) => d.id === current.deityId);
+    if (!deity) return;
+    $("#lb-related").innerHTML = deity.images
+      .filter((i) => i.seed !== current.seed)
+      .map((i) => `
+        <button data-rel="${i.seed}" class="shrink-0 overflow-hidden rounded-xl border border-white/10 opacity-70 transition hover:opacity-100 hover:ring-2 hover:ring-golden">
+          <img src="https://picsum.photos/seed/${i.seed}/120/120" alt="${i.title}" class="size-16 object-cover" />
+        </button>`).join("");
+    $$("#lb-related [data-rel]").forEach((b) =>
+      b.addEventListener("click", () => {
+        const img = deity.images.find((i) => i.seed === b.dataset.rel);
+        openLightbox({ ...img, deityId: deity.id, deityName: deity.name });
+      })
+    );
+  }
+
+  $$("[data-lightbox]").forEach((btn) =>
+    btn.addEventListener("click", () => {
+      const f = btn.closest("figure");
+      const deity = DATA.find((d) => d.id === f.dataset.deity);
+      openLightbox({
+        seed: f.dataset.seed, w: f.dataset.w, h: f.dataset.h,
+        ratio: f.dataset.ratio, title: f.dataset.title,
+        deityId: deity.id, deityName: deity.name,
+      });
+    })
+  );
+
+  $("#lb-download").addEventListener("click", () => current && download(current));
+  $("#lightbox").addEventListener("click", (e) => { if (e.target === $("#lightbox")) $("#lightbox").close(); });
+
+  /* ---------- right-click protection (free users) ---------- */
+  ["#gallery-grid", "#lightbox"].forEach((sel) => {
+    $(sel).addEventListener("contextmenu", (e) => {
+      if (isPremium()) return; // ⭐ Premium = save allowed (unji privilege)
+      e.preventDefault();
+      toast("🙏 Right-click save disabled — Download button use karo • Premium = clean full HD");
+    });
+  });
+})();
+</script>

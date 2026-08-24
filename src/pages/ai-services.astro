@@ -1,0 +1,523 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { deities } from "../data/site";
+import { picsum } from "../lib/utils";
+
+const studios = [
+  { id: "image", name: "Image Generation", dev: "॥ चित्र सृष्टिः ॥", icon: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>' },
+  { id: "poster", name: "Poster Generation", dev: "॥ उत्सव घोषणा ॥", icon: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2"/><path d="M8 6h8"/><path d="M8 10h8"/><path d="M8 14h4"/></svg>' },
+  { id: "voice", name: "Voice Studio", dev: "॥ वाक् सृष्टिः ॥", icon: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>' },
+  { id: "video", name: "Video Generation", dev: "॥ चलच्चित्र सृष्टिः ॥", icon: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg>' },
+];
+
+const templates = [
+  { studio: "image", seed: "cosmic-mahadev-ai", label: "Cosmic Mahadev" },
+  { studio: "image", seed: "radha-krishna-ai-art", label: "Radha Krishna" },
+  { studio: "image", seed: "temple-bokeh-golden", label: "Temple Bokeh" },
+  { studio: "image", seed: "diwali-diya-macro", label: "Diwali Diyas" },
+  { studio: "poster", seed: "ganesh-utsav-poster", label: "Ganesh Utsav" },
+  { studio: "poster", seed: "swami-samarth-poster", label: "Swami Samarth" },
+  { studio: "poster", seed: "navratri-garba-poster", label: "Navratri" },
+  { studio: "video", seed: "aarti-cinematic-reel", label: "Aarti Cinematic" },
+  { studio: "video", seed: "temple-timelapse-reel", label: "Temple Timelapse" },
+  { studio: "video", seed: "kinetic-shloka-reel", label: "Kinetic Shloka" },
+];
+
+const discover = [
+  { seed: "discover-ganesh-glow", h: 500 }, { seed: "discover-temple-mist", h: 340 },
+  { seed: "discover-diya-rows", h: 420 }, { seed: "discover-krishna-peacock", h: 520 },
+  { seed: "discover-varanasi-ghat", h: 360 }, { seed: "discover-marigold-macro", h: 460 },
+  { seed: "discover-hanuman-statue", h: 540 }, { seed: "discover-aarti-flame", h: 380 },
+];
+---
+<Layout title="AI Studio" description="Image, poster, voice aur video generation — ek hi studio mein.">
+<div class="mx-auto flex w-full max-w-[1600px] px-4 pt-24 sm:px-6">
+
+  <!-- ══════════ SIDEBAR ══════════ -->
+  <aside class="sticky top-24 hidden h-[calc(100vh-7rem)] w-60 shrink-0 flex-col justify-between py-6 pr-5 lg:flex">
+    <nav class="space-y-1" aria-label="AI Studios">
+      {studios.map((s) => (
+        <button data-studio={s.id} class="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-300">
+          <span set:html={s.icon} /> {s.name}
+        </button>
+      ))}
+    </nav>
+    <div>
+      <div class="flex items-center justify-between px-2">
+        <p class="text-xs font-semibold uppercase tracking-widest text-sandal/60 dark:text-cream/50">History</p>
+        <button id="clear-history" class="text-xs text-saffron hover:underline">Clear</button>
+      </div>
+      <div id="history" class="mt-3 grid grid-cols-4 gap-2"></div>
+      <div class="mt-6 flex items-center gap-3 rounded-2xl border border-sandal/10 p-3 dark:border-white/10">
+        <span class="grid size-9 place-items-center rounded-xl bg-gradient-to-br from-saffron to-golden font-dev text-lg text-white">ॐ</span>
+        <span>
+          <span class="block text-sm font-semibold">BhaktiMedia Creator</span>
+          <span class="block text-xs text-sandal/60 dark:text-cream/50">CPU Studio • Free</span>
+        </span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ══════════ MAIN ══════════ -->
+  <main class="min-w-0 flex-1 pb-16 lg:pl-6">
+
+    <!-- mobile switcher -->
+    <div class="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 pb-4 lg:hidden">
+      {studios.map((s) => (
+        <button data-studio={s.id} class="filter-btn flex shrink-0 items-center gap-2">
+          <span set:html={s.icon} /> {s.name}
+        </button>
+      ))}
+    </div>
+
+    <!-- header -->
+    <div class="flex items-end justify-between gap-4">
+      <div>
+        <h1 id="studio-title" class="font-display text-3xl font-bold tracking-tight sm:text-4xl">Image Generation</h1>
+        <p id="studio-dev" class="mt-1 font-dev text-golden">॥ चित्र सृष्टिः ॥</p>
+      </div>
+      <span class="chip hidden bg-golden/15 text-sandal dark:text-golden sm:inline-flex">⚡ CPU • No GPU</span>
+    </div>
+
+    <!-- templates -->
+    <section class="mt-8">
+      <h2 class="font-display text-sm font-semibold uppercase tracking-widest text-sandal/60 dark:text-cream/50">Featured Templates</h2>
+      <div class="no-scrollbar -mx-1 mt-3 flex snap-x gap-4 overflow-x-auto px-1 pb-2">
+        {templates.map((t) => (
+          <button data-tpl={t.studio} data-prompt={t.label}
+            class="group relative w-40 shrink-0 snap-start overflow-hidden rounded-2xl border border-sandal/10 text-left shadow-soft dark:border-white/10">
+            <img src={picsum(t.seed, 320, 400)} alt={t.label} loading="lazy" class="aspect-[4/5] w-full object-cover transition duration-500 group-hover:scale-105" />
+            <span class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/80 to-transparent px-3 pb-2 pt-8 text-sm font-semibold text-white">{t.label}</span>
+          </button>
+        ))}
+      </div>
+    </section>
+
+    <!-- results -->
+    <section id="results-wrap" class="mt-8 hidden">
+      <h2 class="font-display text-sm font-semibold uppercase tracking-widest text-sandal/60 dark:text-cream/50">Your Creations</h2>
+      <div id="results" class="mt-3 grid grid-cols-2 gap-4 md:grid-cols-3"></div>
+    </section>
+
+    <!-- ══════════ VOICE STUDIO (tabs) ══════════ -->
+    <section data-panel="voice" class="mt-8 hidden">
+      <div class="overflow-hidden rounded-3xl border border-golden/30 bg-white shadow-lift dark:border-white/10 dark:bg-night">
+        <div class="border-b border-sandal/10 bg-gradient-to-br from-temple to-cream/60 dark:border-white/10 dark:from-night-soft dark:to-night">
+          <nav class="grid grid-cols-3" role="tablist">
+            <button data-vtab="tts" role="tab" aria-selected="true"
+              class="flex items-center justify-center gap-2 border-b-2 border-saffron bg-white px-3 py-4 text-sm font-semibold text-saffron transition-all dark:border-golden dark:bg-night dark:text-golden sm:text-base">
+              🔊 <span class="hidden sm:inline">Text to Speech</span><span class="sm:hidden">TTS</span>
+            </button>
+            <button data-vtab="stt" role="tab" aria-selected="false"
+              class="flex items-center justify-center gap-2 px-3 py-4 text-sm font-semibold text-sandal/70 transition-all hover:bg-white/50 dark:text-cream/60 dark:hover:bg-white/5 sm:text-base">
+              📝 <span class="hidden sm:inline">Speech to Text</span><span class="sm:hidden">STT</span>
+            </button>
+            <button data-vtab="clone" role="tab" aria-selected="false"
+              class="flex items-center justify-center gap-2 px-3 py-4 text-sm font-semibold text-sandal/70 transition-all hover:bg-white/50 dark:text-cream/60 dark:hover:bg-white/5 sm:text-base">
+              🎭 <span class="hidden sm:inline">Voice Cloning</span><span class="sm:hidden">Clone</span>
+            </button>
+          </nav>
+        </div>
+
+        <div class="grid gap-8 p-6 md:grid-cols-[1.2fr_0.8fr] md:p-8">
+          <div class="space-y-5">
+            <!-- TTS -->
+            <div data-vpanel="tts" class="space-y-4">
+              <div>
+                <label for="tts-text" class="mb-2 block font-display text-sm font-semibold">Enter your message</label>
+                <textarea id="tts-text" rows="4" class="input resize-none font-dev" placeholder="॥ श्री गणेशाय नमः ॥"></textarea>
+              </div>
+              <div class="grid gap-4 sm:grid-cols-2">
+                <select id="tts-lang" class="input"><option value="hi">🇮🇳 Hindi</option><option value="en">🇺🇸 English</option></select>
+                <select id="tts-voice" class="input"><option value="female">👩 Female (Warm)</option><option value="male">👨 Male (Deep)</option></select>
+              </div>
+              <button id="btn-tts" class="btn btn-primary w-full">🔊 Generate Speech</button>
+            </div>
+
+            <!-- STT -->
+            <div data-vpanel="stt" class="space-y-4 hidden">
+              <div class="relative flex min-h-[110px] items-center justify-center rounded-2xl border-2 border-dashed border-sandal/25 bg-cream/50 p-5 hover:border-saffron dark:border-white/15 dark:bg-night-soft/50">
+                <input id="stt-file" type="file" accept="audio/*" class="absolute inset-0 cursor-pointer opacity-0" />
+                <div class="text-center">
+                  <p class="font-display font-semibold">🎤 Drop audio or click to upload</p>
+                  <p id="stt-filename" class="mt-2 text-sm font-medium text-saffron"></p>
+                </div>
+              </div>
+              <button id="btn-stt" class="btn btn-primary w-full">📝 Transcribe Audio</button>
+              <div id="stt-result" class="hidden rounded-2xl border border-golden/30 bg-golden/5 p-5">
+                <p class="mb-2 text-xs uppercase tracking-widest text-saffron">Transcription</p>
+                <p id="stt-text" class="font-dev text-lg leading-relaxed"></p>
+                <button id="btn-copy" class="mt-3 text-sm font-semibold text-saffron hover:underline">📋 Copy text</button>
+              </div>
+            </div>
+
+            <!-- Clone -->
+            <div data-vpanel="clone" class="space-y-4 hidden">
+              <div class="rounded-2xl border border-saffron/20 bg-saffron/5 p-4 text-sm">
+                <p class="font-semibold text-saffron">🎯 How voice cloning works</p>
+                <p class="mt-1 text-sandal-deep/80 dark:text-cream/70">5-10 sec ka clear voice sample upload karo — AI usi awaaz mein text bolega.</p>
+              </div>
+              <div class="relative flex min-h-[90px] items-center justify-center rounded-2xl border-2 border-dashed border-sandal/25 bg-cream/50 p-4 hover:border-saffron dark:border-white/15 dark:bg-night-soft/50">
+                <input id="clone-ref" type="file" accept="audio/*" class="absolute inset-0 cursor-pointer opacity-0" />
+                <p id="clone-ref-name" class="text-sm font-semibold">🎤 Drop reference voice sample</p>
+              </div>
+              <audio id="clone-ref-preview" controls class="hidden w-full"></audio>
+              <textarea id="clone-text" rows="3" class="input resize-none" placeholder="Text to speak in cloned voice..."></textarea>
+              <button id="btn-clone" class="btn btn-gold w-full">🎭 Generate Cloned Voice</button>
+            </div>
+
+            <!-- audio result -->
+            <div id="audio-result" class="hidden rounded-2xl border border-golden/30 bg-gradient-to-br from-saffron/5 to-golden/5 p-5">
+              <p class="mb-3 text-xs uppercase tracking-widest text-saffron">✨ Generated Audio</p>
+              <audio id="audio-player" controls class="w-full"></audio>
+            </div>
+          </div>
+
+          <aside class="space-y-5">
+            <div class="rounded-2xl border border-sandal/10 bg-cream/60 p-5 dark:border-white/10 dark:bg-night-soft/40">
+              <p class="eyebrow !text-[10px]">⚡ Performance (CPU)</p>
+              <div class="mt-3 space-y-2 text-sm">
+                <div class="flex justify-between"><span>TTS</span><span class="font-semibold">2-6 sec</span></div>
+                <div class="flex justify-between"><span>STT</span><span class="font-semibold">5-15 sec</span></div>
+                <div class="flex justify-between"><span>Clone</span><span class="font-semibold">6-15 sec</span></div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+      <p id="v-status" class="mt-4 hidden text-center text-sm font-medium text-saffron"></p>
+    </section>
+
+    <!-- discover -->
+    <section data-panel="discover" class="mt-10">
+      <h2 class="font-display text-sm font-semibold uppercase tracking-widest text-sandal/60 dark:text-cream/50">Discover — Devotional Community</h2>
+      <div class="mt-3 columns-2 gap-4 md:columns-3 xl:columns-4">
+        {discover.map((d) => (
+          <img src={picsum(d.seed, 400, d.h)} alt="Community creation" loading="lazy"
+               class="mb-4 w-full break-inside-avoid rounded-2xl border border-sandal/10 object-cover shadow-soft dark:border-white/10" />
+        ))}
+      </div>
+    </section>
+
+    <!-- ══════════ PROMPT BAR ══════════ -->
+    <div id="promptbar" class="sticky bottom-5 z-30 mx-auto mt-12 w-full max-w-3xl">
+      <div class="rounded-3xl border border-golden/40 bg-white/90 p-3 shadow-lift backdrop-blur-xl dark:bg-night/90">
+        <textarea id="prompt" rows="1" placeholder="Type to imagine… ॥ श्री गणेशाय नमः ॥"
+          class="w-full resize-none bg-transparent px-3 py-2 text-base focus:outline-none"></textarea>
+
+        <div class="flex flex-wrap items-center gap-2 px-2 pb-1">
+          <!-- ➕ attach -->
+          <div id="attach-wrap" class="relative">
+            <button id="btn-attach" class="icon-btn !size-9" aria-label="Attach image" aria-haspopup="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            </button>
+            <div id="attach-menu" class="absolute bottom-12 left-0 z-40 hidden w-48 overflow-hidden rounded-2xl border border-golden/30 bg-white shadow-lift dark:bg-night">
+              <button data-attach="file" class="flex w-full items-center gap-3 px-4 py-3 text-sm font-medium transition hover:bg-saffron/10 hover:text-saffron">📁 Upload File</button>
+              <button data-attach="camera" class="flex w-full items-center gap-3 px-4 py-3 text-sm font-medium transition hover:bg-saffron/10 hover:text-saffron">📷 Use Camera</button>
+            </div>
+            <input id="attach-file" type="file" accept="image/*" class="hidden" />
+          </div>
+
+          <!-- attached preview -->
+          <div id="attach-preview" class="relative hidden">
+            <img id="attach-thumb" alt="Attached" class="size-12 rounded-xl object-cover ring-2 ring-golden/60" />
+            <button id="attach-remove" aria-label="Remove attachment"
+              class="absolute -right-2 -top-2 grid size-5 place-items-center rounded-full bg-ink text-xs text-white dark:bg-white dark:text-ink">×</button>
+          </div>
+
+          <!-- image controls (Text→Image / Image→Image + ratio + style) -->
+          <div data-ctl="image" class="flex flex-wrap items-center gap-2">
+            <button data-chip="imode" data-imode="t2i" aria-pressed="true" class="filter-btn !px-3 !py-1.5">📝 Text → Image</button>
+            <button data-chip="imode" data-imode="i2i" aria-pressed="false" class="filter-btn !px-3 !py-1.5">🖼️ Image → Image</button>
+            {["1:1", "4:5", "16:9"].map((r, i) => <button data-chip="ratio" aria-pressed={i === 0 ? "true" : "false"} class="filter-btn !px-3 !py-1.5">{r}</button>)}
+            {["Traditional", "Cinematic", "Cosmic"].map((s, i) => <button data-chip="style" aria-pressed={i === 0 ? "true" : "false"} class="filter-btn !px-3 !py-1.5">{s}</button>)}
+          </div>
+
+          <!-- poster controls -->
+          <div data-ctl="poster" class="hidden flex-wrap items-center gap-2">
+            {deities.map((d, i) => <button data-chip="deity" aria-pressed={i === 0 ? "true" : "false"} class="filter-btn !px-3 !py-1.5">{d.name.replace("Shri ", "")}</button>)}
+          </div>
+
+          <!-- video controls (3 modes) -->
+          <div data-ctl="video" class="hidden flex-wrap items-center gap-2">
+            <button data-chip="vmode" data-vmode="t2v" aria-pressed="true" class="filter-btn !px-3 !py-1.5">📝 Text → Video</button>
+            <button data-chip="vmode" data-vmode="i2v" aria-pressed="false" class="filter-btn !px-3 !py-1.5">🖼️ Image → Video</button>
+            <button data-chip="vmode" data-vmode="v2v" aria-pressed="false" class="filter-btn !px-3 !py-1.5">🎬 Video → Video</button>
+            {["5s", "10s", "15s"].map((d, i) => <button data-chip="dur" aria-pressed={i === 1 ? "true" : "false"} class="filter-btn !px-3 !py-1.5">{d}</button>)}
+          </div>
+
+          <span class="ms-auto">
+            <button id="btn-send" aria-label="Generate"
+              class="grid size-10 place-items-center rounded-full bg-gradient-to-br from-saffron to-golden text-white shadow-glow transition hover:scale-105">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>
+            </button>
+          </span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 📷 Camera Modal (laptop + mobile) -->
+  <dialog id="cam-dialog" class="m-auto w-[min(92vw,480px)] rounded-3xl border border-golden/30 bg-night p-4 text-cream shadow-lift">
+    <p class="mb-3 text-center font-display text-sm font-semibold">📷 Camera — photo lo</p>
+    <video id="cam-video" autoplay playsinline muted class="aspect-[4/3] w-full rounded-2xl bg-black object-cover"></video>
+    <p id="cam-error" class="mt-3 hidden text-center text-sm text-red-400"></p>
+    <div class="mt-4 flex items-center justify-center gap-3">
+      <form method="dialog"><button class="btn btn-ghost !py-2 !text-cream">Cancel</button></form>
+      <button id="btn-capture" class="btn btn-primary">📸 Capture</button>
+    </div>
+  </dialog>
+</div>
+
+<script is:inline>
+(() => {
+  const API = "http://localhost:3001";
+  const $ = (s) => document.querySelector(s);
+  const $$ = (s) => document.querySelectorAll(s);
+  const picsumSeed = (seed, w, h) => `https://picsum.photos/seed/${seed}/${w}/${h}`;
+  const state = { studio: "image", attached: null };
+
+  const meta = {
+    image:  { title: "Image Generation",  dev: "॥ चित्र सृष्टिः ॥", ph: "Type to imagine… ॥ श्री गणेशाय नमः ॥" },
+    poster: { title: "Poster Generation", dev: "॥ उत्सव घोषणा ॥", ph: "Poster title likho… e.g. Ganesh Utsav 2026" },
+    voice:  { title: "Voice Studio",      dev: "॥ वाक् सृष्टिः ॥", ph: "" },
+    video:  { title: "Video Generation",  dev: "॥ चलच्चित्र सृष्टिः ॥", ph: "Video prompt likho… ya image attach karo" },
+  };
+
+  /* ---------- attach menu ---------- */
+  const menu = $("#attach-menu");
+  $("#btn-attach").addEventListener("click", (e) => { e.stopPropagation(); menu.classList.toggle("hidden"); });
+  document.addEventListener("click", (e) => { if (!$("#attach-wrap").contains(e.target)) menu.classList.add("hidden"); });
+
+  $$("[data-attach]").forEach((b) => b.addEventListener("click", () => {
+    menu.classList.add("hidden");
+    if (b.dataset.attach === "camera") openCamera();
+    else $("#attach-file").click();
+  }));
+
+  function onAttach(input) {
+    const f = input.files[0];
+    if (!f) return;
+    state.attached = f;
+    $("#attach-thumb").src = URL.createObjectURL(f);
+    $("#attach-preview").classList.remove("hidden");
+  }
+  $("#attach-file").addEventListener("change", (e) => onAttach(e.target));
+  $("#attach-remove").addEventListener("click", () => {
+    state.attached = null;
+    $("#attach-preview").classList.add("hidden");
+  });
+
+  /* ---------- 📷 camera (getUserMedia — laptop + mobile) ---------- */
+  let camStream = null;
+  async function openCamera() {
+    const dlg = $("#cam-dialog"), err = $("#cam-error");
+    err.classList.add("hidden");
+    dlg.showModal();
+    try {
+      camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false });
+      $("#cam-video").srcObject = camStream;
+    } catch {
+      err.textContent = "⚠️ Camera access nahi mila — permission allow karo ya Upload File use karo";
+      err.classList.remove("hidden");
+    }
+  }
+  function stopCamera() {
+    camStream?.getTracks().forEach((t) => t.stop());
+    camStream = null;
+  }
+  $("#cam-dialog").addEventListener("close", stopCamera);
+
+  $("#btn-capture").addEventListener("click", () => {
+    if (!camStream) return;
+    const video = $("#cam-video");
+    const canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 480;
+    canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+    canvas.toBlob((blob) => {
+      if (!blob) return;
+      state.attached = new File([blob], "camera-capture.jpg", { type: "image/jpeg" });
+      $("#attach-thumb").src = URL.createObjectURL(blob);
+      $("#attach-preview").classList.remove("hidden");
+      $("#cam-dialog").close();
+    }, "image/jpeg", 0.92);
+  });
+
+  /* ---------- attach visibility logic ---------- */
+  function updateAttach() {
+    const vmode = $('[data-chip="vmode"][aria-pressed="true"]')?.dataset.vmode || "t2v";
+    const show = state.studio === "image" || state.studio === "poster" || (state.studio === "video" && vmode !== "t2v");
+    $("#attach-wrap").style.display = show ? "" : "none";
+    $("#attach-file").accept = state.studio === "video" && vmode === "v2v" ? "video/*" : "image/*";
+    $('[data-attach="camera"]').style.display = state.studio === "video" && vmode === "v2v" ? "none" : "";
+  }
+
+  /* ---------- studio switching ---------- */
+  function setStudio(id) {
+    state.studio = id;
+    history.replaceState(null, "", `?studio=${id}`);
+    $("#studio-title").textContent = meta[id].title;
+    $("#studio-dev").textContent = meta[id].dev;
+    $("#prompt").placeholder = meta[id].ph;
+
+    $$("[data-studio]").forEach((b) => {
+      const on = b.dataset.studio === id;
+      b.setAttribute("aria-pressed", on);
+      if (b.classList.contains("filter-btn")) return;
+      b.className = `flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-300 ${
+        on ? "bg-gradient-to-r from-saffron to-golden text-white shadow-gold"
+           : "text-sandal-deep/80 hover:bg-saffron/10 hover:text-saffron dark:text-cream/70"}`;
+    });
+
+    $$("[data-ctl]").forEach((c) => {
+      c.classList.toggle("hidden", c.dataset.ctl !== id);
+      c.classList.toggle("flex", c.dataset.ctl === id);
+    });
+    $$("[data-tpl]").forEach((t) => (t.style.display = t.dataset.tpl === id ? "" : "none"));
+    $$("[data-panel='voice']").forEach((p) => p.classList.toggle("hidden", id !== "voice"));
+    $$("[data-panel='discover']").forEach((p) => p.classList.toggle("hidden", id === "voice"));
+    $("#promptbar").style.display = id === "voice" ? "none" : "";
+    updateAttach();
+  }
+
+  $$("[data-studio]").forEach((b) => b.addEventListener("click", () => setStudio(b.dataset.studio)));
+  $$("[data-tpl]").forEach((t) => t.addEventListener("click", () => { $("#prompt").value = t.dataset.prompt; $("#prompt").focus(); }));
+
+  /* ---------- chips ---------- */
+  ["ratio", "style", "deity", "dur", "res", "vmode", "imode"].forEach((k) => {
+    const btns = $$(`[data-chip="${k}"]`);
+    btns.forEach((b) => b.addEventListener("click", () => {
+      btns.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      if (k === "vmode") updateAttach();
+      if (k === "imode") {
+        const m = $('[data-chip="imode"][aria-pressed="true"]')?.dataset.imode;
+        $("#prompt").placeholder = m === "i2i"
+          ? "Image attach karo + likho kya banani hai…"
+          : "Type to imagine… ॥ श्री गणेशाय नमः ॥";
+      }
+    }));
+  });
+
+  /* ---------- history ---------- */
+  const HKEY = "bm-studio-history";
+  const loadH = () => { try { return JSON.parse(localStorage.getItem(HKEY) || "[]"); } catch { return []; } };
+  const saveH = (h) => { localStorage.setItem(HKEY, JSON.stringify(h.slice(0, 12))); renderH(); };
+  function renderH() {
+    $("#history").innerHTML = loadH().map((h) =>
+      `<img src="${h.thumb}" title="${h.prompt}" data-p="${h.prompt}" class="aspect-square w-full cursor-pointer rounded-lg object-cover ring-1 ring-golden/30">`
+    ).join("") || `<p class="col-span-4 text-xs text-sandal/50 dark:text-cream/40">Abhi koi generation nahi</p>`;
+    $$("#history img").forEach((im) => im.addEventListener("click", () => { $("#prompt").value = im.dataset.p; }));
+  }
+  $("#clear-history").addEventListener("click", () => saveH([]));
+
+  /* ---------- generate ---------- */
+  $("#btn-send").addEventListener("click", () => {
+    const studio = state.studio;
+    const prompt = $("#prompt").value.trim() || "divine temple art";
+    const slug = prompt.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 20);
+    $("#results-wrap").classList.remove("hidden");
+    const slot = document.createElement("div");
+    slot.className = "aspect-square animate-pulse rounded-2xl bg-golden/20";
+    $("#results").prepend(slot);
+
+    setTimeout(() => {
+      const seed = `${studio}-${slug}`;
+      const src = state.attached ? URL.createObjectURL(state.attached) : picsumSeed(seed, 500, 500);
+      if (studio === "video") {
+        slot.outerHTML = `<video controls class="aspect-square w-full rounded-2xl object-cover" src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"></video>`;
+      } else if (studio === "poster") {
+        slot.outerHTML = `<div class="relative overflow-hidden rounded-2xl border border-golden/40 shadow-soft">
+          <img src="${src}" class="aspect-[4/5] w-full object-cover">
+          <span class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 to-transparent px-3 pb-2 pt-8 text-center font-dev text-goldsoft">${prompt}</span></div>`;
+      } else {
+        slot.outerHTML = `<img src="${src}" class="aspect-square w-full rounded-2xl object-cover shadow-soft">`;
+      }
+      saveH([{ prompt, thumb: picsumSeed(seed, 96, 96), t: Date.now() }, ...loadH()]);
+    }, 1500);
+  });
+
+  /* ---------- voice tabs ---------- */
+  const vtabs = $$("[data-vtab]"), vpanels = $$("[data-vpanel]");
+  vtabs.forEach((t) => t.addEventListener("click", () => {
+    vtabs.forEach((x) => {
+      const on = x === t;
+      x.setAttribute("aria-selected", on);
+      x.classList.toggle("border-b-2", on); x.classList.toggle("border-saffron", on);
+      x.classList.toggle("bg-white", on); x.classList.toggle("text-saffron", on);
+      x.classList.toggle("dark:border-golden", on); x.classList.toggle("dark:bg-night", on); x.classList.toggle("dark:text-golden", on);
+    });
+    vpanels.forEach((p) => p.classList.toggle("hidden", p.dataset.vpanel !== t.dataset.vtab));
+  }));
+
+  /* ---------- voice API ---------- */
+  const vShow = (m, err = false) => {
+    const el = $("#v-status");
+    el.classList.remove("hidden");
+    el.textContent = m;
+    el.className = `mt-4 text-center text-sm font-medium ${err ? "text-red-500" : "text-saffron"}`;
+  };
+  function playAudio(blob) {
+    const a = $("#audio-player");
+    a.src = URL.createObjectURL(blob);
+    $("#audio-result").classList.remove("hidden");
+  }
+
+  $("#btn-tts").addEventListener("click", async () => {
+    const text = $("#tts-text").value.trim();
+    if (!text) return vShow("⚠️ Pehle text likho", true);
+    try {
+      vShow("✨ Generating speech...");
+      const r = await fetch(`${API}/api/tts`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text, lang: $("#tts-lang").value }) });
+      if (!r.ok) throw 0;
+      playAudio(await r.blob()); vShow("✅ Speech ready!");
+    } catch { vShow("⚠️ Voice server offline — node voice-server.mjs chalao", true); }
+  });
+
+  $("#stt-file").addEventListener("change", (e) => { $("#stt-filename").textContent = e.target.files[0] ? `📁 ${e.target.files[0].name}` : ""; });
+  $("#btn-stt").addEventListener("click", async () => {
+    const f = $("#stt-file").files[0];
+    if (!f) return vShow("⚠️ Audio file chuno", true);
+    try {
+      vShow("🎤 Transcribing...");
+      const fd = new FormData(); fd.append("audio", f);
+      const r = await fetch(`${API}/api/stt`, { method: "POST", body: fd });
+      if (!r.ok) throw 0;
+      const d = await r.json();
+      $("#stt-text").textContent = d.text;
+      $("#stt-result").classList.remove("hidden");
+      vShow("✅ Done!");
+    } catch { vShow("⚠️ Voice server offline", true); }
+  });
+  $("#btn-copy").addEventListener("click", () => {
+    navigator.clipboard.writeText($("#stt-text").textContent);
+    $("#btn-copy").textContent = "✅ Copied!";
+    setTimeout(() => ($("#btn-copy").textContent = "📋 Copy text"), 2000);
+  });
+
+  $("#clone-ref").addEventListener("change", (e) => {
+    const f = e.target.files[0];
+    if (f) {
+      $("#clone-ref-name").textContent = `📁 ${f.name}`;
+      const p = $("#clone-ref-preview"); p.src = URL.createObjectURL(f); p.classList.remove("hidden");
+    }
+  });
+  $("#btn-clone").addEventListener("click", async () => {
+    const f = $("#clone-ref").files[0], text = $("#clone-text").value.trim();
+    if (!f) return vShow("⚠️ Reference voice chuno", true);
+    if (!text) return vShow("⚠️ Text likho", true);
+    try {
+      vShow("🎭 Cloning... (6-15 sec)");
+      const fd = new FormData(); fd.append("reference", f); fd.append("text", text);
+      const r = await fetch(`${API}/api/clone`, { method: "POST", body: fd });
+      if (!r.ok) throw 0;
+      playAudio(await r.blob()); vShow("✅ Cloned!");
+    } catch { vShow("⚠️ Voice server offline", true); }
+  });
+
+  /* ---------- init ---------- */
+  renderH();
+  setStudio(new URLSearchParams(location.search).get("studio") || "image");
+})();
+</script>
+</Layout>

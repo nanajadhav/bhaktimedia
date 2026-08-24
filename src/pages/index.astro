@@ -1,0 +1,387 @@
+﻿---
+import Layout from "../layouts/Layout.astro";
+import Services from "../components/Services.astro";
+import { getCollection } from "astro:content";
+import { site, testimonials, marqueeItems } from "../data/site";
+import { deityGallery } from "../data/gallery";
+import { picsum } from "../lib/utils";
+import { readTime, fmtDate } from "../lib/utils";
+
+const galleryPreview = deityGallery.flatMap((d) => d.images.slice(0, 2).map((i) => ({ ...i, deity: d.name })));
+
+const posters = [
+  { seed: "ganesh-utsav-poster", title: "Ganesh Utsav 2026", deity: "Shri Ganesh" },
+  { seed: "swami-samarth-poster", title: "Swami Samarth Jayanti", deity: "Shri Swami Samarth" },
+  { seed: "datta-jayanti-poster", title: "Datta Jayanti", deity: "Shri Datta" },
+  { seed: "hanuman-chalisa-poster", title: "Hanuman Chalisa", deity: "Shri Hanuman" },
+  { seed: "navratri-garba-poster", title: "Navratri Utsav", deity: "Maa Durga" },
+  { seed: "janmashtami-poster", title: "Janmashtami", deity: "Shri Krishna" },
+  { seed: "diwali-deepotsav-poster", title: "Deepotsav", deity: "Shri Lakshmi" },
+];
+
+const posts = (await getCollection("blog")).sort((a, b) => +b.data.pubDate - +a.data.pubDate);
+const [featuredPost, ...restPosts] = posts;
+const sidePosts = restPosts.slice(0, 3);
+---
+<Layout>
+<style>
+  .hero-rays { background: repeating-conic-gradient(from 0deg at 50% -20%, rgb(245 176 65 / .16) 0deg 5deg, transparent 5deg 13deg); mask-image: radial-gradient(ellipse 70% 62% at 50% 0%, black, transparent 72%); -webkit-mask-image: radial-gradient(ellipse 70% 62% at 50% 0%, black, transparent 72%); }
+  .mandala-spin { animation: spin 80s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .marquee { animation: marquee 34s linear infinite; }
+  .marquee-wrap:hover .marquee { animation-play-state: paused; }
+  @keyframes marquee { to { transform: translateX(-50%); } }
+  .float-y { animation: floaty 7s ease-in-out infinite; }
+  .float-y2 { animation: floaty 11s ease-in-out infinite; }
+  @keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+  .flame { animation: flick 2.4s ease-in-out infinite; transform-origin: 60px 44px; }
+  @keyframes flick { 0%, 100% { transform: scaleY(1); } 25% { transform: scaleY(1.12) rotate(-2deg); } 60% { transform: scaleY(0.94) rotate(2deg); } }
+  .kenburns { animation: kb 18s ease-in-out infinite alternate; }
+  @keyframes kb { from { transform: scale(1); } to { transform: scale(1.1) translateY(-2%); } }
+  .mask-line { display: block; overflow: hidden; padding-bottom: 0.1em; margin-bottom: -0.1em; }
+  .mask-line > span { display: block; transform: translateY(112%); transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1); transition-delay: var(--rd, 0ms); }
+  .is-in .mask-line > span { transform: none; }
+  [data-reveal]:not([data-reveal="group"]) { opacity: 0; transform: translateY(26px); transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1), transform 0.9s cubic-bezier(0.22, 1, 0.36, 1); transition-delay: var(--rd, 0ms); }
+  [data-reveal].is-in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .marquee, .mandala-spin, .float-y, .float-y2, .flame, .kenburns { animation: none !important; }
+    [data-reveal], .mask-line > span { opacity: 1 !important; transform: none !important; transition: none !important; }
+  }
+</style>
+
+<!-- ══════════ HERO ══════════ -->
+<section id="home" class="relative flex min-h-svh items-center overflow-hidden pb-24 pt-32">
+  <div class="absolute inset-0 bg-gradient-to-b from-cream via-temple to-temple dark:from-[#2a1708] dark:via-night dark:to-night" aria-hidden="true"></div>
+  <div class="hero-rays absolute -top-24 left-1/2 h-[75vh] w-[160%] -translate-x-1/2" aria-hidden="true"></div>
+
+  <svg viewBox="0 0 400 400" fill="none" aria-hidden="true" class="mandala-spin absolute -right-44 -top-44 size-[560px] text-golden/25 dark:text-golden/15">
+    <g stroke="currentColor" stroke-width="1">
+      <circle cx="200" cy="200" r="196" opacity="0.5" /><circle cx="200" cy="200" r="170" stroke-dasharray="3 8" />
+      <circle cx="200" cy="200" r="120" /><circle cx="200" cy="200" r="70" stroke-dasharray="2 6" />
+      {Array.from({ length: 12 }).map((_, i) => (
+        <path d="M200 30 C214 60 214 90 200 112 C186 90 186 60 200 30 Z" transform={`rotate(${i * 30} 200 200)`} opacity="0.7" />
+      ))}
+    </g>
+    <text x="200" y="212" text-anchor="middle" font-size="32" fill="currentColor" font-family="serif">ॐ</text>
+  </svg>
+
+  <canvas id="dust" class="absolute inset-0 z-[1] h-full w-full" aria-hidden="true"></canvas>
+
+  <div class="container-x relative z-10 grid items-center gap-16 lg:grid-cols-[1.05fr_0.95fr]">
+    <div>
+      <span class="chip border border-golden/40 bg-white/60 font-dev text-sandal-deep backdrop-blur dark:bg-white/5 dark:text-goldsoft">
+        <span class="size-2 rounded-full bg-saffron" style="animation: pulse-dot 2s infinite"></span>
+        🪔 {site.tagline}
+      </span>
+
+      <h1 data-reveal="group" class="mt-6 font-display text-[2.6rem] font-bold leading-[1.05] tracking-tight sm:text-6xl xl:text-7xl">
+        <span class="mask-line"><span style="--rd:100ms">Experience <span class="text-gradient">Divine</span></span></span>
+        <span class="mask-line"><span style="--rd:220ms">Creativity Through</span></span>
+        <span class="mask-line"><span style="--rd:340ms">Digital Media<span class="text-saffron">.</span></span></span>
+      </h1>
+
+      <p data-reveal style="--rd:440ms" class="mt-6 max-w-xl text-base leading-relaxed text-sandal-deep/85 dark:text-cream/70 sm:text-lg">
+        {site.description}
+      </p>
+
+      <div data-reveal style="--rd:540ms" class="mt-8 flex flex-wrap items-center gap-3">
+        <a href="/services" class="btn btn-primary">Explore
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+        <button data-open-dialog="demo-modal" class="btn btn-glass">
+          <span class="grid size-8 place-items-center rounded-full bg-gradient-to-br from-saffron to-golden text-white shadow-gold">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+          </span>
+          Watch Demo
+        </button>
+        <a href="/contact" class="btn btn-ghost">Contact Us</a>
+      </div>
+
+      <div data-reveal style="--rd:660ms" class="mt-10 flex flex-wrap items-center gap-4">
+        <div class="flex -space-x-3">
+          {["devotee-one", "devotee-two", "devotee-three", "devotee-four"].map((a) => (
+            <img src={picsum(`avatar-${a}`, 80, 80)} alt="" loading="lazy" class="size-10 rounded-full object-cover ring-2 ring-temple dark:ring-night" />
+          ))}
+        </div>
+        <div>
+          <div class="flex gap-0.5 text-golden" aria-label="5 star rating">
+            {Array.from({ length: 5 }).map(() => (
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+            ))}
+          </div>
+          <p class="text-sm text-sandal-deep/75 dark:text-cream/60">Trusted by <strong class="font-semibold">100+ temples & creators</strong> across India</p>
+        </div>
+      </div>
+    </div>
+
+    <div data-reveal style="--rd:300ms" class="relative mx-auto w-full max-w-md lg:max-w-none">
+      <div class="absolute -inset-8 rounded-[3rem] bg-gradient-to-br from-saffron/25 via-golden/20 to-transparent blur-2xl" aria-hidden="true"></div>
+      <figure class="relative rounded-b-3xl rounded-t-[14rem] border border-golden/40 bg-white p-3 shadow-lift dark:border-golden/25 dark:bg-night-soft">
+        <div class="overflow-hidden rounded-b-2xl rounded-t-[13rem]">
+          <img src={picsum("temple-aarti-divine-glow", 880, 1100)} alt="Divine aarti glow — BhaktiMedia poster art" fetchpriority="high" class="kenburns aspect-[4/5] w-full object-cover" />
+        </div>
+        <figcaption class="flex items-center justify-between px-2 pb-1 pt-3 text-xs">
+          <span class="font-dev text-sandal dark:text-golden">॥ श्री स्वामी समर्थ ॥</span>
+          <span class="chip bg-saffron/10 text-saffron">Poster Series</span>
+        </figcaption>
+      </figure>
+
+      <div class="float-y absolute -left-6 top-12 flex items-center gap-2 rounded-2xl border border-white/60 bg-white/70 px-4 py-3 text-sm font-semibold shadow-soft backdrop-blur-xl dark:border-white/10 dark:bg-night/80">✨ AI Generated Art</div>
+      <div class="float-y2 absolute -right-4 bottom-20 flex items-center gap-3 rounded-2xl border border-white/60 bg-white/70 px-4 py-3 shadow-soft backdrop-blur-xl dark:border-white/10 dark:bg-night/80">
+        <span class="grid size-9 place-items-center rounded-full bg-gradient-to-br from-saffron to-golden text-white">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+        </span>
+        <span><span class="block font-display text-sm font-bold">2.4M views</span><span class="block text-xs text-sandal-deep/70 dark:text-cream/60">Bhakti Reel • Ganesh Utsav</span></span>
+      </div>
+
+      <svg viewBox="0 0 120 110" aria-hidden="true" class="float-y2 absolute -bottom-10 -left-10 w-24">
+        <defs>
+          <radialGradient id="h-glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFD98A" stop-opacity="0.85"/><stop offset="100%" stop-color="#FFD98A" stop-opacity="0"/></radialGradient>
+          <linearGradient id="h-flame" x1="0" y1="1" x2="0" y2="0"><stop offset="0%" stop-color="#FF6B00"/><stop offset="60%" stop-color="#F5B041"/><stop offset="100%" stop-color="#FFF8F0"/></linearGradient>
+          <linearGradient id="h-bowl" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#F5B041"/><stop offset="100%" stop-color="#8B4513"/></linearGradient>
+        </defs>
+        <circle cx="60" cy="30" r="30" fill="url(#h-glow)" />
+        <g class="flame"><ellipse cx="60" cy="28" rx="9" ry="17" fill="url(#h-flame)" /><ellipse cx="60" cy="33" rx="4" ry="9" fill="#FFF8F0" opacity="0.85" /></g>
+        <ellipse cx="60" cy="60" rx="42" ry="8" fill="#8B4513" />
+        <path d="M18 62c7 22 77 22 84 0-16 8-68 8-84 0z" fill="url(#h-bowl)" />
+      </svg>
+    </div>
+  </div>
+
+  <a href="#services-anchor" aria-label="Scroll to services" class="absolute bottom-6 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-sandal/70 dark:text-cream/40 md:flex">
+    Scroll <span class="h-10 w-px animate-pulse bg-gradient-to-b from-saffron to-transparent"></span>
+  </a>
+</section>
+
+<!-- ══════════ OM TICKER ══════════ -->
+<div class="marquee-wrap relative overflow-hidden border-y border-golden/20 bg-ink py-4 dark:bg-black">
+  <div class="marquee flex w-max gap-8 whitespace-nowrap">
+    {[0, 1].map((dup) => (
+      <ul class="flex items-center gap-8" aria-hidden={dup === 1}>
+        {marqueeItems.map((t) => (
+          <li class="flex items-center gap-8 font-dev text-lg text-goldsoft/90"><span>{t}</span><span class="text-saffron">✦</span></li>
+        ))}
+      </ul>
+    ))}
+  </div>
+</div>
+
+<!-- ══════════ SERVICES ══════════ -->
+<div id="services-anchor"><Services /></div>
+
+<!-- ══════════ STATS ══════════ -->
+<section class="relative overflow-hidden bg-ink py-20 text-cream">
+  <div class="hero-rays absolute inset-x-0 top-0 h-72 opacity-50" aria-hidden="true"></div>
+  <div class="container-x relative grid grid-cols-2 gap-x-6 gap-y-12 text-center lg:grid-cols-4">
+    {[{ v: 1000, s: "+", l: "Creative Designs" }, { v: 500, s: "+", l: "Videos Produced" }, { v: 100, s: "+", l: "Happy Clients" }, { v: 25, s: "M+", l: "Total Views" }].map((st, i) => (
+      <div data-reveal style={`--rd:${i * 100}ms`}>
+        <p class="font-display text-4xl font-bold text-gradient md:text-5xl" data-count={st.v} data-suffix={st.s}>0</p>
+        <p class="mt-2 text-xs uppercase tracking-[0.25em] text-cream/60 md:text-sm">{st.l}</p>
+      </div>
+    ))}
+  </div>
+</section>
+
+<!-- ══════════ POSTERS ══════════ -->
+<section class="section pattern-sacred bg-cream/60 dark:bg-night-soft/30">
+  <div class="container-x">
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <header data-reveal>
+        <p class="eyebrow">Festival Posters</p>
+        <h2 class="mt-4 font-display text-3xl font-bold tracking-tight sm:text-4xl">Posters That Devotees <span class="text-gradient">Frame</span></h2>
+        <p class="mt-2 font-dev text-sandal dark:text-golden/80">॥ उत्सव घोषणा ॥</p>
+      </header>
+      <a data-reveal href="/ai-services?studio=poster" class="btn btn-primary">Open Poster Studio
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+
+    <div class="no-scrollbar -mx-1 mt-12 flex snap-x gap-5 overflow-x-auto px-1 pb-2">
+      {posters.map((p, i) => (
+        <a data-reveal style={`--rd:${(i % 4) * 80}ms`} href="/gallery"
+           class="group relative w-56 shrink-0 snap-start overflow-hidden rounded-2xl border border-sandal/10 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-lift dark:border-white/10 sm:w-64">
+          <img src={picsum(p.seed, 480, 672)} alt={p.title} loading="lazy" class="aspect-[5/7] w-full object-cover transition duration-700 group-hover:scale-105" />
+          <span class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 to-transparent px-4 pb-3 pt-10">
+            <span class="block font-dev text-xs text-goldsoft">{p.deity}</span>
+            <span class="block font-display text-sm font-semibold text-white">{p.title}</span>
+          </span>
+          <span class="chip absolute left-3 top-3 bg-ink/60 text-[10px] text-white backdrop-blur">Print Ready</span>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ GALLERY PREVIEW ══════════ -->
+<section class="section">
+  <div class="container-x">
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <header data-reveal>
+        <p class="eyebrow">Divine Gallery</p>
+        <h2 class="mt-4 font-display text-3xl font-bold tracking-tight sm:text-4xl">Moments of <span class="text-gradient">Devotion</span></h2>
+      </header>
+      <a data-reveal href="/gallery" class="btn btn-ghost">Full Gallery</a>
+    </div>
+    <div class="mt-12 columns-2 gap-4 md:columns-4">
+      {galleryPreview.map((g, i) => (
+        <a data-reveal style={`--rd:${(i % 4) * 70}ms`} href="/gallery" class="group relative mb-4 block break-inside-avoid overflow-hidden rounded-2xl border border-sandal/10 shadow-soft dark:border-white/10">
+          <img src={picsum(g.seed, g.w, g.h)} alt={g.title} loading="lazy" class="w-full object-cover transition duration-700 group-hover:scale-[1.04]" />
+          <span class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/80 to-transparent px-3 pb-2 pt-8 text-xs font-semibold text-white opacity-0 transition group-hover:opacity-100">{g.deity} • {g.ratio}</span>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ BLOG ══════════ -->
+<section class="section bg-cream/50 dark:bg-night-soft/30">
+  <div class="container-x">
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <header data-reveal>
+        <p class="eyebrow">From the Blog</p>
+        <h2 class="mt-4 font-display text-3xl font-bold tracking-tight sm:text-4xl">Latest <span class="text-gradient">Wisdom</span></h2>
+        <p class="mt-2 font-dev text-sandal dark:text-golden/80">॥ ज्ञानदीपः ॥</p>
+      </header>
+      <a data-reveal href="/blog" class="btn btn-ghost">All Articles</a>
+    </div>
+
+    <div class="mt-12 grid gap-8 lg:grid-cols-2">
+      <!-- featured -->
+      <a data-reveal href={`/blog/${featuredPost.id}`} class="card group overflow-hidden transition duration-300 hover:-translate-y-1 hover:shadow-lift">
+        <div class="overflow-hidden">
+          <img src={featuredPost.data.image} alt={featuredPost.data.title} class="aspect-video w-full object-cover transition duration-700 group-hover:scale-[1.04]" />
+        </div>
+        <div class="p-7">
+          <div class="flex flex-wrap items-center gap-2 text-xs">
+            <span class="chip bg-saffron/10 font-semibold text-saffron">{featuredPost.data.category}</span>
+            <span class="text-sandal/70 dark:text-cream/50">{readTime(featuredPost.body)} min read</span>
+            <span class="text-sandal/70 dark:text-cream/50">{fmtDate(featuredPost.data.pubDate)}</span>
+          </div>
+          <h3 class="mt-4 font-display text-2xl font-bold leading-snug transition group-hover:text-saffron">{featuredPost.data.title}</h3>
+          <p class="mt-3 text-sm leading-relaxed text-sandal-deep/75 dark:text-cream/65">{featuredPost.data.description}</p>
+        </div>
+      </a>
+
+      <!-- side list -->
+      <div class="flex flex-col gap-6">
+        {sidePosts.map((p, i) => (
+          <a data-reveal style={`--rd:${i * 100}ms`} href={`/blog/${p.id}`} class="card group flex gap-5 p-4 transition duration-300 hover:-translate-y-1 hover:shadow-lift">
+            <div class="w-32 shrink-0 overflow-hidden rounded-xl sm:w-40">
+              <img src={p.data.image} alt="" loading="lazy" class="aspect-[4/3] h-full w-full object-cover transition duration-700 group-hover:scale-105" />
+            </div>
+            <div class="py-1">
+              <span class="chip bg-golden/15 text-[11px] font-semibold text-sandal dark:text-golden">{p.data.category}</span>
+              <h3 class="mt-2 font-display font-semibold leading-snug transition group-hover:text-saffron sm:text-lg">{p.data.title}</h3>
+              <p class="mt-2 text-xs text-sandal/70 dark:text-cream/50">{readTime(p.body)} min • {fmtDate(p.data.pubDate)}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ TESTIMONIALS ══════════ -->
+<section class="section overflow-hidden">
+  <div class="container-x">
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <header data-reveal>
+        <p class="eyebrow">Testimonials</p>
+        <h2 class="mt-4 font-display text-3xl font-bold tracking-tight sm:text-4xl">Voices of <span class="text-gradient">Faith & Trust</span></h2>
+      </header>
+      <div data-reveal class="flex gap-2">
+        <button data-car-prev class="icon-btn" aria-label="Previous"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+        <button data-car-next class="icon-btn" aria-label="Next"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
+      </div>
+    </div>
+  </div>
+  <div class="container-x mt-12">
+    <div data-car class="no-scrollbar flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-4">
+      {testimonials.map((t) => (
+        <figure class="card min-w-[86%] snap-center border-white/60 bg-white/70 p-8 backdrop-blur-xl dark:border-white/10 dark:bg-white/5 sm:min-w-[420px]">
+          <div class="flex gap-0.5 text-golden">{Array.from({ length: 5 }).map(() => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+          ))}</div>
+          <blockquote class="mt-4 leading-relaxed text-sandal-deep/90 dark:text-cream/80">“{t.quote}”</blockquote>
+          <figcaption class="mt-6 flex items-center gap-3">
+            <img src={picsum(t.seed, 96, 96)} alt={t.name} loading="lazy" class="size-12 rounded-full object-cover ring-2 ring-golden/50" />
+            <span><span class="block font-display text-sm font-semibold">{t.name}</span><span class="block text-xs text-sandal/80 dark:text-cream/60">{t.role}</span></span>
+          </figcaption>
+        </figure>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- demo modal -->
+<dialog id="demo-modal" class="m-auto w-[min(92vw,880px)] rounded-3xl border border-golden/30 bg-night p-3 shadow-lift">
+  <div class="relative overflow-hidden rounded-2xl">
+    <img src={picsum("bhaktimedia-showreel", 1280, 720)} alt="BhaktiMedia showreel" class="aspect-video w-full object-cover opacity-90" />
+    <span class="absolute inset-0 grid place-items-center">
+      <span class="grid size-20 animate-pulse place-items-center rounded-full bg-gradient-to-br from-saffron to-golden text-white shadow-glow">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+      </span>
+    </span>
+    <p class="absolute bottom-4 left-5 font-dev text-sm text-goldsoft">॥ BhaktiMedia Showreel 2026 ॥</p>
+  </div>
+  <form method="dialog" class="mt-4 text-right"><button class="btn btn-glass !text-cream">Close</button></form>
+</dialog>
+
+<script is:inline>
+(() => {
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const els = document.querySelectorAll("[data-reveal]");
+  if (reduced || !("IntersectionObserver" in window)) els.forEach((el) => el.classList.add("is-in"));
+  else {
+    const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } }), { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+    els.forEach((el) => io.observe(el));
+  }
+
+  const fmt = (n) => n.toLocaleString("en-IN");
+  const cio = new IntersectionObserver((es) => es.forEach((e) => {
+    if (!e.isIntersecting) return;
+    const el = e.target, target = +el.dataset.count, suffix = el.dataset.suffix || "";
+    cio.unobserve(el);
+    if (reduced) { el.textContent = fmt(target) + suffix; return; }
+    const t0 = performance.now();
+    const step = (t) => { const p = Math.min(1, (t - t0) / 1800); el.textContent = fmt(Math.round(target * (1 - Math.pow(1 - p, 3)))) + suffix; if (p < 1) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  }), { threshold: 0.4 });
+  document.querySelectorAll("[data-count]").forEach((el) => cio.observe(el));
+
+  const track = document.querySelector("[data-car]");
+  const stepW = () => (track.querySelector(":scope > *")?.offsetWidth ?? 400) + 24;
+  document.querySelector("[data-car-prev]")?.addEventListener("click", () => track.scrollBy({ left: -stepW(), behavior: reduced ? "auto" : "smooth" }));
+  document.querySelector("[data-car-next]")?.addEventListener("click", () => track.scrollBy({ left: stepW(), behavior: reduced ? "auto" : "smooth" }));
+
+  document.querySelectorAll("[data-open-dialog]").forEach((b) => b.addEventListener("click", () => document.getElementById(b.dataset.openDialog)?.showModal()));
+  document.querySelectorAll("dialog").forEach((d) => d.addEventListener("click", (e) => { if (e.target === d) d.close(); }));
+
+  const canvas = document.getElementById("dust");
+  if (canvas && !reduced) {
+    const ctx = canvas.getContext("2d");
+    let w, h, running = true;
+    const resize = () => { const d = Math.min(devicePixelRatio || 1, 2); w = canvas.clientWidth; h = canvas.clientHeight; canvas.width = w * d; canvas.height = h * d; ctx.setTransform(d, 0, 0, d, 0, 0); };
+    resize(); addEventListener("resize", resize);
+    const spawn = (fresh) => ({ x: Math.random() * w, y: fresh ? h + 20 : Math.random() * h, r: Math.random() * 1.8 + 0.6, s: Math.random() * 0.4 + 0.12, sw: Math.random() * 6.28, amp: Math.random() * 18 + 6, a: Math.random() * 0.5 + 0.25 });
+    const P = Array.from({ length: 60 }, () => spawn(false));
+    new IntersectionObserver(([e]) => (running = e.isIntersecting)).observe(canvas);
+    const tick = () => {
+      requestAnimationFrame(tick);
+      if (!running || document.hidden) return;
+      ctx.clearRect(0, 0, w, h);
+      for (let i = 0; i < P.length; i++) {
+        const p = P[i]; p.y -= p.s; p.sw += 0.012;
+        if (p.y < -10) P[i] = spawn(true);
+        ctx.beginPath();
+        ctx.arc(p.x + Math.sin(p.sw) * p.amp, p.y, p.r, 0, 6.28);
+        ctx.fillStyle = `rgba(245,176,65,${p.a * (0.7 + 0.3 * Math.sin(p.sw * 3))})`;
+        ctx.shadowColor = "rgba(255,150,40,.8)"; ctx.shadowBlur = 6; ctx.fill(); ctx.shadowBlur = 0;
+      }
+    };
+    tick();
+  }
+})();
+</script>
+</Layout>

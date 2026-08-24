@@ -1,0 +1,415 @@
+---
+// Premium Voice Studio UI — TTS, STT, Voice Cloning
+const features = [
+  {
+    id: "tts",
+    title: "Text to Speech",
+    dev: "॥ वाक् सृष्टिः ॥",
+    desc: "Convert text into natural Hindi & English speech",
+    icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>',
+  },
+  {
+    id: "stt",
+    title: "Speech to Text",
+    dev: "॥ श्रुतं लिखितम् ॥",
+    desc: "Transcribe audio into accurate text (Hindi/Marathi/English)",
+    icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>',
+  },
+  {
+    id: "clone",
+    title: "Voice Cloning",
+    dev: "॥ स्वर प्रतिबिम्बम् ॥",
+    desc: "Clone any voice from a 5-10 second reference sample",
+    icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/><path d="M17 8c2 2 2 6 0 8"/></svg>',
+  },
+];
+---
+<section class="section bg-cream/40 dark:bg-night-soft/30">
+  <div class="container-x">
+    <!-- Header -->
+    <div class="mx-auto max-w-2xl text-center">
+      <p class="eyebrow">
+        <span class="h-px w-8 bg-gradient-to-r from-saffron to-transparent" aria-hidden="true"></span>
+        AI Voice Studio
+        <span class="h-px w-8 bg-gradient-to-l from-saffron to-transparent" aria-hidden="true"></span>
+      </p>
+      <h2 class="mt-4 font-display text-3xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-5xl">
+        Divine Voices, <span class="text-gradient">Digitally Crafted</span>
+      </h2>
+      <p class="mt-4 text-lg text-sandal-deep/80 dark:text-cream/70">
+        Premium CPU-powered voice AI — Text to Speech, Speech to Text, and Voice Cloning.
+        Runs entirely on our servers. No Python. No GPU. Just devotion.
+      </p>
+    </div>
+
+    <!-- Studio Card -->
+    <div class="mt-14 overflow-hidden rounded-3xl border border-golden/30 bg-white shadow-lift dark:border-white/10 dark:bg-night">
+      <!-- Tab Header -->
+      <div class="border-b border-sandal/10 bg-gradient-to-br from-temple to-cream/60 dark:border-white/10 dark:from-night-soft dark:to-night">
+        <nav class="grid grid-cols-3" role="tablist">
+          {features.map((f, i) => (
+            <button
+              role="tab"
+              data-tab={f.id}
+              aria-selected={i === 0 ? "true" : "false"}
+              class:list={[
+                "flex items-center justify-center gap-3 px-4 py-5 text-sm font-semibold transition-all duration-300 sm:text-base",
+                i === 0
+                  ? "border-b-2 border-saffron bg-white text-saffron dark:border-golden dark:bg-night dark:text-golden"
+                  : "text-sandal/70 hover:bg-white/50 hover:text-saffron dark:text-cream/60 dark:hover:bg-white/5",
+              ]}
+            >
+              <span class="grid size-8 place-items-center rounded-lg bg-gradient-to-br from-saffron/10 to-golden/10 text-saffron dark:text-golden" set:html={f.icon} />
+              <span class="hidden sm:inline">{f.title}</span>
+            </button>
+          ))}
+        </nav>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="grid gap-8 p-6 md:grid-cols-[1.2fr_0.8fr] md:p-10">
+        <!-- Main Panel -->
+        <div class="space-y-6">
+          {/* TTS Panel */}
+          <div data-panel="tts" class="space-y-5">
+            <div>
+              <label for="tts-text" class="mb-2 block font-display text-sm font-semibold">
+                Enter your message
+              </label>
+              <textarea
+                id="tts-text"
+                rows="5"
+                placeholder="॥ श्री गणेशाय नमः ॥ — Type or paste your text here..."
+                class="input resize-none font-dev"
+              />
+              <div class="mt-2 flex items-center justify-between text-xs text-sandal/60 dark:text-cream/50">
+                <span>Max 1000 characters</span>
+                <span class="text-saffron">✨ CPU optimized</span>
+              </div>
+            </div>
+
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label for="tts-lang" class="mb-2 block text-sm font-medium">Language</label>
+                <select id="tts-lang" class="input">
+                  <option value="hi">🇮🇳 Hindi</option>
+                  <option value="en">🇺🇸 English</option>
+                </select>
+              </div>
+              <div>
+                <label for="tts-voice" class="mb-2 block text-sm font-medium">Voice Style</label>
+                <select id="tts-voice" class="input">
+                  <option value="female">👩 Female (Warm)</option>
+                  <option value="male">👨 Male (Deep)</option>
+                </select>
+              </div>
+            </div>
+
+            <button id="btn-tts" class="btn btn-primary w-full">
+              <span set:html={features[0].icon} />
+              Generate Speech
+            </button>
+          </div>
+
+          {/* STT Panel */}
+          <div data-panel="stt" class="space-y-5 hidden">
+            <div>
+              <label for="stt-file" class="mb-2 block font-display text-sm font-semibold">
+                Upload audio file
+              </label>
+              <div class="group relative flex min-h-[120px] items-center justify-center rounded-2xl border-2 border-dashed border-sandal/25 bg-cream/50 p-6 transition-all hover:border-saffron hover:bg-saffron/5 dark:border-white/15 dark:bg-night-soft/50 dark:hover:border-golden">
+                <input
+                  id="stt-file"
+                  type="file"
+                  accept="audio/*"
+                  class="absolute inset-0 cursor-pointer opacity-0"
+                />
+                <div class="text-center">
+                  <span class="mx-auto grid size-12 place-items-center rounded-full bg-gradient-to-br from-saffron to-golden text-white shadow-gold" set:html={features[1].icon} />
+                  <p class="mt-3 font-display font-semibold">Drop audio or click to upload</p>
+                  <p class="mt-1 text-xs text-sandal/60 dark:text-cream/50">WAV, MP3, M4A — up to 10MB</p>
+                  <p id="stt-filename" class="mt-2 text-sm font-medium text-saffron"></p>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label for="stt-lang" class="mb-2 block text-sm font-medium">Language (auto-detect if empty)</label>
+              <select id="stt-lang" class="input">
+                <option value="">🤖 Auto-detect</option>
+                <option value="hi">🇮🇳 Hindi</option>
+                <option value="mr">🇮🇳 Marathi</option>
+                <option value="en">🇺🇸 English</option>
+              </select>
+            </div>
+
+            <button id="btn-stt" class="btn btn-primary w-full">
+              <span set:html={features[1].icon} />
+              Transcribe Audio
+            </button>
+
+            <div id="stt-result" class="hidden rounded-2xl border border-golden/30 bg-golden/5 p-5">
+              <p class="mb-2 text-xs uppercase tracking-widest text-saffron">Transcription</p>
+              <p id="stt-text" class="font-dev text-lg leading-relaxed"></p>
+              <button id="btn-copy" class="mt-3 text-sm font-semibold text-saffron hover:underline">
+                📋 Copy text
+              </button>
+            </div>
+          </div>
+
+          {/* Clone Panel */}
+          <div data-panel="clone" class="space-y-5 hidden">
+            <div class="rounded-2xl border border-saffron/20 bg-saffron/5 p-4 text-sm">
+              <p class="font-semibold text-saffron">🎯 How voice cloning works</p>
+              <p class="mt-1 text-sandal-deep/80 dark:text-cream/70">
+                Upload a <strong>5-10 second</strong> clear voice sample. Our AI extracts the unique voice characteristics and applies them to any text you enter.
+              </p>
+            </div>
+
+            <div>
+              <label for="clone-ref" class="mb-2 block font-display text-sm font-semibold">
+                Step 1: Upload reference voice
+              </label>
+              <div class="group relative flex min-h-[100px] items-center justify-center rounded-2xl border-2 border-dashed border-sandal/25 bg-cream/50 p-5 transition-all hover:border-saffron hover:bg-saffron/5 dark:border-white/15 dark:bg-night-soft/50 dark:hover:border-golden">
+                <input
+                  id="clone-ref"
+                  type="file"
+                  accept="audio/*"
+                  class="absolute inset-0 cursor-pointer opacity-0"
+                />
+                <div class="text-center">
+                  <span class="mx-auto grid size-10 place-items-center rounded-full bg-gradient-to-br from-saffron to-golden text-white shadow-gold" set:html={features[2].icon} />
+                  <p class="mt-2 text-sm font-semibold">Drop reference voice sample</p>
+                  <p id="clone-ref-name" class="mt-1 text-xs text-saffron"></p>
+                </div>
+              </div>
+              <audio id="clone-ref-preview" controls class="mt-3 hidden w-full"></audio>
+            </div>
+
+            <div>
+              <label for="clone-text" class="mb-2 block font-display text-sm font-semibold">
+                Step 2: Enter text to speak
+              </label>
+              <textarea
+                id="clone-text"
+                rows="3"
+                placeholder="Enter text that will be spoken in the cloned voice..."
+                class="input resize-none"
+              />
+            </div>
+
+            <button id="btn-clone" class="btn btn-gold w-full">
+              <span set:html={features[2].icon} />
+              Generate Cloned Voice
+            </button>
+          </div>
+
+          {/* Audio Player */}
+          <div id="audio-result" class="hidden rounded-2xl border border-golden/30 bg-gradient-to-br from-saffron/5 to-golden/5 p-5">
+            <p class="mb-3 text-xs uppercase tracking-widest text-saffron">✨ Generated Audio</p>
+            <audio id="audio-player" controls class="w-full"></audio>
+            <div class="mt-3 flex items-center gap-3 text-xs text-sandal/60 dark:text-cream/50">
+              <span>⚡ Generated on CPU</span>
+              <span>•</span>
+              <span id="audio-duration">0 sec</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Side Panel - Info + Voices Library */}
+        <aside class="space-y-5">
+          <div class="rounded-2xl border border-sandal/10 bg-cream/60 p-5 dark:border-white/10 dark:bg-night-soft/40">
+            <p class="eyebrow !text-[10px]">⚡ Performance</p>
+            <div class="mt-3 space-y-2 text-sm">
+              <div class="flex items-center justify-between">
+                <span class="text-sandal/80 dark:text-cream/60">TTS</span>
+                <span class="font-semibold">2-6 sec</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-sandal/80 dark:text-cream/60">STT</span>
+                <span class="font-semibold">5-15 sec</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-sandal/80 dark:text-cream/60">Voice Clone</span>
+                <span class="font-semibold">6-15 sec</span>
+              </div>
+            </div>
+            <p class="mt-4 text-xs text-sandal/60 dark:text-cream/50">
+              🛡️ All processing runs on secure CPU servers. No data stored.
+            </p>
+          </div>
+
+          {/* Tips */}
+          <div class="rounded-2xl border border-golden/30 bg-gradient-to-br from-golden/10 to-saffron/5 p-5">
+            <p class="font-display text-sm font-semibold">💡 Pro Tips</p>
+            <ul class="mt-3 space-y-2 text-xs leading-relaxed text-sandal-deep/80 dark:text-cream/70">
+              <li>🎤 <strong>Reference audio:</strong> Use clean, mono WAV, 5-10 seconds</li>
+              <li>📝 <strong>Text clarity:</strong> Add punctuation for natural pauses</li>
+              <li>🔊 <strong>For aarti:</strong> Use Hindi TTS for authentic pronunciation</li>
+              <li>🎬 <strong>Reel voiceovers:</strong> Combine TTS + clone for custom narrators</li>
+            </ul>
+          </div>
+
+          {/* Status */}
+          <div id="status-bar" class="hidden rounded-2xl border border-saffron/30 bg-saffron/10 p-4 text-center">
+            <p id="status-text" class="text-sm font-medium text-saffron"></p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+(() => {
+  const API = "http://localhost:3001"; // Voice server URL
+
+  /* ---------- Tab Switching ---------- */
+  const tabs = document.querySelectorAll("[data-tab]");
+  const panels = document.querySelectorAll("[data-panel]");
+
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      const id = tab.dataset.tab;
+      tabs.forEach((t) => {
+        const active = t === tab;
+        t.setAttribute("aria-selected", active);
+        t.classList.toggle("border-b-2", active);
+        t.classList.toggle("border-saffron", active);
+        t.classList.toggle("dark:border-golden", active);
+        t.classList.toggle("bg-white", active);
+        t.classList.toggle("text-saffron", active);
+        t.classList.toggle("dark:bg-night", active);
+        t.classList.toggle("dark:text-golden", active);
+      });
+      panels.forEach((p) => p.classList.toggle("hidden", p.dataset.panel !== id));
+    });
+  });
+
+  /* ---------- Helpers ---------- */
+  function showStatus(msg, isError = false) {
+    const bar = document.getElementById("status-bar");
+    const text = document.getElementById("status-text");
+    bar.classList.remove("hidden");
+    bar.className = `rounded-2xl border p-4 text-center ${
+      isError
+        ? "border-red-300 bg-red-50 dark:bg-red-900/20"
+        : "border-saffron/30 bg-saffron/10"
+    }`;
+    text.textContent = msg;
+    text.className = `text-sm font-medium ${isError ? "text-red-600" : "text-saffron"}`;
+  }
+
+  function hideStatus() {
+    document.getElementById("status-bar").classList.add("hidden");
+  }
+
+  function showAudioPlayer(blob) {
+    const audio = document.getElementById("audio-player");
+    audio.src = URL.createObjectURL(blob);
+    audio.onloadedmetadata = () => {
+      document.getElementById("audio-duration").textContent = `${audio.duration.toFixed(1)} sec`;
+    };
+    document.getElementById("audio-result").classList.remove("hidden");
+  }
+
+  /* ---------- TTS ---------- */
+  document.getElementById("btn-tts").addEventListener("click", async () => {
+    const text = document.getElementById("tts-text").value.trim();
+    const lang = document.getElementById("tts-lang").value;
+
+    if (!text) { showStatus("Please enter some text", true); return; }
+    if (text.length > 1000) { showStatus("Text too long (max 1000 chars)", true); return; }
+
+    try {
+      showStatus("✨ Generating speech... (2-6 sec)");
+      const res = await fetch(`${API}/api/tts`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text, lang }),
+      });
+
+      if (!res.ok) throw new Error(await res.text());
+      const blob = await res.blob();
+      showAudioPlayer(blob);
+      showStatus("✅ Speech generated!");
+    } catch (e) {
+      showStatus(`❌ Failed: ${e.message}`, true);
+    }
+  });
+
+  /* ---------- STT ---------- */
+  const sttFile = document.getElementById("stt-file");
+  sttFile.addEventListener("change", () => {
+    const name = sttFile.files[0]?.name || "";
+    document.getElementById("stt-filename").textContent = name ? `📁 ${name}` : "";
+  });
+
+  document.getElementById("btn-stt").addEventListener("click", async () => {
+    const file = sttFile.files[0];
+    const lang = document.getElementById("stt-lang").value;
+
+    if (!file) { showStatus("Please upload an audio file", true); return; }
+
+    try {
+      showStatus("🎤 Transcribing... (5-15 sec)");
+      const form = new FormData();
+      form.append("audio", file);
+      if (lang) form.append("language", lang);
+
+      const res = await fetch(`${API}/api/stt`, { method: "POST", body: form });
+      if (!res.ok) throw new Error(await res.text());
+      const data = await res.json();
+
+      document.getElementById("stt-text").textContent = data.text;
+      document.getElementById("stt-result").classList.remove("hidden");
+      showStatus(`✅ Transcribed in ${data.language || "auto"}`);
+    } catch (e) {
+      showStatus(`❌ Failed: ${e.message}`, true);
+    }
+  });
+
+  document.getElementById("btn-copy")?.addEventListener("click", () => {
+    const text = document.getElementById("stt-text").textContent;
+    navigator.clipboard.writeText(text);
+    document.getElementById("btn-copy").textContent = "✅ Copied!";
+    setTimeout(() => (document.getElementById("btn-copy").textContent = "📋 Copy text"), 2000);
+  });
+
+  /* ---------- Voice Clone ---------- */
+  const cloneRef = document.getElementById("clone-ref");
+  const refPreview = document.getElementById("clone-ref-preview");
+
+  cloneRef.addEventListener("change", () => {
+    const file = cloneRef.files[0];
+    if (file) {
+      document.getElementById("clone-ref-name").textContent = `📁 ${file.name}`;
+      refPreview.src = URL.createObjectURL(file);
+      refPreview.classList.remove("hidden");
+    }
+  });
+
+  document.getElementById("btn-clone").addEventListener("click", async () => {
+    const refFile = cloneRef.files[0];
+    const text = document.getElementById("clone-text").value.trim();
+
+    if (!refFile) { showStatus("Please upload a reference voice", true); return; }
+    if (!text) { showStatus("Please enter text to speak", true); return; }
+
+    try {
+      showStatus("🎭 Cloning voice... (6-15 sec)");
+      const form = new FormData();
+      form.append("reference", refFile);
+      form.append("text", text);
+
+      const res = await fetch(`${API}/api/clone`, { method: "POST", body: form });
+      if (!res.ok) throw new Error(await res.text());
+      const blob = await res.blob();
+      showAudioPlayer(blob);
+      showStatus("✅ Voice cloned successfully!");
+    } catch (e) {
+      showStatus(`❌ Failed: ${e.message}`, true);
+    }
+  });
+})();
+</script>

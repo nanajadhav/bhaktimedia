@@ -1,0 +1,29 @@
+---
+import { ArrowRight, MessageCircle } from "@lucide/astro";
+import Mandala from "./Mandala.astro";
+import { site } from "../data/site";
+---
+<section class="section !pt-4">
+  <div class="container-x">
+    <div data-reveal class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-saffron via-saffron-deep to-sandal px-6 py-14 text-center text-white shadow-lift md:px-14 md:py-20">
+      <Mandala class="absolute -right-24 -top-24 size-96 animate-spin-slower text-white/15" />
+      <Mandala class="absolute -bottom-28 -left-28 size-80 text-white/10" />
+      <p class="relative font-dev text-goldsoft">? ???? ?????? ??? ?</p>
+      <h2 class="relative mt-3 font-display text-3xl font-bold tracking-tight md:text-5xl">
+        Let's Create Something <em class="not-italic underline decoration-goldsoft/60 decoration-wavy underline-offset-8">Divine</em> Together
+      </h2>
+      <p class="relative mx-auto mt-5 max-w-xl text-white/85">
+        Posters, reels, YouTube channels, temple websites — tell us your seva, and we'll bring it to life with craft and devotion.
+      </p>
+      <div class="relative mt-8 flex flex-wrap items-center justify-center gap-3">
+        <a href="/contact" class="btn bg-white text-saffron-deep shadow-lift hover:-translate-y-0.5 hover:brightness-95">
+          Start Your Project <ArrowRight class="size-4" />
+        </a>
+        <a href={site.socials.whatsapp} target="_blank" rel="noopener"
+           class="btn border border-white/40 bg-white/10 text-white backdrop-blur hover:-translate-y-0.5 hover:bg-white/20">
+          <MessageCircle class="size-4" /> WhatsApp Us
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

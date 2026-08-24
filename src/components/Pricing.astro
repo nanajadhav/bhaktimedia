@@ -1,0 +1,58 @@
+---
+import { Check, Sparkle } from "@lucide/astro";
+import SectionHeading from "./SectionHeading.astro";
+import { plans, site } from "../data/site";
+
+const inr = (n: number) => n.toLocaleString("en-IN");
+---
+<section id="pricing" class="section bg-cream/50 dark:bg-night-soft/30">
+  <div class="container-x">
+    <SectionHeading align="center" eyebrow="Pricing" dev="? ???????? ??????? ?"
+      description="Simple monthly plans for creators, channels and temple trusts. Pause anytime — no lock-ins.">
+      <Fragment slot="title">Choose Your <span class="text-gradient">Seva Plan</span></Fragment>
+    </SectionHeading>
+
+    <div class="mt-16 grid items-stretch gap-8 lg:grid-cols-3">
+      {plans.map((p, i) => (
+        <article data-reveal style={`--rd:${i * 120}ms`}
+                 class:list={[
+                   "relative flex flex-col",
+                   p.featured
+                     ? "bg-gradient-to-b from-saffron to-golden p-[2px] shadow-glow lg:-translate-y-4"
+                     : "card",
+                 ]}>
+          <div class:list={["flex h-full flex-col p-8", p.featured && "rounded-[calc(1.5rem-2px)] bg-temple dark:bg-night"]}>
+            {p.featured && (
+              <span class="absolute -top-4 left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-gradient-to-r from-saffron to-golden px-4 py-1.5 text-xs font-bold text-white shadow-gold">
+                <Sparkle class="size-3.5" /> Most Loved
+              </span>
+            )}
+            <p class="font-dev text-lg text-saffron">{p.dev}</p>
+            <h3 class="mt-1 font-display text-2xl font-bold">{p.name}</h3>
+            <p class="mt-2 text-sm text-sandal-deep/70 dark:text-cream/60">{p.desc}</p>
+            <p class="mt-6 font-display">
+              <span class="text-5xl font-bold">?{inr(p.price)}</span>
+              <span class="text-sm text-sandal/70 dark:text-cream/50"> /month</span>
+            </p>
+            <ul class="mt-7 grid flex-1 gap-3 text-sm">
+              {p.features.map((f) => (
+                <li class="flex items-start gap-2.5">
+                  <Check class="mt-0.5 size-4 shrink-0 text-saffron" />
+                  <span class="text-sandal-deep/85 dark:text-cream/75">{f}</span>
+                </li>
+              ))}
+            </ul>
+            <a href="/contact" class:list={["btn mt-8 w-full", p.featured ? "btn-primary" : "btn-ghost"]}>
+              Begin with {p.name}
+            </a>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <p data-reveal class="mt-10 text-center text-sm text-sandal-deep/70 dark:text-cream/60">
+      ?? Temple trusts & NGOs receive a <strong class="font-semibold text-saffron">20% seva discount</strong> on every plan.
+      Custom needs? <a href="/contact" class="font-semibold text-saffron underline underline-offset-4">Talk to us</a> — {site.email}
+    </p>
+  </div>
+</section>

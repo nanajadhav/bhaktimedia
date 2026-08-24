@@ -1,0 +1,38 @@
+---
+import { Image } from "astro:assets";
+import { Play, Eye, Heart } from "@lucide/astro";
+import Layout from "../layouts/Layout.astro";
+import PageHeader from "../components/PageHeader.astro";
+import CTA from "../components/CTA.astro";
+import { reels } from "../data/site";
+import { picsum } from "../lib/utils";
+---
+<Layout title="Bhakti Reels" description="Vertical devotion that stops the scroll � cinematic bhakti reels by BhaktiMedia.">
+  <PageHeader eyebrow="Bhakti Reels" title="Vertical Devotion, Viral Blessings" dev="॥ चलच्चित्र भक्ती ॥"
+    description="9:16 frames engineered for emotion � hooks, transitions and devotional audio that carry blessings past the first second." />
+
+  <section class="section !pt-10">
+    <div class="container-x grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
+      {reels.map((r, i) => (
+        <article data-reveal style={`--rd:${(i % 4) * 80}ms`} class="group relative">
+          <div class="relative overflow-hidden rounded-[1.8rem] border-4 border-ink/90 shadow-lift dark:border-white/10">
+            <span class="absolute left-1/2 top-2 z-10 h-1.5 w-14 -translate-x-1/2 rounded-full bg-black/60" aria-hidden="true"></span>
+            <Image src={picsum(r.seed, 540, 960)} width={540} height={960} alt={r.title} loading="lazy"
+                   class="aspect-[9/16] w-full object-cover transition duration-700 group-hover:scale-105" />
+            <span class="absolute inset-0 grid place-items-center bg-ink/0 transition duration-300 group-hover:bg-ink/30">
+              <span class="grid size-14 scale-75 place-items-center rounded-full bg-gradient-to-br from-saffron to-golden text-white opacity-0 shadow-glow transition duration-300 group-hover:scale-100 group-hover:opacity-100">
+                <Play class="size-6 fill-current" />
+              </span>
+            </span>
+            <span class="absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-ink/80 to-transparent px-4 pb-3 pt-8 text-xs text-white">
+              <span class="flex items-center gap-1"><Eye class="size-3.5" /> {r.views}</span>
+              <span class="flex items-center gap-1"><Heart class="size-3.5 text-saffron" /> {r.likes}</span>
+            </span>
+          </div>
+          <h3 class="mt-3 px-1 text-sm font-semibold leading-snug">{r.title}</h3>
+        </article>
+      ))}
+    </div>
+  </section>
+  <CTA />
+</Layout>

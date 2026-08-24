@@ -1,0 +1,137 @@
+@import "tailwindcss";
+
+@theme {
+  --color-saffron: #ff6b00;
+  --color-saffron-deep: #e85d04;
+  --color-golden: #f5b041;
+  --color-goldsoft: #ffd98a;
+  --color-sandal: #8b4513;
+  --color-sandal-deep: #5e2f0d;
+  --color-temple: #fff8f0;
+  --color-cream: #ffefd9;
+  --color-ink: #1e1e1e;
+  --color-night: #171009;
+  --color-night-soft: #251a10;
+
+  --font-display: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-dev: "Noto Serif Devanagari", serif;
+
+  --shadow-glow: 0 10px 44px -8px rgb(255 107 0 / 0.45);
+  --shadow-gold: 0 8px 32px -6px rgb(245 176 65 / 0.5);
+  --shadow-lift: 0 24px 60px -20px rgb(139 69 19 / 0.35);
+}
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body {
+    @apply bg-temple font-body text-ink antialiased dark:bg-night dark:text-cream;
+  }
+}
+
+@layer components {
+  .container-x {
+    @apply mx-auto w-full max-w-7xl px-5 sm:px-8;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition-all duration-300;
+  }
+  .btn-primary {
+    @apply bg-gradient-to-r from-saffron to-saffron-deep text-white shadow-glow hover:-translate-y-0.5;
+  }
+  .btn-gold {
+    @apply bg-gradient-to-r from-golden to-goldsoft text-sandal-deep shadow-gold hover:-translate-y-0.5;
+  }
+  .btn-ghost {
+    @apply border border-sandal/25 text-sandal-deep hover:border-saffron hover:text-saffron dark:border-cream/25 dark:text-cream;
+  }
+  .card {
+    @apply rounded-2xl border border-sandal/10 bg-white shadow-sm dark:border-white/10 dark:bg-night-soft;
+  }
+  .text-gradient {
+    @apply bg-gradient-to-r from-saffron via-golden to-saffron bg-clip-text text-transparent;
+  }
+  .nav-link {
+    @apply rounded-full px-4 py-2.5 text-sm font-medium text-sandal-deep/80 transition hover:bg-saffron/10 hover:text-saffron dark:text-cream/75;
+  }
+  .icon-btn {
+    @apply grid size-10 place-items-center rounded-full border border-sandal/20 text-sandal-deep transition hover:border-saffron hover:text-saffron dark:border-cream/20 dark:text-cream;
+  }
+  .input {
+    @apply w-full rounded-xl border border-sandal/20 bg-white/70 px-4 py-3 text-sm focus:border-saffron focus:outline-none dark:border-cream/20 dark:bg-white/5;
+  }
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.25em] text-saffron;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium;
+  }
+  .font-display {
+    font-family: var(--font-display);
+  }
+  .font-body {
+    font-family: var(--font-body);
+  }
+  .font-dev {
+    font-family: var(--font-dev);
+  }
+}
+
+/* Navbar ko hamesha readable background do */
+#nav-shell {
+  margin-top: 0.75rem;
+  background: rgb(255 248 240 / 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgb(139 69 19 / 0.12);
+  box-shadow: 0 10px 40px -12px rgb(139 69 19 / 0.25);
+}
+
+.dark #nav-shell {
+  background: rgb(23 16 9 / 0.85);
+  border-color: rgb(255 255 255 / 0.08);
+}
+
+/* Chips / filter buttons */
+.filter-btn {
+  border-radius: 9999px;
+  border: 1px solid color-mix(in srgb, var(--color-sandal) 25%, transparent);
+  padding: 0.5rem 1.1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-sandal-deep);
+  transition: all 0.25s;
+}
+.filter-btn:hover {
+  border-color: var(--color-saffron);
+  color: var(--color-saffron);
+}
+.filter-btn[aria-pressed="true"] {
+  background: linear-gradient(135deg, var(--color-saffron), var(--color-golden));
+  color: #fff;
+  border-color: transparent;
+  box-shadow: var(--shadow-gold);
+}
+.dark .filter-btn {
+  color: var(--color-cream);
+  border-color: rgb(255 255 255 / 0.15);
+}
+.dark .filter-btn[aria-pressed="true"] {
+  color: #fff;
+}
+
+dialog { border-radius: 1.5rem; }
+dialog::backdrop { background: rgb(23 16 9 / 0.7); backdrop-filter: blur(8px); }
+
+/* Section spacing — premium breathing room */
+.section { @apply relative py-24 md:py-32; }
+
+/* Hide scrollbars on carousels */
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* Sacred geometry background */
+.pattern-sacred {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120' fill='none' stroke='%23f5b041' stroke-opacity='0.14'%3E%3Ccircle cx='60' cy='60' r='28'/%3E%3Ccircle cx='60' cy='32' r='28'/%3E%3Ccircle cx='60' cy='88' r='28'/%3E%3Ccircle cx='36' cy='46' r='28'/%3E%3Ccircle cx='84' cy='46' r='28'/%3E%3Ccircle cx='36' cy='74' r='28'/%3E%3Ccircle cx='84' cy='74' r='28'/%3E%3C/svg%3E");
+  background-size: 130px 130px;
+}

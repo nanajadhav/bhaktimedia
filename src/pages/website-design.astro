@@ -1,0 +1,243 @@
+---
+import Layout from "../layouts/Layout.astro";
+import PageHeader from "../components/PageHeader.astro";
+import { picsum } from "../lib/utils";
+
+const types = [
+  { i: "🛕", t: "Mandir / Trust", p: "14,999", d: "Darshan timings, aarti live, donation/UPI, utsav calendar, trust history." },
+  { i: "🏪", t: "Local Business", p: "9,999", d: "Menu/services, WhatsApp booking, Google Maps, reviews wall." },
+  { i: "👤", t: "Creator Portfolio", p: "7,999", d: "Showreel, gallery, testimonials aur booking form — personal brand ke liye." },
+  { i: "🛒", t: "E-commerce Lite", p: "19,999", d: "Catalog, UPI/WhatsApp orders, stock alerts — chhote shops ke liye perfect." },
+  { i: "🎉", t: "Event Landing Page", p: "4,999", d: "Utsav/launch ke liye 1-page hype — countdown, RSVP, gallery." },
+];
+
+const feats = [
+  "📱 Mobile-first design", "🔍 SEO + structured data", "💬 WhatsApp order/booking", "💳 UPI payments ready",
+  "🖼️ Gallery & blog built-in", "🌐 Multi-language (Hi/Mr/En)", "📊 Analytics dashboard", "🛡️ SSL + hosting setup",
+];
+
+const steps = [
+  { t: "Discover", d: "30-min call — goals, pages, content aur examples lock." },
+  { t: "Design", d: "48 hrs mein pehla mockup — aapke brand colors ke saath." },
+  { t: "Build", d: "Astro-fast development, mobile + SEO testing." },
+  { t: "Launch", d: "Domain connect, SSL, Google indexing — sab hum karenge." },
+  { t: "Support", d: "1 saal maintenance + training video taaki aap khud update kar sako." },
+];
+
+const faqs = [
+  { q: "Website banne mein kitna time lagta hai?", a: "Landing pages 5-7 din, full business/temple websites 2-3 weeks — content milne ke baad." },
+  { q: "Hosting aur domain kaun karega?", a: "Hum setup karte hain (SSL ke saath). Domain aapke naam par hota hai — full ownership aapki." },
+  { q: "Meri purani website hai — redesign karoge?", a: "Haan! Free audit ke baad hum batayenge kya retain karein aur kya improve — SEO ranking protect rehti hai." },
+  { q: "Donation / payment integration hota hai?", a: "UPI, Razorpay aur WhatsApp-based orders — temple trusts ke liye 80G receipt page bhi." },
+  { q: "Baad mein khud update kar sakte hain?", a: "Bilkul. Launch ke baad training video + simple admin guide milta hai — ya maintenance pack le lo." },
+];
+---
+<Layout title="Website Design" description="Mandir se market tak — fast, SEO-ready websites for temples, businesses & creators.">
+<style>
+  summary::-webkit-details-marker { display: none; }
+</style>
+  <PageHeader eyebrow="Website Design" title="Mandir Se Market Tak — Websites That Work" dev="॥ मंदिरं डिजिटलम् ॥"
+    description="Fast, SEO-ready websites — temples, local businesses aur creators ke liye. Dekhiye live demo neeche." />
+
+  <!-- ══════════ LIVE DEMO (website inside website) ══════════ -->
+  <section class="section !pt-4">
+    <div class="container-x">
+      <div data-reveal class="overflow-hidden rounded-3xl border border-golden/30 bg-white shadow-lift dark:bg-night">
+        <!-- browser chrome -->
+        <div class="flex items-center gap-2 border-b border-sandal/10 bg-cream/80 px-4 py-3 dark:border-white/10 dark:bg-night-soft">
+          <span class="size-3 rounded-full bg-red-400"></span>
+          <span class="size-3 rounded-full bg-golden"></span>
+          <span class="size-3 rounded-full bg-green-400"></span>
+          <span id="demo-url" class="ml-3 flex-1 truncate rounded-full bg-white/70 px-4 py-1.5 text-xs text-sandal/70 dark:bg-white/5 dark:text-cream/60">bhaktimedia.in/demo/mandir</span>
+        </div>
+        <!-- tabs -->
+        <div class="flex flex-wrap gap-2 border-b border-sandal/10 p-3 dark:border-white/10">
+          <button data-wtab="mandir" aria-pressed="true" class="filter-btn !px-4 !py-2">🛕 Mandir</button>
+          <button data-wtab="cafe" aria-pressed="false" class="filter-btn !px-4 !py-2">☕ Café</button>
+          <button data-wtab="port" aria-pressed="false" class="filter-btn !px-4 !py-2">👤 Portfolio</button>
+        </div>
+
+        <!-- mandir demo -->
+        <div data-wpanel="mandir" class="p-5 sm:p-8">
+          <div class="mx-auto max-w-3xl rounded-2xl border border-saffron/20 bg-temple p-5">
+            <div class="flex items-center justify-between">
+              <span class="flex items-center gap-2 font-display text-sm font-bold"><span class="grid size-7 place-items-center rounded-lg bg-gradient-to-br from-saffron to-golden font-dev text-xs text-white">ॐ</span> Shri Ganesh Mandir</span>
+              <span class="hidden gap-3 text-[10px] font-medium text-sandal/70 sm:flex"><span>Home</span><span>Aarti</span><span>Events</span><span>Donate</span></span>
+            </div>
+            <div class="mt-4 grid items-center gap-4 sm:grid-cols-[1fr_auto]">
+              <div>
+                <p class="font-dev text-[11px] text-saffron">॥ शुभ मंगल ॥</p>
+                <p class="mt-1 font-display text-lg font-bold leading-tight">Darshan Timings 7 AM – 9 PM</p>
+                <div class="mt-3 flex gap-2">
+                  <span class="rounded-full bg-gradient-to-r from-saffron to-golden px-3 py-1 text-[10px] font-bold text-white">🙏 Donate</span>
+                  <span class="rounded-full border border-saffron/40 px-3 py-1 text-[10px] font-bold text-saffron">▶ Live Aarti</span>
+                </div>
+              </div>
+              <img src={picsum("mandir-demo-hero", 320, 200)} alt="" class="aspect-video w-full rounded-xl object-cover sm:w-48" />
+            </div>
+          </div>
+        </div>
+
+        <!-- cafe demo -->
+        <div data-wpanel="cafe" class="hidden p-5 sm:p-8">
+          <div class="mx-auto max-w-3xl rounded-2xl border border-amber-700/20 bg-[#fdf6ec] p-5">
+            <div class="flex items-center justify-between">
+              <span class="font-display text-sm font-bold text-amber-900">☕ Café Katta</span>
+              <span class="hidden gap-3 text-[10px] font-medium text-amber-800/70 sm:flex"><span>Menu</span><span>Gallery</span><span>Visit Us</span></span>
+            </div>
+            <div class="mt-4 grid items-center gap-4 sm:grid-cols-[1fr_auto]">
+              <div>
+                <p class="text-[11px] font-semibold uppercase tracking-widest text-amber-600">Fresh • Local • Loved</p>
+                <p class="mt-1 font-display text-lg font-bold leading-tight text-amber-950">Misal Pav Jo Yaad Rahe</p>
+                <div class="mt-3 flex gap-2">
+                  <span class="rounded-full bg-green-600 px-3 py-1 text-[10px] font-bold text-white">💬 Order on WhatsApp</span>
+                  <span class="rounded-full border border-amber-700/40 px-3 py-1 text-[10px] font-bold text-amber-800">️ Menu</span>
+                </div>
+              </div>
+              <img src={picsum("cafe-demo-food", 320, 200)} alt="" class="aspect-video w-full rounded-xl object-cover sm:w-48" />
+            </div>
+          </div>
+        </div>
+
+        <!-- portfolio demo -->
+        <div data-wpanel="port" class="hidden p-5 sm:p-8">
+          <div class="mx-auto max-w-3xl rounded-2xl border border-white/10 bg-[#12100d] p-5 text-cream">
+            <div class="flex items-center justify-between">
+              <span class="font-display text-sm font-bold">Rahul Sharma <span class="text-golden">• Photographer</span></span>
+              <span class="hidden gap-3 text-[10px] font-medium text-cream/60 sm:flex"><span>Work</span><span>About</span><span>Book</span></span>
+            </div>
+            <div class="mt-4 grid items-center gap-4 sm:grid-cols-[1fr_auto]">
+              <div>
+                <p class="text-[11px] uppercase tracking-widest text-goldsoft/80">Weddings • Portraits • Events</p>
+                <p class="mt-1 font-display text-lg font-bold leading-tight">Stories In Every Frame</p>
+                <div class="mt-3 flex gap-2">
+                  <span class="rounded-full bg-gradient-to-r from-golden to-saffron px-3 py-1 text-[10px] font-bold text-ink">📸 Book a Shoot</span>
+                  <span class="rounded-full border border-white/20 px-3 py-1 text-[10px] font-bold text-cream/80">🖼️ Gallery</span>
+                </div>
+              </div>
+              <img src={picsum("portfolio-demo-photo", 320, 200)} alt="" class="aspect-video w-full rounded-xl object-cover sm:w-48" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="mt-4 text-center text-xs text-sandal/60 dark:text-cream/50">↑ Ye demo hai — asli mein aapki website aisi live hogi, 1 second se kam load time ke saath ⚡</p>
+    </div>
+  </section>
+
+  <!-- types -->
+  <section class="section bg-cream/60 dark:bg-night-soft/30">
+    <div class="container-x">
+      <header data-reveal class="mx-auto max-w-2xl text-center">
+        <p class="eyebrow justify-center">Website Types</p>
+        <h2 class="mt-4 font-display text-3xl font-bold sm:text-4xl">Har Zarurat Ke Liye <span class="text-gradient">Ek Solution</span></h2>
+      </header>
+      <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {types.map((x, i) => (
+          <div data-reveal style={`--rd:${(i % 3) * 90}ms`} class="card p-6 transition duration-300 hover:-translate-y-1 hover:border-saffron/40 hover:shadow-glow">
+            <span class="text-3xl">{x.i}</span>
+            <h3 class="mt-3 font-display text-lg font-bold">{x.t}</h3>
+            <p class="mt-2 text-sm text-sandal-deep/75 dark:text-cream/65">{x.d}</p>
+            <p class="mt-4 text-sm font-semibold text-saffron">₹{x.p} se shuru</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- features + performance -->
+  <section class="section">
+    <div class="container-x grid gap-12 lg:grid-cols-2">
+      <div data-reveal>
+        <p class="eyebrow">Har Website Mein</p>
+        <h2 class="mt-4 font-display text-3xl font-bold">Built-In Superpowers</h2>
+        <ul class="mt-8 grid gap-3 sm:grid-cols-2">
+          {feats.map((f) => <li class="card px-4 py-3 text-sm font-medium">{f}</li>)}
+        </ul>
+      </div>
+      <div data-reveal style="--rd:150ms" class="rounded-3xl bg-ink p-10 text-cream">
+        <p class="eyebrow">Performance</p>
+        <h2 class="mt-4 font-display text-3xl font-bold">Slow Website = Khoya Customer</h2>
+        <div class="mt-8 grid grid-cols-2 gap-6 text-center">
+          {[["95+", "Lighthouse Score"], ["<1s", "Load Time"], ["100%", "SEO Ready"], ["24×7", "Uptime"]].map(([v, l]) => (
+            <div><p class="font-display text-3xl font-bold text-gradient">{v}</p><p class="mt-1 text-xs uppercase tracking-widest text-cream/60">{l}</p></div>
+          ))}
+        </div>
+        <p class="mt-8 text-sm text-cream/70">Hum Astro + modern stack use karte hain — wahi tech jo is website ko chala rahi hai. 🚀</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- process -->
+  <section class="section bg-cream/50 dark:bg-night-soft/30">
+    <div class="container-x">
+      <header data-reveal class="mx-auto max-w-2xl text-center">
+        <p class="eyebrow justify-center">Process</p>
+        <h2 class="mt-4 font-display text-3xl font-bold sm:text-4xl">Idea Se Launch Tak <span class="text-gradient">5 Steps</span></h2>
+      </header>
+      <ol class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
+        {steps.map((s, i) => (
+          <li data-reveal style={`--rd:${i * 90}ms`} class="card relative p-6">
+            <span class="grid size-9 place-items-center rounded-full bg-gradient-to-br from-saffron to-golden font-display text-sm font-bold text-white shadow-gold">{i + 1}</span>
+            <h3 class="mt-4 font-display font-bold">{s.t}</h3>
+            <p class="mt-2 text-xs leading-relaxed text-sandal-deep/75 dark:text-cream/65">{s.d}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section">
+    <div class="container-x max-w-3xl">
+      <header data-reveal class="text-center">
+        <p class="eyebrow justify-center">FAQ</p>
+        <h2 class="mt-4 font-display text-3xl font-bold sm:text-4xl">Aapke <span class="text-gradient">Sawaal</span></h2>
+      </header>
+      <div class="mt-10 space-y-4">
+        {faqs.map((f, i) => (
+          <details data-reveal style={`--rd:${i * 70}ms`} class="card group p-6">
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-display font-semibold">
+              {f.q}
+              <span class="shrink-0 text-xl text-saffron transition duration-300 group-open:rotate-45">+</span>
+            </summary>
+            <p class="mt-3 text-sm leading-relaxed text-sandal-deep/80 dark:text-cream/70">{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section !pt-4">
+    <div class="container-x">
+      <div data-reveal class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-saffron via-saffron-deep to-sandal px-6 py-14 text-center text-white shadow-lift">
+        <h2 class="relative font-display text-3xl font-bold md:text-5xl">48 Hrs Mein Free Demo Mockup</h2>
+        <p class="relative mx-auto mt-4 max-w-xl text-white/85">Aapke business ka live preview — pasand aaye to hi aage badho.</p>
+        <div class="relative mt-8 flex flex-wrap justify-center gap-3">
+          <a href="/contact" class="btn bg-white text-saffron-deep shadow-lift hover:-translate-y-0.5">Get Free Demo</a>
+          <a href="/social-media" class="btn border border-white/40 bg-white/10 text-white backdrop-blur hover:bg-white/20">Social Media →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script is:inline>
+    (() => {
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const els = document.querySelectorAll("[data-reveal]");
+      if (reduced || !("IntersectionObserver" in window)) els.forEach((el) => el.classList.add("is-in"));
+      else {
+        const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } }), { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+        els.forEach((el) => io.observe(el));
+      }
+      /* demo tabs */
+      const urls = { mandir: "bhaktimedia.in/demo/mandir", cafe: "cafekatta.in", port: "rahulsharma.photo" };
+      const tabs = document.querySelectorAll("[data-wtab]"), panels = document.querySelectorAll("[data-wpanel]");
+      tabs.forEach((t) => t.addEventListener("click", () => {
+        tabs.forEach((x) => x.setAttribute("aria-pressed", String(x === t)));
+        panels.forEach((p) => p.classList.toggle("hidden", p.dataset.wpanel !== t.dataset.wtab));
+        document.getElementById("demo-url").textContent = urls[t.dataset.wtab];
+      }));
+    })();
+  </script>
+</Layout>

@@ -1,0 +1,78 @@
+---
+import { Image } from "astro:assets";
+import { getCollection, render } from "astro:content";
+import { Clock, Calendar, ArrowLeft, ArrowRight } from "lucide-astro";
+import Layout from "../../layouts/Layout.astro";
+import CTA from "../../components/CTA.astro";
+import { readTime, fmtDate } from "../../lib/utils";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const minutes = readTime(post.body);
+
+const sorted = (await getCollection("blog")).sort((a, b) => +b.data.pubDate - +a.data.pubDate);
+const idx = sorted.findIndex((p) => p.id === post.id);
+const newer = sorted[idx - 1];
+const older = sorted[idx + 1];
+
+const postLd = {
+  "@context": "https://schema.org", "@type": "BlogPosting",
+  headline: post.data.title, description: post.data.description,
+  image: post.data.image, datePublished: post.data.pubDate.toISOString(),
+  author: { "@type": "Organization", name: post.data.author },
+  publisher: { "@type": "Organization", name: "BhaktiMedia" },
+};
+---
+<Layout title={post.data.title} description={post.data.description} image={post.data.image} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(postLd)} />
+
+  <article class="pt-36 md:pt-44">
+    <div class="container-x max-w-3xl">
+      <a href="/blog" class="inline-flex items-center gap-2 text-sm font-semibold text-saffron transition hover:gap-3">
+        <ArrowLeft class="size-4" /> Back to Blog
+      </a>
+      <div class="mt-6 flex flex-wrap items-center gap-3 text-xs">
+        <span class="chip bg-saffron/10 font-semibold text-saffron">{post.data.category}</span>
+        <span class="flex items-center gap-1 text-sandal/70 dark:text-cream/50"><Calendar class="size-3.5" /> {fmtDate(post.data.pubDate)}</span>
+        <span class="flex items-center gap-1 text-sandal/70 dark:text-cream/50"><Clock class="size-3.5" /> {minutes} min read</span>
+      </div>
+      <h1 class="mt-5 animate-rise font-display text-3xl font-bold leading-tight tracking-tight sm:text-4xl md:text-5xl">
+        {post.data.title}
+      </h1>
+      <p class="mt-4 text-lg leading-relaxed text-sandal-deep/80 dark:text-cream/70">{post.data.description}</p>
+      <p class="mt-4 text-sm text-sandal/70 dark:text-cream/50">By <strong class="font-semibold">{post.data.author}</strong></p>
+    </div>
+
+    <div class="container-x mt-10 max-w-4xl">
+      <Image src={post.data.image} width={1200} height={675} alt={post.data.title}
+             class="aspect-video w-full rounded-3xl border border-golden/30 object-cover shadow-lift" />
+    </div>
+
+    <div class="container-x mt-12 max-w-3xl">
+      <Content />
+    </div>
+
+    <!-- prev / next -->
+    <div class="container-x mt-16 max-w-3xl grid gap-4 sm:grid-cols-2">
+      {newer ? (
+        <a href={`/blog/${newer.id}`} class="card group p-5 transition hover:-translate-y-1 hover:shadow-lift">
+          <span class="text-xs uppercase tracking-widest text-saffron">← Newer</span>
+          <span class="mt-1 block font-display font-semibold leading-snug group-hover:text-saffron">{newer.data.title}</span>
+        </a>
+      ) : <span class="hidden sm:block" />}
+      {older && (
+        <a href={`/blog/${older.id}`} class="card group p-5 text-right transition hover:-translate-y-1 hover:shadow-lift">
+          <span class="text-xs uppercase tracking-widest text-saffron">Older →</span>
+          <span class="mt-1 block font-display font-semibold leading-snug group-hover:text-saffron">{older.data.title}</span>
+        </a>
+      )}
+    </div>
+    <div class="h-8"><ArrowRight class="hidden" /></div>
+  </article>
+  <CTA />
+</Layout>

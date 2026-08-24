@@ -1,0 +1,45 @@
+---
+import { Image } from "astro:assets";
+import { Quote, Star, ChevronLeft, ChevronRight } from "@lucide/astro";
+import SectionHeading from "./SectionHeading.astro";
+import { testimonials } from "../data/site";
+import { picsum } from "../lib/utils";
+---
+<section class="section overflow-hidden bg-gradient-to-b from-temple to-cream/70 dark:from-night dark:to-night-soft/40">
+  <div class="container-x">
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <SectionHeading eyebrow="Testimonials" dev="? ????? ???????? ?"
+        description="Temple trusts, creators and utsav committees across India trust BhaktiMedia with their digital seva.">
+        <Fragment slot="title">Voices of <span class="text-gradient">Faith & Trust</span></Fragment>
+      </SectionHeading>
+      <div data-reveal class="flex gap-2">
+        <button data-carousel-prev class="icon-btn" aria-label="Previous testimonial"><ChevronLeft class="size-5" /></button>
+        <button data-carousel-next class="icon-btn" aria-label="Next testimonial"><ChevronRight class="size-5" /></button>
+      </div>
+    </div>
+  </div>
+
+  <div data-carousel-root class="container-x mt-12">
+    <div data-carousel class="no-scrollbar flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-4">
+      {testimonials.map((t) => (
+        <figure class="card min-w-[86%] snap-center border-white/60 bg-white/70 p-8 backdrop-blur-xl dark:border-white/10 dark:bg-white/5 sm:min-w-[420px]">
+          <div class="flex items-center justify-between">
+            <Quote class="size-8 text-golden" />
+            <div class="flex gap-0.5 text-golden" aria-label="5 star rating">
+              {Array.from({ length: 5 }).map(() => <Star class="size-3.5 fill-current" />)}
+            </div>
+          </div>
+          <blockquote class="mt-4 leading-relaxed text-sandal-deep/90 dark:text-cream/80">“{t.quote}”</blockquote>
+          <figcaption class="mt-6 flex items-center gap-3">
+            <Image src={picsum(t.seed, 96, 96)} width={48} height={48} alt={t.name} loading="lazy"
+                   class="size-12 rounded-full object-cover ring-2 ring-golden/50" />
+            <div>
+              <p class="font-display text-sm font-semibold">{t.name}</p>
+              <p class="text-xs text-sandal/80 dark:text-cream/60">{t.role}</p>
+            </div>
+          </figcaption>
+        </figure>
+      ))}
+    </div>
+  </div>
+</section>

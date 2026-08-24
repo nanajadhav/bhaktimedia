@@ -1,0 +1,22 @@
+---
+interface Props {
+  eyebrow?: string; title?: string; dev?: string;
+  description?: string; align?: "left" | "center";
+}
+const { eyebrow, title, dev, description, align = "left" } = Astro.props;
+const center = align === "center";
+---
+<header data-reveal class={center ? "mx-auto max-w-2xl text-center" : "max-w-2xl"}>
+  {eyebrow && (
+    <p class={`eyebrow ${center ? "justify-center" : ""}`}>
+      <span class="h-px w-8 bg-gradient-to-r from-saffron to-transparent" aria-hidden="true"></span>
+      {eyebrow}
+      <span class="h-px w-8 bg-gradient-to-l from-saffron to-transparent" aria-hidden="true"></span>
+    </p>
+  )}
+  <h2 class="mt-4 font-display text-3xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-[2.75rem]">
+    <slot name="title">{title}</slot>
+  </h2>
+  {dev && <p class="mt-2 font-dev text-base text-sandal dark:text-golden/80">{dev}</p>}
+  {description && <p class="mt-4 leading-relaxed text-sandal-deep/80 dark:text-cream/70">{description}</p>}
+</header>

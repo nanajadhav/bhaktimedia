@@ -1,0 +1,30 @@
+---
+import Layout from "../layouts/Layout.astro";
+import PageHeader from "../components/PageHeader.astro";
+import Pricing from "../components/Pricing.astro";
+import CTA from "../components/CTA.astro";
+import { faqs } from "../data/site";
+---
+<Layout title="Pricing" description="Simple monthly plans for devotional content — Aarti, Utsav and Mahayagya. Temple trusts get 20% off.">
+  <PageHeader eyebrow="Pricing" title="Plans for Every Temple & Creator" dev="? ???????? ??????? ?"
+    description="Month-to-month seva plans. Pause for Chaturmas, upgrade for Ganesh Utsav — always flexible." />
+  <Pricing />
+
+  <section class="section !pt-4">
+    <div class="container-x max-w-3xl">
+      <h2 class="text-center font-display text-3xl font-bold">Frequently Asked <span class="text-gradient">Questions</span></h2>
+      <div class="mt-10 space-y-4">
+        {faqs.map((f, i) => (
+          <details data-reveal style={`--rd:${i * 60}ms`} class="card group p-6 open:border-saffron/40 open:shadow-glow">
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-display font-semibold [&::-webkit-details-marker]:hidden">
+              {f.q}
+              <span class="grid size-8 shrink-0 place-items-center rounded-full bg-saffron/10 text-saffron transition duration-300 group-open:rotate-45">+</span>
+            </summary>
+            <p class="mt-4 text-sm leading-relaxed text-sandal-deep/80 dark:text-cream/70">{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+  <CTA />
+</Layout>

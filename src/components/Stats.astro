@@ -1,0 +1,25 @@
+---
+import { Palette, Film, HeartHandshake, Eye } from "@lucide/astro";
+import Mandala from "./Mandala.astro";
+import { stats } from "../data/site";
+
+const iconMap: Record<string, any> = { palette: Palette, film: Film, heart: HeartHandshake, eye: Eye };
+---
+<section class="relative overflow-hidden bg-ink py-20 text-cream md:py-24">
+  <Mandala class="absolute left-1/2 top-1/2 size-[560px] -translate-x-1/2 -translate-y-1/2 animate-spin-slower text-golden/10" />
+  <div class="hero-rays absolute inset-x-0 top-0 h-72 opacity-50" aria-hidden="true"></div>
+
+  <div class="container-x relative grid grid-cols-2 gap-x-6 gap-y-12 text-center lg:grid-cols-4">
+    {stats.map((s, i) => {
+      const Icon = iconMap[s.icon];
+      return (
+        <div data-reveal style={`--rd:${i * 100}ms`}>
+          <Icon class="mx-auto size-6 text-golden" />
+          <p class="mt-4 font-display text-4xl font-bold text-gradient md:text-5xl"
+             data-count={s.value} data-suffix={s.suffix}>0</p>
+          <p class="mt-2 text-xs uppercase tracking-[0.25em] text-cream/60 md:text-sm">{s.label}</p>
+        </div>
+      );
+    })}
+  </div>
+</section>

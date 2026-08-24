@@ -1,0 +1,27 @@
+---
+import Mandala from "./Mandala.astro";
+interface Props { eyebrow: string; title: string; dev?: string; description?: string }
+const { eyebrow, title, dev, description } = Astro.props;
+---
+<section class="relative overflow-hidden pb-14 pt-36 md:pt-44">
+  <div class="absolute inset-0 bg-gradient-to-b from-cream via-temple to-temple dark:from-[#2a1708] dark:via-night dark:to-night" aria-hidden="true"></div>
+  <div class="hero-rays absolute -top-20 left-1/2 h-[50vh] w-[150%] -translate-x-1/2 animate-rays" aria-hidden="true"></div>
+  <Mandala class="absolute -right-32 -top-24 size-[420px] animate-spin-slower text-golden/20" />
+  <div class="pattern-sacred absolute inset-0 opacity-40" aria-hidden="true"></div>
+
+  <div class="container-x relative">
+    <p class="eyebrow animate-rise">
+      <span class="h-px w-8 bg-gradient-to-r from-saffron to-transparent"></span>{eyebrow}
+    </p>
+    <h1 class="mt-4 max-w-3xl animate-rise font-display text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl" style="animation-delay:120ms">
+      {title}
+    </h1>
+    {dev && <p class="mt-3 animate-rise font-dev text-lg text-sandal dark:text-golden/80" style="animation-delay:220ms">{dev}</p>}
+    {description && (
+      <p class="mt-5 max-w-2xl animate-rise text-lg leading-relaxed text-sandal-deep/80 dark:text-cream/70" style="animation-delay:320ms">
+        {description}
+      </p>
+    )}
+    <slot />
+  </div>
+</section>

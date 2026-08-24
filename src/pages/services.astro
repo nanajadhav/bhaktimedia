@@ -1,0 +1,38 @@
+---
+import Layout from "../layouts/Layout.astro";
+import PageHeader from "../components/PageHeader.astro";
+import Services from "../components/Services.astro";
+import CTA from "../components/CTA.astro";
+
+const steps = [
+  { num: "०१", title: "Sankalp — Discover", desc: "We listen: your temple's history, your channel's goal, your festival's scale." },
+  { num: "०२", title: "Srishti — Create", desc: "Designers, editors and AI pipelines craft the first offering within days." },
+  { num: "०३", title: "Manthan — Refine", desc: "You review, we refine — until every frame feels worthy of the deity." },
+  { num: "०४", title: "Utsav — Launch", desc: "We publish, promote and measure. Then we plan the next utsav together." },
+];
+---
+<Layout title="Services" description="Devotional posters, temple branding, YouTube management, AI art, reels, voiceovers and more — full-service digital devotion.">
+  <PageHeader eyebrow="Services" title="Everything Devotion Needs, Digitally" dev="॥ सेवा परमो धर्मः ॥"
+    description="Ten disciplines under one temple roof. Mix and match, or hand us the entire digital seva." />
+  <Services />
+
+  <section class="section !pt-4 bg-cream/50 dark:bg-night-soft/30">
+    <div class="container-x">
+      <h2 class="font-display text-3xl font-bold">How we work</h2>
+      <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {steps.map((s, i) => (
+          <article data-reveal style={`--rd:${i * 100}ms`} class="card relative p-7">
+            <span class="font-dev text-4xl text-golden/70">॥ {s.num} ॥</span>
+            <h3 class="mt-4 font-display text-lg font-semibold">{s.title}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-sandal-deep/75 dark:text-cream/65">{s.desc}</p>
+            {i < steps.length - 1 && (
+              <span class="absolute -right-4 top-1/2 hidden text-2xl text-saffron/40 lg:block" aria-hidden="true">→</span>
+            )}
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CTA />
+</Layout>

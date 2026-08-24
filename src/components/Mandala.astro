@@ -1,0 +1,24 @@
+---
+interface Props { class?: string }
+---
+<svg viewBox="0 0 400 400" fill="none" aria-hidden="true" class={Astro.props.class}>
+  <g stroke="currentColor" stroke-width="1">
+    <circle cx="200" cy="200" r="196" opacity="0.5" />
+    <circle cx="200" cy="200" r="170" stroke-dasharray="3 8" />
+    <circle cx="200" cy="200" r="120" />
+    <circle cx="200" cy="200" r="70" stroke-dasharray="2 6" />
+    {Array.from({ length: 12 }).map((_, i) => (
+      <path d="M200 30 C214 60 214 90 200 112 C186 90 186 60 200 30 Z"
+            transform={`rotate(${i * 30} 200 200)`} opacity="0.7" />
+    ))}
+    {Array.from({ length: 24 }).map((_, i) => (
+      <circle cx="200" cy="46" r="3" transform={`rotate(${i * 15} 200 200)`}
+              fill="currentColor" stroke="none" opacity="0.5" />
+    ))}
+    {Array.from({ length: 8 }).map((_, i) => (
+      <path d="M200 138 C216 158 216 180 200 192 C184 180 184 158 200 138 Z"
+            transform={`rotate(${i * 45} 200 200)`} />
+    ))}
+  </g>
+  <text x="200" y="212" text-anchor="middle" font-size="32" fill="currentColor" font-family="serif">?</text>
+</svg>
