@@ -1,4 +1,4 @@
-/* BhaktiMedia — single lightweight client bundle (all features guarded). */
+/* BhaktiMedia ï¿½ single lightweight client bundle (all features guarded). */
 const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const finePointer = window.matchMedia("(pointer: fine)").matches;
 
