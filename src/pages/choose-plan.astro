@@ -1,0 +1,54 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+<Layout title="Plan Chuno" description="Apne liye sahi plan chuno.">
+  <section class="section">
+    <div class="container-x">
+      <div class="text-center">
+        <h1 class="font-display text-3xl font-bold">Apna Plan Chuno 🪔</h1>
+        <p class="mt-2 text-sm text-sandal-deep/70 dark:text-cream/60">Trial mein 3 free credits hain — upgrade jab chaho.</p>
+      </div>
+      <div id="plans" class="mx-auto mt-10 grid max-w-4xl gap-6 md:grid-cols-3"></div>
+      <p id="msg" class="mt-6 text-center text-sm text-red-500"></p>
+    </div>
+  </section>
+
+  <script>
+    import { supabase } from "../lib/supabase";
+
+    const PLANS = [
+      { id: "starter", name: "Starter", price: "₹7,999/mo", perks: ["20 AI images / mo", "10 gallery downloads", "Poster Studio"] },
+      { id: "growth", name: "Growth", price: "₹15,999/mo", popular: true, perks: ["100 AI images / mo", "50 downloads", "Voice Studio", "Priority support"] },
+      { id: "scale", name: "Scale", price: "₹29,999/mo", perks: ["Unlimited AI images", "Unlimited downloads", "Voice + Video Studio", "Dedicated manager"] },
+    ];
+
+    async function main() {
+      const { data } = await supabase.auth.getSession();
+      const session = data.session;
+      if (!session) { window.location.href = "/login"; return; }
+
+      const grid = document.getElementById("plans") as HTMLElement;
+      grid.innerHTML = PLANS.map((p) => `
+        <div class="card flex flex-col p-6 ${p.popular ? "ring-2 ring-saffron" : ""}">
+          ${p.popular ? '<span class="mb-2 w-fit rounded-full bg-saffron px-3 py-1 text-xs font-bold text-white">Sabse Popular</span>' : ""}
+          <h2 class="font-display text-xl font-bold">${p.name}</h2>
+          <p class="mt-1 text-2xl font-extrabold text-saffron">${p.price}</p>
+          <ul class="mt-4 flex-1 space-y-2 text-sm">
+            ${p.perks.map((x) => `<li>✅ ${x}</li>`).join("")}
+          </ul>
+          <button data-plan="${p.id}" class="btn btn-primary mt-6 w-full justify-center">Plan Chuno</button>
+        </div>
+      `).join("");
+
+      grid.addEventListener("click", async (e) => {
+        const btn = (e.target as HTMLElement).closest("button[data-plan]");
+        if (!btn) return;
+        const plan = btn.getAttribute("data-plan") as string;
+        const { error } = await supabase.from("profiles").update({ plan }).eq("id", session.user.id);
+        if (error) { (document.getElementById("msg") as HTMLElement).textContent = error.message; return; }
+        window.location.href = "/dashboard";
+      });
+    }
+    main();
+  </script>
+</Layout>

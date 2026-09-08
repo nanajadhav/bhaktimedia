@@ -1,0 +1,51 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+<Layout title="Mera Dashboard" description="Aapka BhaktiMedia dashboard.">
+  <section class="section">
+    <div class="container-x max-w-3xl">
+      <div id="dash" class="card p-8 text-center">🪔 Loading...</div>
+    </div>
+  </section>
+
+  <script>
+    import { supabase } from "../lib/supabase";
+
+    async function main() {
+      const { data } = await supabase.auth.getSession();
+      const session = data.session;
+      if (!session) { window.location.href = "/login"; return; }
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", session.user.id)
+        .single();
+
+      const plan = profile?.plan || "trial";
+      const credits = plan === "trial" ? 3 : plan === "starter" ? 20 : plan === "growth" ? 100 : "∞";
+
+      (document.getElementById("dash") as HTMLElement).innerHTML = `
+        <div class="text-left">
+          <h1 class="font-display text-2xl font-bold">🪔 Namaste, ${profile?.name || "Bhakti User"}</h1>
+          <p class="mt-1 text-sm text-sandal-deep/70 dark:text-cream/60">${session.user.email}</p>
+          <div class="mt-6 grid grid-cols-2 gap-4 text-center">
+            <div class="rounded-xl bg-golden/10 p-5">
+              <p class="text-2xl font-extrabold text-saffron uppercase">${plan}</p>
+              <p class="mt-1 text-xs">Current Plan</p>
+            </div>
+            <div class="rounded-xl bg-golden/10 p-5">
+              <p class="text-2xl font-extrabold text-saffron">${credits}</p>
+              <p class="mt-1 text-xs">Available Credits</p>
+            </div>
+          </div>
+          <div class="mt-6 flex gap-3">
+            <a href="/choose-plan" class="btn btn-primary flex-1 justify-center">Plan Badlo</a>
+            <a href="/ai-services" class="btn btn-ghost flex-1 justify-center">AI Studio Kholo</a>
+          </div>
+        </div>
+      `;
+    }
+    main();
+  </script>
+</Layout>

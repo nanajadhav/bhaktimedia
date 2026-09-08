@@ -79,6 +79,14 @@ const discover = [
       <span class="chip hidden bg-golden/15 text-sandal dark:text-golden sm:inline-flex">⚡ CPU • No GPU</span>
     </div>
 
+    <!-- credits chip -->
+    <div class="mt-3 flex items-center gap-3">
+      <span id="credits-chip" class="chip bg-golden/15 text-golden">
+        ⚡ <span id="credits-count">...</span> / <span id="credits-limit">...</span> credits
+      </span>
+      <a href="/dashboard" class="chip hover:bg-golden/20">Dashboard</a>
+    </div>
+
     <!-- templates -->
     <section class="mt-8">
       <h2 class="font-display text-sm font-semibold uppercase tracking-widest text-sandal/60 dark:text-cream/50">Featured Templates</h2>
@@ -225,12 +233,17 @@ const discover = [
               class="absolute -right-2 -top-2 grid size-5 place-items-center rounded-full bg-ink text-xs text-white dark:bg-white dark:text-ink">×</button>
           </div>
 
-          <!-- image controls (Text→Image / Image→Image + ratio + style) -->
+          <!-- image controls -->
           <div data-ctl="image" class="flex flex-wrap items-center gap-2">
             <button data-chip="imode" data-imode="t2i" aria-pressed="true" class="filter-btn !px-3 !py-1.5">📝 Text → Image</button>
             <button data-chip="imode" data-imode="i2i" aria-pressed="false" class="filter-btn !px-3 !py-1.5">🖼️ Image → Image</button>
             {["1:1", "4:5", "16:9"].map((r, i) => <button data-chip="ratio" aria-pressed={i === 0 ? "true" : "false"} class="filter-btn !px-3 !py-1.5">{r}</button>)}
             {["Traditional", "Cinematic", "Cosmic"].map((s, i) => <button data-chip="style" aria-pressed={i === 0 ? "true" : "false"} class="filter-btn !px-3 !py-1.5">{s}</button>)}
+            <select id="img-model" class="filter-btn !px-2 !py-1.5 !text-xs">
+              <option value="openai/gpt-5.4-image-2">🎨 GPT-Image</option>
+              <option value="bytedance-seed/seedream-5.0-pro">🖼️ Seedream</option>
+              <option value="google/gemini-3.1-flash-lite-image">✨ Gemini Flash</option>
+            </select>
           </div>
 
           <!-- poster controls -->
@@ -238,7 +251,7 @@ const discover = [
             {deities.map((d, i) => <button data-chip="deity" aria-pressed={i === 0 ? "true" : "false"} class="filter-btn !px-3 !py-1.5">{d.name.replace("Shri ", "")}</button>)}
           </div>
 
-          <!-- video controls (3 modes) -->
+          <!-- video controls -->
           <div data-ctl="video" class="hidden flex-wrap items-center gap-2">
             <button data-chip="vmode" data-vmode="t2v" aria-pressed="true" class="filter-btn !px-3 !py-1.5">📝 Text → Video</button>
             <button data-chip="vmode" data-vmode="i2v" aria-pressed="false" class="filter-btn !px-3 !py-1.5">🖼️ Image → Video</button>
@@ -257,7 +270,7 @@ const discover = [
     </div>
   </main>
 
-  <!-- 📷 Camera Modal (laptop + mobile) -->
+  <!-- 📷 Camera Modal -->
   <dialog id="cam-dialog" class="m-auto w-[min(92vw,480px)] rounded-3xl border border-golden/30 bg-night p-4 text-cream shadow-lift">
     <p class="mb-3 text-center font-display text-sm font-semibold">📷 Camera — photo lo</p>
     <video id="cam-video" autoplay playsinline muted class="aspect-[4/3] w-full rounded-2xl bg-black object-cover"></video>
@@ -272,6 +285,7 @@ const discover = [
 <script is:inline>
 (() => {
   const API = "http://localhost:3001";
+  const TR_KEY = "sk-QXyOrWmt9Drb386zn7jDBeu2awEJTz3wdhQH4BNFeT4cRTwJ";
   const $ = (s) => document.querySelector(s);
   const $$ = (s) => document.querySelectorAll(s);
   const picsumSeed = (seed, w, h) => `https://picsum.photos/seed/${seed}/${w}/${h}`;
@@ -283,6 +297,43 @@ const discover = [
     voice:  { title: "Voice Studio",      dev: "॥ वाक् सृष्टिः ॥", ph: "" },
     video:  { title: "Video Generation",  dev: "॥ चलच्चित्र सृष्टिः ॥", ph: "Video prompt likho… ya image attach karo" },
   };
+
+  /* ---------- session + credits helpers ---------- */
+  function getSessionToken() {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.indexOf("sb-") === 0 && k.indexOf("auth-token") !== -1) {
+        try {
+          const s = JSON.parse(localStorage.getItem(k));
+          return s?.access_token || null;
+        } catch { return null; }
+      }
+    }
+    return null;
+  }
+
+  function showErr(msg) {
+    localStorage.setItem("bm-welcome", "⚠️ " + msg);
+    window.location.href = "/";
+  }
+
+  async function loadCredits(token) {
+    try {
+      const res = await fetch("https://sbzlypodjpqoukhzxhfo.supabase.co/rest/v1/rpc/get_credits", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: "sb_publishable_m3drS7J8YIwutJQ9piiGJQ_sFaPj9js",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.ok) {
+        const d = await res.json();
+        $("#credits-count").textContent = d.used || 0;
+        $("#credits-limit").textContent = d.limit || 3;
+      }
+    } catch (e) { console.warn("Credits load fail:", e); }
+  }
 
   /* ---------- attach menu ---------- */
   const menu = $("#attach-menu");
@@ -308,7 +359,7 @@ const discover = [
     $("#attach-preview").classList.add("hidden");
   });
 
-  /* ---------- 📷 camera (getUserMedia — laptop + mobile) ---------- */
+  /* ---------- camera ---------- */
   let camStream = null;
   async function openCamera() {
     const dlg = $("#cam-dialog"), err = $("#cam-error");
@@ -344,7 +395,7 @@ const discover = [
     }, "image/jpeg", 0.92);
   });
 
-  /* ---------- attach visibility logic ---------- */
+  /* ---------- attach visibility ---------- */
   function updateAttach() {
     const vmode = $('[data-chip="vmode"][aria-pressed="true"]')?.dataset.vmode || "t2v";
     const show = state.studio === "image" || state.studio === "poster" || (state.studio === "video" && vmode !== "t2v");
@@ -411,30 +462,133 @@ const discover = [
   }
   $("#clear-history").addEventListener("click", () => saveH([]));
 
-  /* ---------- generate ---------- */
-  $("#btn-send").addEventListener("click", () => {
+  /* ---------- MAIN GENERATE (REAL API) ---------- */
+  $("#btn-send").addEventListener("click", async () => {
     const studio = state.studio;
-    const prompt = $("#prompt").value.trim() || "divine temple art";
-    const slug = prompt.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 20);
+    const prompt = $("#prompt").value.trim() || (studio === "poster" ? "Divine poster art" : "divine temple art");
+
+    if (studio === "voice") return;
+
+    if (studio === "video") {
+      $("#results-wrap").classList.remove("hidden");
+      const slot = document.createElement("div");
+      slot.className = "aspect-video animate-pulse rounded-2xl bg-golden/20";
+      $("#results").prepend(slot);
+      setTimeout(() => {
+        slot.outerHTML = `<video controls class="aspect-video w-full rounded-2xl object-cover" src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"></video>`;
+      }, 1200);
+      return;
+    }
+
+    const token = getSessionToken();
+    if (!token) {
+      localStorage.setItem("bm-welcome", "🙏 Pehle login karo — AI Studio ke liye");
+      window.location.href = "/login";
+      return;
+    }
+
     $("#results-wrap").classList.remove("hidden");
     const slot = document.createElement("div");
-    slot.className = "aspect-square animate-pulse rounded-2xl bg-golden/20";
+    slot.className = "aspect-square flex items-center justify-center rounded-2xl bg-gradient-to-br from-saffron/20 to-golden/20 text-center text-sm text-saffron";
+    slot.innerHTML = `<div><div class="mb-2 text-2xl">🪔</div>AI soch raha hai...<br><span class="text-xs opacity-70">10-30 sec lagenge</span></div>`;
     $("#results").prepend(slot);
 
-    setTimeout(() => {
-      const seed = `${studio}-${slug}`;
-      const src = state.attached ? URL.createObjectURL(state.attached) : picsumSeed(seed, 500, 500);
-      if (studio === "video") {
-        slot.outerHTML = `<video controls class="aspect-square w-full rounded-2xl object-cover" src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"></video>`;
-      } else if (studio === "poster") {
-        slot.outerHTML = `<div class="relative overflow-hidden rounded-2xl border border-golden/40 shadow-soft">
-          <img src="${src}" class="aspect-[4/5] w-full object-cover">
-          <span class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 to-transparent px-3 pb-2 pt-8 text-center font-dev text-goldsoft">${prompt}</span></div>`;
-      } else {
-        slot.outerHTML = `<img src="${src}" class="aspect-square w-full rounded-2xl object-cover shadow-soft">`;
+    try {
+      const ratio = $('[data-chip="ratio"][aria-pressed="true"]')?.textContent || "1:1";
+      const style = $('[data-chip="style"][aria-pressed="true"]')?.textContent || "Traditional";
+      const model = $("#img-model")?.value || "openai/gpt-5.4-image-2";
+      const imode = $('[data-chip="imode"][aria-pressed="true"]')?.dataset.imode || "t2i";
+
+      const styleMap = {
+        Traditional: "traditional Indian temple art, ornate details, ",
+        Cinematic: "cinematic lighting, photorealistic, dramatic, ",
+        Cosmic: "cosmic spiritual, ethereal golden glow, nebula, ",
+      };
+      const finalPrompt = (styleMap[style] || "") + prompt;
+
+      const sizeMap = { "1:1": "1024x1024", "4:5": "1024x1280", "16:9": "1792x1024" };
+      const size = sizeMap[ratio] || "1024x1024";
+
+      const payload = { prompt: finalPrompt, size, model, mode: imode, studio };
+
+      if (imode === "i2i" && state.attached) {
+        const b64 = await new Promise((res) => {
+          const r = new FileReader();
+          r.onload = () => res(r.result.toString().split(",")[1]);
+          r.readAsDataURL(state.attached);
+        });
+        payload.input_image = b64;
+        payload.input_image_type = state.attached.type;
       }
-      saveH([{ prompt, thumb: picsumSeed(seed, 96, 96), t: Date.now() }, ...loadH()]);
-    }, 1500);
+
+      const isLocal = location.hostname === "localhost" || location.hostname === "127.0.0.1";
+      let res, data;
+
+      if (isLocal) {
+        // LOCAL DEV: proxy server (node proxy-server.mjs)
+        res = await fetch("http://localhost:3002/api/generate-image", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ model, prompt: finalPrompt, size }),
+        });
+        data = await res.json();
+        if (!data.image) throw new Error(data.error || "Local generation fail");
+      } else {
+        // LIVE: secure Cloudflare function
+        res = await fetch("/api/generate-image", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify(payload),
+        });
+        data = await res.json();
+        if (!res.ok) {
+          slot.remove();
+          if (res.status === 401) return showErr("Session expired — dobara login karo");
+          if (res.status === 402) {
+            localStorage.setItem("bm-welcome", "⚠️ Credits khatam! Plan upgrade karo.");
+            window.location.href = "/choose-plan";
+            return;
+          }
+          throw new Error(data.error || "Generation fail");
+        }
+      }
+
+      const imgHtml = studio === "poster"
+        ? `<div class="group relative overflow-hidden rounded-2xl shadow-soft">
+            <img src="${data.image}" class="aspect-[4/5] w-full object-cover" alt="Poster">
+            <span class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 to-transparent px-3 pb-2 pt-8 text-center font-dev text-goldsoft">${prompt}</span>
+            <div class="absolute inset-0 bg-gradient-to-t from-ink/90 via-transparent to-transparent opacity-0 transition group-hover:opacity-100">
+              <div class="absolute inset-x-0 bottom-0 flex gap-2 p-3">
+                <a href="${data.image}" download="bhaktimedia-poster-${Date.now()}.png" class="btn btn-primary !py-1.5 !text-xs flex-1 justify-center">⬇️ Download</a>
+              </div>
+            </div>
+            <span class="absolute left-2 top-2 rounded-full bg-ink/70 px-2 py-1 text-[10px] text-golden">${data.used}/${data.limit} credits</span>
+           </div>`
+        : `<div class="group relative overflow-hidden rounded-2xl shadow-soft">
+            <img src="${data.image}" class="aspect-square w-full object-cover" alt="Generated">
+            <div class="absolute inset-0 bg-gradient-to-t from-ink/90 via-transparent to-transparent opacity-0 transition group-hover:opacity-100">
+              <div class="absolute inset-x-0 bottom-0 flex gap-2 p-3">
+                <a href="${data.image}" download="bhaktimedia-${Date.now()}.png" class="btn btn-primary !py-1.5 !text-xs flex-1 justify-center">⬇️ Download</a>
+              </div>
+            </div>
+            <span class="absolute left-2 top-2 rounded-full bg-ink/70 px-2 py-1 text-[10px] text-golden">${data.used}/${data.limit} credits</span>
+           </div>`;
+
+      slot.outerHTML = imgHtml;
+
+      if (data.used !== "DEV") {
+        $("#credits-count").textContent = data.used;
+        $("#credits-limit").textContent = data.limit;
+      }
+
+      saveH([{ prompt, thumb: data.image, t: Date.now() }, ...loadH()]);
+      localStorage.setItem("bm-welcome", `🎨 Image ready! Credits: ${data.used}/${data.limit}`);
+
+    } catch (err) {
+      slot.remove();
+      localStorage.setItem("bm-welcome", "❌ " + (err.message || "Kuch galat hua — dobara try karo"));
+      console.error("Generate error:", err);
+    }
   });
 
   /* ---------- voice tabs ---------- */
@@ -518,6 +672,15 @@ const discover = [
   /* ---------- init ---------- */
   renderH();
   setStudio(new URLSearchParams(location.search).get("studio") || "image");
+
+  const isLocal = location.hostname === "localhost" || location.hostname === "127.0.0.1";
+  if (isLocal) {
+    $("#credits-count").textContent = "DEV";
+    $("#credits-limit").textContent = "∞";
+  } else {
+    const initToken = getSessionToken();
+    if (initToken) loadCredits(initToken);
+  }
 })();
 </script>
 </Layout>

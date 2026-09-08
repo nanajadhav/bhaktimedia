@@ -11,18 +11,18 @@ const media = [
   { label: "YouTube", href: "/youtube" }, { label: "AI Services", href: "/ai-services" },
 ];
 
-// SVG icons as HTML strings - works everywhere!
 const icons = {
   menu: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>',
   x: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>',
   sun: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>',
   moon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>',
   chevronDown: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>',
-  sparkles: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>',
+  logout: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>',
+  sparkles: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5a2 2 0 0 0 1.5 1.437l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>',
   palette: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>',
   landmark: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" x2="21" y1="22" y2="22"/><line x1="6" x2="6" y1="18" y2="11"/><line x1="10" x2="10" y1="18" y2="11"/><line x1="14" x2="14" y1="18" y2="11"/><line x1="18" x2="18" y1="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>',
   youtube: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"/><path d="m10 15 5-3-5-3z"/></svg>',
-  clapperboard: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.2 6 3 11l-.9-2.4c-.3-.8.2-1.7 1-1.9L20.2 3"/><path d="M6.2 13.2 21 9"/><path d="M21 13H3v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2z"/></svg>',
+  clapperboard: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.2 6 3 11l-.9-2.4c0-.8.2-1.7 1-1.9L20.2 3"/><path d="M6.2 13.2 21 9"/><path d="M21 13H3v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2z"/></svg>',
   film: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 3v18"/><path d="M3 7.5h4"/><path d="M3 12h18"/><path d="M3 16.5h4"/><path d="M17 3v18"/><path d="M17 7.5h4"/><path d="M17 16.5h4"/></svg>',
   mic: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>',
   image: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>',
@@ -32,10 +32,10 @@ const icons = {
 ---
 <header id="site-header" class="fixed inset-x-0 top-0 z-50">
   <div class="container-x">
-    <div id="nav-shell" class="flex items-center justify-between gap-4 rounded-2xl px-3 py-2.5 sm:px-4">
-      <a href="/" class="flex shrink-0 items-center gap-2.5" aria-label={`${site.name} home`}>
-        <span class="grid size-10 place-items-center rounded-xl bg-gradient-to-br from-saffron to-golden font-dev text-xl font-bold text-white shadow-gold">ॐ</span>
-        <span class="font-display text-lg font-bold tracking-tight">
+    <div id="nav-shell" class="flex items-center justify-between gap-3 rounded-2xl px-3 py-1.5 sm:px-4">
+      <a href="/" class="flex shrink-0 items-center gap-2" aria-label={`${site.name} home`}>
+        <span class="grid size-9 place-items-center rounded-xl bg-gradient-to-br from-saffron to-golden font-dev text-lg font-bold text-white shadow-gold">ॐ</span>
+        <span class="font-display text-base font-bold tracking-tight">
           Bhakti<span class="text-gradient">Media</span><span class="text-saffron">.in</span>
         </span>
       </a>
@@ -64,7 +64,7 @@ const icons = {
                     </a>
                   ))}
                 </div>
-                <a href="/ai-services" class="mt-2 flex items-center justify-between rounded-xl bg-gradient-to-r from-saffron/10 to-golden/10 px-4 py-3 text-sm font-semibold text-saffron">
+                <a href="/studio" class="mt-2 flex items-center justify-between rounded-xl bg-gradient-to-r from-saffron/10 to-golden/10 px-4 py-3 text-sm font-semibold text-saffron">
                   <span class="flex items-center gap-2"><span set:html={icons.sparkles} /> New: AI Devotional Studio</span>
                   <span aria-hidden="true">→</span>
                 </a>
@@ -90,12 +90,28 @@ const icons = {
         </ul>
       </nav>
 
-      <div class="flex items-center gap-2">
-        <button data-theme-toggle class="icon-btn" aria-label="Toggle dark mode">
+      <!-- RIGHT: slim auth -->
+      <div class="flex items-center gap-1.5">
+        <button data-theme-toggle class="icon-btn" style="display:none" aria-label="Toggle dark mode">
           <span class="hidden dark:block"><span set:html={icons.sun} /></span>
           <span class="dark:hidden"><span set:html={icons.moon} /></span>
         </button>
-        <a href="/contact" class="btn btn-primary hidden !px-5 !py-2.5 md:inline-flex">Start a Project</a>
+
+        <div id="auth-guest-d" class="flex items-center gap-1.5">
+          <a href="/login" class="hidden rounded-lg px-3 py-1.5 text-sm font-semibold text-sandal-deep transition hover:bg-golden/10 hover:text-saffron sm:block dark:text-cream/80">Login</a>
+          <a href="/signup" class="rounded-full bg-gradient-to-r from-saffron to-golden px-4 py-2 text-sm font-bold text-white shadow-gold transition hover:scale-105">Get Start</a>
+        </div>
+
+        <div id="auth-user-d" class="hidden items-center gap-1.5">
+          <a href="/dashboard" class="flex items-center gap-2 rounded-full py-1 pl-1 pr-3 transition hover:bg-golden/15" title="Dashboard">
+            <span id="user-avatar" class="grid size-8 place-items-center rounded-full bg-gradient-to-br from-saffron to-golden text-sm font-bold text-white">M</span>
+            <span id="user-name-d" class="hidden max-w-[110px] truncate text-sm font-semibold md:inline">Mera Account</span>
+          </a>
+          <button id="logout-btn-d" class="icon-btn" aria-label="Logout" title="Logout">
+            <span set:html={icons.logout} />
+          </button>
+        </div>
+
         <button id="drawer-open" class="icon-btn lg:hidden" aria-label="Open menu" aria-controls="drawer">
           <span set:html={icons.menu} />
         </button>
@@ -113,7 +129,7 @@ const icons = {
       <span class="grid size-9 place-items-center rounded-xl bg-gradient-to-br from-saffron to-golden font-dev text-lg font-bold text-white">ॐ</span>
       <span class="font-display font-bold">Bhakti<span class="text-gradient">Media</span><span class="text-saffron">.in</span></span>
     </span>
-    <button data-drawer-close class="icon-btn" aria-label="Close menu"><span set:html={icons.x} /></button>
+      <button data-drawer-close class="icon-btn" aria-label="Close menu"><span set:html={icons.x} /></button>
   </div>
 
   <nav class="mt-8" aria-label="Mobile">
@@ -134,8 +150,68 @@ const icons = {
     </ul>
   </nav>
 
-  <div class="mt-auto space-y-4 pt-10">
-    <a href="/contact" class="btn btn-primary w-full">Start a Project</a>
-    <p class="text-center font-dev text-sm text-sandal dark:text-golden/70">{site.tagline} · डिजिटल भक्ती, प्रत्येक हृदयासाठी</p>
+  <div id="auth-guest" class="mt-8 items-center gap-2" style="display:flex">
+    <a href="/login" class="rounded-full px-4 py-2 text-sm font-semibold text-sandal-deep transition hover:text-saffron dark:text-cream/80">Login</a>
+    <a href="/signup" class="btn btn-primary !py-2 !text-sm">Get Start</a>
+  </div>
+
+  <div id="auth-user" class="mt-8 items-center gap-2" style="display:none">
+    <a href="/dashboard" class="flex items-center gap-2 rounded-full bg-golden/15 px-4 py-2 text-sm font-semibold text-saffron transition hover:bg-golden/25">
+      🪔 <span id="user-name">Mera Account</span>
+    </a>
+    <button id="logout-btn" class="rounded-full px-3 py-2 text-xs font-semibold text-sandal-deep/70 transition hover:text-red-500 dark:text-cream/60">Logout</button>
   </div>
 </aside>
+
+<script is:inline>
+(function () {
+  var raw = null;
+  try {
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (k && k.indexOf("sb-") === 0 && k.indexOf("auth-token") !== -1) { raw = localStorage.getItem(k); break; }
+    }
+  } catch (e) {}
+  var logged = !!raw;
+  var name = "Mera Account";
+  if (raw) {
+    try {
+      var s = JSON.parse(raw);
+      if (!s || !s.user) s = JSON.parse(atob(raw));
+      if (s && s.user) name = (s.user.user_metadata && s.user.user_metadata.name) || s.user.email || name;
+    } catch (e) {}
+  }
+
+  // desktop slim auth
+  var gd = document.getElementById("auth-guest-d");
+  var ud = document.getElementById("auth-user-d");
+  if (gd) gd.style.display = logged ? "none" : "flex";
+  if (ud) ud.style.display = logged ? "flex" : "none";
+  var nd = document.getElementById("user-name-d");
+  if (nd) { nd.textContent = name; nd.title = name; }
+  var av = document.getElementById("user-avatar");
+  if (av) av.textContent = (name || "M").trim().charAt(0).toUpperCase();
+
+  // drawer auth
+  var guest = document.getElementById("auth-guest");
+  var user = document.getElementById("auth-user");
+  if (guest) guest.style.display = logged ? "none" : "flex";
+  if (user) {
+    user.style.display = logged ? "flex" : "none";
+    var un = document.getElementById("user-name");
+    if (un) un.textContent = name;
+  }
+
+  // logout — dono jagah
+  document.addEventListener("click", function (e) {
+    if (e.target.closest("#logout-btn, #logout-btn-d")) {
+      for (var j = 0; j < localStorage.length; j++) {
+        var key = localStorage.key(j);
+        if (key && key.indexOf("sb-") === 0) { localStorage.removeItem(key); j--; }
+      }
+      localStorage.setItem("bm-welcome", "👋 Logout ho gaya. Phir milenge!");
+      window.location.href = "/";
+    }
+  });
+})();
+</script>

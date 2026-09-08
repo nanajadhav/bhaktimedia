@@ -1,0 +1,70 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+<Layout title="Account Banayo" description="BhaktiMedia mein join karo — digital seva shuru karo.">
+  <section class="section">
+    <div class="container-x max-w-md">
+      <div class="card p-8">
+        <div class="text-center">
+          <span class="text-4xl">🙏</span>
+          <h1 class="mt-3 font-display text-2xl font-bold">Seva Shuru Karo</h1>
+          <p class="mt-2 text-sm text-sandal-deep/70 dark:text-cream/60">Account banao — 3 free trial credits pao!</p>
+        </div>
+
+        <form id="signup-form" class="mt-6 space-y-4">
+          <div>
+            <label class="mb-1 block text-xs font-semibold" for="name">Naam</label>
+            <input id="name" required placeholder="Aapka naam"
+              class="w-full rounded-xl border border-golden/30 bg-white/70 px-4 py-3 text-sm outline-none transition focus:border-saffron dark:bg-ink/60 dark:text-cream" />
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-semibold" for="email">Email</label>
+            <input id="email" type="email" required placeholder="aap@email.com"
+              class="w-full rounded-xl border border-golden/30 bg-white/70 px-4 py-3 text-sm outline-none transition focus:border-saffron dark:bg-ink/60 dark:text-cream" />
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-semibold" for="password">Password</label>
+            <input id="password" type="password" required minlength="6" placeholder="Kam se kam 6 characters"
+              class="w-full rounded-xl border border-golden/30 bg-white/70 px-4 py-3 text-sm outline-none transition focus:border-saffron dark:bg-ink/60 dark:text-cream" />
+          </div>
+          <button type="submit" class="btn btn-primary w-full justify-center">Account Banao 🙏</button>
+          <p id="msg" class="text-center text-sm text-red-500"></p>
+        </form>
+
+        <p class="mt-4 text-center text-sm">
+          Pehle se account hai? <a href="/login" class="font-semibold text-saffron hover:underline">Login karo</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    import { supabase } from "../lib/supabase";
+
+    const form = document.getElementById("signup-form") as HTMLFormElement;
+    const msg = document.getElementById("msg") as HTMLParagraphElement;
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      msg.textContent = "";
+
+      const name = (document.getElementById("name") as HTMLInputElement).value.trim();
+      const email = (document.getElementById("email") as HTMLInputElement).value.trim();
+      const password = (document.getElementById("password") as HTMLInputElement).value;
+
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { name } },
+      });
+
+      if (error) {
+        msg.textContent = error.message;
+        return;
+      }
+
+      // Email confirmation OFF hai → turant login ho jayega
+      window.location.href = "/choose-plan";
+    });
+  </script>
+</Layout>
