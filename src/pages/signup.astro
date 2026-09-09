@@ -1,70 +1,58 @@
 ---
 import Layout from "../layouts/Layout.astro";
 ---
-<Layout title="Account Banayo" description="BhaktiMedia mein join karo — digital seva shuru karo.">
-  <section class="section">
-    <div class="container-x max-w-md">
-      <div class="card p-8">
-        <div class="text-center">
-          <span class="text-4xl">🙏</span>
-          <h1 class="mt-3 font-display text-2xl font-bold">Seva Shuru Karo</h1>
-          <p class="mt-2 text-sm text-sandal-deep/70 dark:text-cream/60">Account banao — 3 free trial credits pao!</p>
-        </div>
-
-        <form id="signup-form" class="mt-6 space-y-4">
-          <div>
-            <label class="mb-1 block text-xs font-semibold" for="name">Naam</label>
-            <input id="name" required placeholder="Aapka naam"
-              class="w-full rounded-xl border border-golden/30 bg-white/70 px-4 py-3 text-sm outline-none transition focus:border-saffron dark:bg-ink/60 dark:text-cream" />
-          </div>
-          <div>
-            <label class="mb-1 block text-xs font-semibold" for="email">Email</label>
-            <input id="email" type="email" required placeholder="aap@email.com"
-              class="w-full rounded-xl border border-golden/30 bg-white/70 px-4 py-3 text-sm outline-none transition focus:border-saffron dark:bg-ink/60 dark:text-cream" />
-          </div>
-          <div>
-            <label class="mb-1 block text-xs font-semibold" for="password">Password</label>
-            <input id="password" type="password" required minlength="6" placeholder="Kam se kam 6 characters"
-              class="w-full rounded-xl border border-golden/30 bg-white/70 px-4 py-3 text-sm outline-none transition focus:border-saffron dark:bg-ink/60 dark:text-cream" />
-          </div>
-          <button type="submit" class="btn btn-primary w-full justify-center">Account Banao 🙏</button>
-          <p id="msg" class="text-center text-sm text-red-500"></p>
-        </form>
-
-        <p class="mt-4 text-center text-sm">
-          Pehle se account hai? <a href="/login" class="font-semibold text-saffron hover:underline">Login karo</a>
-        </p>
-      </div>
+<Layout title="Signup" description="BhaktiMedia par naya account banao.">
+<div class="container-x px-4 pt-32 pb-20 sm:px-6">
+  <div class="mx-auto max-w-md">
+    <div class="card p-8 shadow-lift">
+      <h1 class="font-display text-2xl font-bold">🙏 Naya Account</h1>
+      <p class="mt-1 text-sm text-sandal-deep/60 dark:text-cream/50">Join karo — 3 free AI credits har mahine!</p>
+      <form id="signup-form" class="mt-6 grid gap-4">
+        <label class="block text-sm font-semibold">Naam
+          <input id="name" type="text" required class="input mt-1.5" placeholder="Aapka naam" />
+        </label>
+        <label class="block text-sm font-semibold">Email
+          <input id="email" type="email" required class="input mt-1.5" placeholder="you@example.com" />
+        </label>
+        <label class="block text-sm font-semibold">Password
+          <input id="password" type="password" required minlength="6" class="input mt-1.5" placeholder="Kam se kam 6 characters" />
+        </label>
+        <p id="err" class="hidden rounded-xl bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-600"></p>
+        <button class="btn btn-primary w-full justify-center" type="submit">Account Banao →</button>
+      </form>
+      <p class="mt-4 text-center text-sm">Pehle se account? <a href="/login" class="font-semibold text-saffron hover:underline">Login karo</a></p>
     </div>
-  </section>
-
-  <script>
-    import { supabase } from "../lib/supabase";
-
-    const form = document.getElementById("signup-form") as HTMLFormElement;
-    const msg = document.getElementById("msg") as HTMLParagraphElement;
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      msg.textContent = "";
-
-      const name = (document.getElementById("name") as HTMLInputElement).value.trim();
-      const email = (document.getElementById("email") as HTMLInputElement).value.trim();
-      const password = (document.getElementById("password") as HTMLInputElement).value;
-
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { data: { name } },
-      });
-
-      if (error) {
-        msg.textContent = error.message;
-        return;
-      }
-
-      // Email confirmation OFF hai → turant login ho jayega
-      window.location.href = "/choose-plan";
+  </div>
+</div>
+<script is:inline>
+document.getElementById("signup-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const err = document.getElementById("err");
+  err.classList.add("hidden");
+  const btn = e.target.querySelector("button[type=submit]");
+  btn.disabled = true; btn.textContent = "Account ban raha hai...";
+  try {
+    const r = await fetch("/api/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: document.getElementById("name").value,
+        email: document.getElementById("email").value,
+        password: document.getElementById("password").value,
+      }),
     });
-  </script>
+    const d = await r.json();
+    if (!r.ok || !d.token) throw new Error(d.error || "Signup fail");
+    localStorage.setItem("sb-bm-auth-token", JSON.stringify({
+      access_token: d.token,
+      user: { id: d.user.id, email: d.user.email, user_metadata: { name: d.user.name } },
+    }));
+    localStorage.setItem("bm-welcome", "🎉 Swagat hai, " + d.user.name + "! Aapke 3 free credits ready hain.");
+    location.href = "/studio";
+  } catch (ex) {
+    err.textContent = ex.message; err.classList.remove("hidden");
+    btn.disabled = false; btn.textContent = "Account Banao →";
+  }
+});
+</script>
 </Layout>

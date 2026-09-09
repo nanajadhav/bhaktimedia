@@ -255,10 +255,7 @@ import Layout from "../layouts/Layout.astro";
     if (isLocal) { $("#credits-count").textContent = "DEV"; $("#credits-limit").textContent = "∞"; return; }
     if (!token) return;
     try {
-      const r = await fetch("https://sbzlypodjpqoukhzxhfo.supabase.co/rest/v1/rpc/get_credits", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", apikey: "sb_publishable_m3drS7J8YIwutJQ9piiGJQ_sFaPj9js", Authorization: `Bearer ${token}` },
-      });
+            const r = await fetch("/api/credits", { headers: { Authorization: `Bearer ${token}` } });
       if (r.ok) { const d = await r.json(); $("#credits-count").textContent = d.used; $("#credits-limit").textContent = d.limit; }
     } catch {}
   }
