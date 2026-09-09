@@ -1,12 +1,5 @@
-// functions/api/generate-image.ts — Cloudflare (OpenAI generations + edits, credits, sab secret)
-const SUPABASE_URL = "https://sbzlypodjpqoukhzxhfo.supabase.co";
-const SUPABASE_ANON = "sb_publishable_m3drS7J8YIwutJQ9piiGJQ_sFaPj9js";
-
-const LIMITS: Record<string, number> = { trial: 3, starter: 20, growth: 100, scale: 999999 };
-
-function json(obj: unknown, status = 200) {
-  return new Response(JSON.stringify(obj), { status, headers: { "Content-Type": "application/json" } });
-}
+// functions/api/generate-image.ts — Cloudflare D1 auth + OpenAI
+import { json, getToken, verifyJWT, LIMITS } from "../_lib";
 
 function bufToB64(buf: ArrayBuffer) {
   let bin = "";
@@ -21,33 +14,20 @@ export const onRequestPost = async (context: any) => {
     const MODEL = context.env.OPENAI_IMAGE_MODEL || "gpt-image-2";
     if (!OPENAI_KEY) return json({ error: "Server key missing" }, 500);
 
-    const token = (context.request.headers.get("Authorization") || "").replace("Bearer ", "");
-    if (!token) return json({ error: "Pehle login karo" }, 401);
+    const token = getToken(context);
+    const payload = token ? await verifyJWT(token, context.env.AUTH_SECRET) : null;
+    if (!payload) return json({ error: "Pehle login karo" }, 401);
 
-    const userRes = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
-      headers: { apikey: SUPABASE_ANON, Authorization: `Bearer ${token}` },
-    });
-    if (!userRes.ok) return json({ error: "Session invalid — dobara login karo" }, 401);
-    const user = await userRes.json();
-
-    const profRes = await fetch(`${SUPABASE_URL}/rest/v1/profiles?select=plan&id=eq.${user.id}`, {
-      headers: { apikey: SUPABASE_ANON, Authorization: `Bearer ${token}` },
-    });
-    const prof = await profRes.json();
-    const plan = prof?.[0]?.plan || "trial";
+    const DB = context.env.DB;
+    const prof = await DB.prepare("SELECT plan FROM profiles WHERE user_id = ?").bind(payload.sub).first();
+    const plan = (prof?.plan as string) || "trial";
     const limit = LIMITS[plan] ?? 3;
-
     const period = new Date().toISOString().slice(0, 7);
-    const useRes = await fetch(
-      `${SUPABASE_URL}/rest/v1/usage?select=id,used&user_id=eq.${user.id}&feature=eq.images&period=eq.${period}`,
-      { headers: { apikey: SUPABASE_ANON, Authorization: `Bearer ${token}` } }
-    );
-    const rows = await useRes.json();
-    const used = rows?.[0]?.used ?? 0;
+    const row = await DB.prepare("SELECT id, used FROM usage WHERE user_id = ? AND feature = 'images' AND period = ?").bind(payload.sub, period).first();
+    const used = (row?.used as number) || 0;
     if (used >= limit) return json({ error: "Credits khatam! Plan upgrade karo." }, 402);
 
     const body = await context.request.json();
-
     let r: Response;
     if (body.photo) {
       const b64 = String(body.photo).includes(",") ? String(body.photo).split(",")[1] : body.photo;
@@ -59,11 +39,7 @@ export const onRequestPost = async (context: any) => {
       form.append("prompt", body.prompt || "poster");
       form.append("size", body.size || "1024x1536");
       form.append("image", new File([bytes], "photo.png", { type: "image/png" }));
-      r = await fetch("https://api.openai.com/v1/images/edits", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${OPENAI_KEY}` },
-        body: form,
-      });
+      r = await fetch("https://api.openai.com/v1/images/edits", { method: "POST", headers: { Authorization: `Bearer ${OPENAI_KEY}` }, body: form });
     } else {
       r = await fetch("https://api.openai.com/v1/images/generations", {
         method: "POST",
@@ -75,17 +51,10 @@ export const onRequestPost = async (context: any) => {
     const item = data?.data?.[0];
     let img = item?.b64_json ? `data:image/png;base64,${item.b64_json}` : item?.url || null;
     if (!img) return json({ error: data?.error?.message || "Image fail" }, 502);
-    if (img.startsWith("http")) {
-      const ir = await fetch(img);
-      img = `data:image/png;base64,${bufToB64(await ir.arrayBuffer())}`;
-    }
+    if (img.startsWith("http")) img = `data:image/png;base64,${bufToB64(await (await fetch(img)).arrayBuffer())}`;
 
-    const auth = { apikey: SUPABASE_ANON, Authorization: `Bearer ${token}`, "Content-Type": "application/json", Prefer: "return=minimal" };
-    if (rows.length) {
-      await fetch(`${SUPABASE_URL}/rest/v1/usage?id=eq.${rows[0].id}`, { method: "PATCH", headers: auth, body: JSON.stringify({ used: used + 1 }) });
-    } else {
-      await fetch(`${SUPABASE_URL}/rest/v1/usage`, { method: "POST", headers: auth, body: JSON.stringify({ user_id: user.id, feature: "images", used: 1, period }) });
-    }
+    if (row) await DB.prepare("UPDATE usage SET used = ? WHERE id = ?").bind(used + 1, row.id).run();
+    else await DB.prepare("INSERT INTO usage (user_id, feature, used, period) VALUES (?, ?, ?, ?)").bind(payload.sub, "images", 1, period).run();
 
     return json({ image: img, plan, used: used + 1, limit });
   } catch (e: any) {
