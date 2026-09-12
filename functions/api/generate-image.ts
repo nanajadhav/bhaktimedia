@@ -1,4 +1,4 @@
-// functions/api/generate-image.ts — Cloudflare D1 auth + OpenAI
+// functions/api/generate-image.ts — D1 auth + credits + OpenAI (template-locked edits)
 import { json, getToken, verifyJWT, LIMITS } from "../_lib";
 
 function bufToB64(buf: ArrayBuffer) {
@@ -6,6 +6,15 @@ function bufToB64(buf: ArrayBuffer) {
   const bytes = new Uint8Array(buf);
   for (let i = 0; i < bytes.byteLength; i++) bin += String.fromCharCode(bytes[i]);
   return btoa(bin);
+}
+function b64ToBytes(b64: string) {
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return bytes;
+}
+function cleanText(s: string) {
+  return String(s || "").replace(/["\n\r\\]/g, " ").trim();
 }
 
 export const onRequestPost = async (context: any) => {
@@ -28,25 +37,59 @@ export const onRequestPost = async (context: any) => {
     if (used >= limit) return json({ error: "Credits khatam! Plan upgrade karo." }, 402);
 
     const body = await context.request.json();
-    let r: Response;
+
+    // ── photo bytes (agar hai to) ──
+    let photoBytes: Uint8Array | null = null;
     if (body.photo) {
-      const b64 = String(body.photo).includes(",") ? String(body.photo).split(",")[1] : body.photo;
-      const bin = atob(b64);
-      const bytes = new Uint8Array(bin.length);
-      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      const b64 = String(body.photo).includes(",") ? String(body.photo).split(",")[1] : String(body.photo);
+      photoBytes = b64ToBytes(b64);
+    }
+
+    // ── template bytes (server-side fetch — client sirf path bhejta hai) ──
+    let templateBytes: Uint8Array | null = null;
+    if (body.template) {
+      const origin = new URL(context.request.url).origin;
+      const tUrl = String(body.template).startsWith("http") ? String(body.template) : origin + String(body.template);
+      const tr = await fetch(tUrl);
+      if (tr.ok) templateBytes = new Uint8Array(await tr.arrayBuffer());
+      else return json({ error: "Template load nahi hua: " + String(body.template) }, 500);
+    }
+
+    let r: Response;
+    if (templateBytes && photoBytes) {
+      // ═══ TEMPLATE-LOCKED EDIT: [template, photo] + generic prompt ═══
+      const name = cleanText(body.name);
+      const msg = cleanText(body.msg);
+      const prompt = `Image 1 = our official festival poster template.
+Image 2 = the customer's photo (the person may be a child, boy, girl, man or woman).
+Edit image 1 with ONLY these changes:
+1. Completely REMOVE the existing person/figure from image 1. Place the person from image 2 in that freed area (or a suitable prominent side area if the space is tight), keeping the person's OWN face, appearance, clothing and natural pose from image 2. Blend the person cleanly into the poster's lighting, color grade and art style. The face must be clearly recognizable, respectful and dignified.
+2. Write the name text exactly as: "${name}" and the wish line exactly as: "${msg}" in the template's existing decorative name-block style (create a matching decorative name block at the bottom if the template has none).
+Everything else must remain EXACTLY as image 1 — same layout, same deity artwork, same background, same colors, same borders, same ornaments, all other existing text unchanged and correctly spelled. Clean print-quality output, no extra watermarks or logos.`;
+      const form = new FormData();
+      form.append("model", MODEL);
+      form.append("size", body.size || "1024x1536");
+      form.append("image[]", new File([templateBytes], "template.jpg", { type: "image/jpeg" }));
+      form.append("image[]", new File([photoBytes], "photo.png", { type: "image/png" }));
+      form.append("prompt", prompt);
+      r = await fetch("https://api.openai.com/v1/images/edits", { method: "POST", headers: { Authorization: `Bearer ${OPENAI_KEY}` }, body: form });
+    } else if (photoBytes) {
+      // ═══ PHOTO EDIT (reference transformation) ═══
       const form = new FormData();
       form.append("model", MODEL);
       form.append("prompt", body.prompt || "poster");
       form.append("size", body.size || "1024x1536");
-      form.append("image", new File([bytes], "photo.png", { type: "image/png" }));
+      form.append("image", new File([photoBytes], "photo.png", { type: "image/png" }));
       r = await fetch("https://api.openai.com/v1/images/edits", { method: "POST", headers: { Authorization: `Bearer ${OPENAI_KEY}` }, body: form });
     } else {
+      // ═══ PURE GENERATION ═══
       r = await fetch("https://api.openai.com/v1/images/generations", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${OPENAI_KEY}` },
         body: JSON.stringify({ model: MODEL, prompt: body.prompt || "divine art", size: body.size || "1024x1024", n: 1 }),
       });
     }
+
     const data = await r.json();
     const item = data?.data?.[0];
     let img = item?.b64_json ? `data:image/png;base64,${item.b64_json}` : item?.url || null;
@@ -55,7 +98,6 @@ export const onRequestPost = async (context: any) => {
 
     if (row) await DB.prepare("UPDATE usage SET used = ? WHERE id = ?").bind(used + 1, row.id).run();
     else await DB.prepare("INSERT INTO usage (user_id, feature, used, period) VALUES (?, ?, ?, ?)").bind(payload.sub, "images", 1, period).run();
-
     return json({ image: img, plan, used: used + 1, limit });
   } catch (e: any) {
     return json({ error: String(e) }, 500);
