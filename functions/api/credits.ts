@@ -1,5 +1,5 @@
-// functions/api/credits.ts
-import { json, getToken, verifyJWT, LIMITS } from "../_lib";
+// functions/api/credits.ts — AI credits + murti quota
+import { json, getToken, verifyJWT, LIMITS, MURTI_LIMITS } from "../_lib";
 
 export const onRequestGet = async (context: any) => {
   const token = getToken(context);
@@ -10,5 +10,12 @@ export const onRequestGet = async (context: any) => {
   const plan = (prof?.plan as string) || "trial";
   const period = new Date().toISOString().slice(0, 7);
   const row = await DB.prepare("SELECT used FROM usage WHERE user_id = ? AND feature = 'images' AND period = ?").bind(payload.sub, period).first();
-  return json({ plan, used: (row?.used as number) || 0, limit: LIMITS[plan] ?? 3 });
+  const mrow = await DB.prepare("SELECT used FROM usage WHERE user_id = ? AND feature = 'murti' AND period = ?").bind(payload.sub, period).first();
+  return json({
+    plan,
+    used: (row?.used as number) || 0,
+    limit: LIMITS[plan] ?? 3,
+    murtiUsed: (mrow?.used as number) || 0,
+    murtiLimit: MURTI_LIMITS[plan] ?? 10,
+  });
 };

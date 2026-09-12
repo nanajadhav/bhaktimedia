@@ -57,6 +57,8 @@ export function getToken(context: any): string {
 }
 export const LIMITS: Record<string, number> = { trial: 3, starter: 60, growth: 225, scale: 540 };
 
+export const MURTI_LIMITS: Record<string, number> = { trial: 10, starter: 50, growth: 100, scale: 200 };
+
 // ═══ OTP + EMAIL ═══
 export function otpCode(): string {
   return String(Math.floor(100000 + Math.random() * 900000));
