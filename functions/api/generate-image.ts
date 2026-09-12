@@ -1,4 +1,4 @@
-// functions/api/generate-image.ts — D1 auth + credits + OpenAI (template-locked edits)
+// functions/api/generate-image.ts — D1 auth + credits (3/creation, 6/HD) + template-locked edits
 import { json, getToken, verifyJWT, LIMITS } from "../_lib";
 
 function bufToB64(buf: ArrayBuffer) {
@@ -19,7 +19,7 @@ function cleanText(s: string) {
 
 export const onRequestPost = async (context: any) => {
   try {
-    const OPENAI_KEY = context.env.OPENAI_API_KEY || "";
+    const OPENAI_KEY = context.env.OPENAI_KEY || context.env.OPENAI_API_KEY || "";
     const MODEL = context.env.OPENAI_IMAGE_MODEL || "gpt-image-2";
     if (!OPENAI_KEY) return json({ error: "Server key missing" }, 500);
 
@@ -34,18 +34,19 @@ export const onRequestPost = async (context: any) => {
     const period = new Date().toISOString().slice(0, 7);
     const row = await DB.prepare("SELECT id, used FROM usage WHERE user_id = ? AND feature = 'images' AND period = ?").bind(payload.sub, period).first();
     const used = (row?.used as number) || 0;
-    if (used >= limit) return json({ error: "Credits khatam! Plan upgrade karo." }, 402);
 
     const body = await context.request.json();
+    const hd = !!body.hd;
+    const cost = hd ? 6 : 3;
+    if (used + cost > limit) return json({ error: "Credits khatam! Plan upgrade karo." }, 402);
+    const quality = hd ? "high" : "medium";
 
-    // ── photo bytes (agar hai to) ──
     let photoBytes: Uint8Array | null = null;
     if (body.photo) {
       const b64 = String(body.photo).includes(",") ? String(body.photo).split(",")[1] : String(body.photo);
       photoBytes = b64ToBytes(b64);
     }
 
-    // ── template bytes (server-side fetch — client sirf path bhejta hai) ──
     let templateBytes: Uint8Array | null = null;
     if (body.template) {
       const origin = new URL(context.request.url).origin;
@@ -57,7 +58,6 @@ export const onRequestPost = async (context: any) => {
 
     let r: Response;
     if (templateBytes && photoBytes) {
-      // ═══ TEMPLATE-LOCKED EDIT: [template, photo] + generic prompt ═══
       const name = cleanText(body.name);
       const msg = cleanText(body.msg);
       const prompt = `Image 1 = our official festival poster template.
@@ -69,24 +69,24 @@ Everything else must remain EXACTLY as image 1 — same layout, same deity artwo
       const form = new FormData();
       form.append("model", MODEL);
       form.append("size", body.size || "1024x1536");
+      form.append("quality", quality);
       form.append("image[]", new File([templateBytes], "template.png", { type: "image/png" }));
       form.append("image[]", new File([photoBytes], "photo.png", { type: "image/png" }));
       form.append("prompt", prompt);
       r = await fetch("https://api.openai.com/v1/images/edits", { method: "POST", headers: { Authorization: `Bearer ${OPENAI_KEY}` }, body: form });
     } else if (photoBytes) {
-      // ═══ PHOTO EDIT (reference transformation) ═══
       const form = new FormData();
       form.append("model", MODEL);
       form.append("prompt", body.prompt || "poster");
       form.append("size", body.size || "1024x1536");
+      form.append("quality", quality);
       form.append("image", new File([photoBytes], "photo.png", { type: "image/png" }));
       r = await fetch("https://api.openai.com/v1/images/edits", { method: "POST", headers: { Authorization: `Bearer ${OPENAI_KEY}` }, body: form });
     } else {
-      // ═══ PURE GENERATION ═══
       r = await fetch("https://api.openai.com/v1/images/generations", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${OPENAI_KEY}` },
-        body: JSON.stringify({ model: MODEL, prompt: body.prompt || "divine art", size: body.size || "1024x1024", n: 1 }),
+        body: JSON.stringify({ model: MODEL, prompt: body.prompt || "divine art", size: body.size || "1024x1024", quality, n: 1 }),
       });
     }
 
@@ -96,9 +96,9 @@ Everything else must remain EXACTLY as image 1 — same layout, same deity artwo
     if (!img) return json({ error: data?.error?.message || "Image fail" }, 502);
     if (img.startsWith("http")) img = `data:image/png;base64,${bufToB64(await (await fetch(img)).arrayBuffer())}`;
 
-    if (row) await DB.prepare("UPDATE usage SET used = ? WHERE id = ?").bind(used + 1, row.id).run();
-    else await DB.prepare("INSERT INTO usage (user_id, feature, used, period) VALUES (?, ?, ?, ?)").bind(payload.sub, "images", 1, period).run();
-    return json({ image: img, plan, used: used + 1, limit });
+    if (row) await DB.prepare("UPDATE usage SET used = ? WHERE id = ?").bind(used + cost, row.id).run();
+    else await DB.prepare("INSERT INTO usage (user_id, feature, used, period) VALUES (?, ?, ?, ?)").bind(payload.sub, "images", cost, period).run();
+    return json({ image: img, plan, used: used + cost, limit, cost });
   } catch (e: any) {
     return json({ error: String(e) }, 500);
   }

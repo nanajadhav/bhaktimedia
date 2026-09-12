@@ -55,7 +55,7 @@ export async function verifyJWT(token: string, secret: string): Promise<any | nu
 export function getToken(context: any): string {
   return (context.request.headers.get("Authorization") || "").replace("Bearer ", "");
 }
-export const LIMITS: Record<string, number> = { trial: 3, starter: 20, growth: 100, scale: 999999 };
+export const LIMITS: Record<string, number> = { trial: 3, starter: 60, growth: 225, scale: 540 };
 
 // ═══ OTP + EMAIL ═══
 export function otpCode(): string {

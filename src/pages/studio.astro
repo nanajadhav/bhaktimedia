@@ -415,7 +415,7 @@ import Layout from "../layouts/Layout.astro";
     const extra = $("#prompt").value.trim();
     if (view === "image") {
       if (!extra) return toast("Pehle prompt likho!");
-      const body = { prompt: extra + (STYLE_SUFFIX[$("#i-style").value] || ""), size: $("#i-ratio").value === "auto" ? "1024x1024" : $("#i-ratio").value, tag: extra };
+      const body = { prompt: extra + (STYLE_SUFFIX[$("#i-style").value] || ""), size: $("#i-ratio").value === "auto" ? "1024x1024" : $("#i-ratio").value, tag: extra, hd: $("#i-res").value === "2K" };
       const ref = refs[1] || refs[2];
       if (ref) body.photo = ref;
       run(body);
@@ -432,6 +432,7 @@ import Layout from "../layouts/Layout.astro";
         name,
         msg,
         size: $("#p-ratio").value,
+        hd: false,
         tag: design.name + " — " + name,
       });
     }
