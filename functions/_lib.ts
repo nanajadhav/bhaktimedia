@@ -1,4 +1,4 @@
-// functions/_lib.ts — shared helpers (underscore = route nahi banta)
+// functions/_lib.ts — shared helpers
 export function json(obj: unknown, status = 200) {
   return new Response(JSON.stringify(obj), { status, headers: { "Content-Type": "application/json" } });
 }
@@ -7,6 +7,10 @@ export function uid(): string {
 }
 function bufToHex(buf: ArrayBuffer): string {
   return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+export async function sha256hex(text: string): Promise<string> {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return bufToHex(buf);
 }
 export async function hashPassword(pass: string, salt: string): Promise<string> {
   const enc = new TextEncoder();
@@ -52,3 +56,42 @@ export function getToken(context: any): string {
   return (context.request.headers.get("Authorization") || "").replace("Bearer ", "");
 }
 export const LIMITS: Record<string, number> = { trial: 3, starter: 20, growth: 100, scale: 999999 };
+
+// ═══ OTP + EMAIL ═══
+export function otpCode(): string {
+  return String(Math.floor(100000 + Math.random() * 900000));
+}
+export async function sendOtpMail(env: any, to: string, code: string, heading: string): Promise<boolean> {
+  const key = env.RESEND_API_KEY || "";
+  if (!key) return false;
+  const html = `<!DOCTYPE html><html><body style="margin:0;background:#faf5ef;font-family:Arial,Helvetica,sans-serif;padding:32px">
+  <div style="max-width:420px;margin:auto;background:#ffffff;border-radius:20px;padding:32px;text-align:center;border:1px solid #f0e4d7">
+    <div style="font-size:36px">🪔</div>
+    <div style="font-size:20px;font-weight:800;color:#1c1917;margin-top:6px">Bhakti<span style="color:#f97316">Media</span>.in</div>
+    <p style="color:#57534e;font-size:14px;margin:18px 0 6px">${heading}</p>
+    <div style="font-size:34px;font-weight:900;letter-spacing:8px;color:#ea580c;background:#fff7ed;border:1px dashed #fdba74;border-radius:14px;padding:14px;margin:14px 0">${code}</div>
+    <p style="color:#a8a29e;font-size:12px">Ye code 10 minute tak valid hai. Kisi ke saath share na karein.</p>
+    <p style="color:#d6d3d1;font-size:11px;margin-top:18px">© BhaktiMedia.in — Digital Devotion For Every Heart</p>
+  </div></body></html>`;
+  try {
+    const r = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ from: "BhaktiMedia <otp@bhaktimedia.in>", to: [to], subject: `BhaktiMedia verification code: ${code}`, html }),
+    });
+    return r.ok;
+  } catch { return false; }
+}
+export async function verifyOtp(DB: any, email: string, purpose: string, code: string): Promise<{ ok: boolean; error?: string }> {
+  const row = await DB.prepare("SELECT * FROM otps WHERE email = ? AND purpose = ? AND used = 0 ORDER BY id DESC LIMIT 1").bind(email, purpose).first();
+  if (!row) return { ok: false, error: "Pehle code bhejo" };
+  if (Date.now() > (row.expires_at as number)) return { ok: false, error: "Code expire ho gaya — naya bhejo" };
+  if ((row.attempts as number) >= 3) return { ok: false, error: "Bahut galat attempts — naya code bhejo" };
+  const h = await sha256hex(code + email);
+  if (h !== row.code_hash) {
+    await DB.prepare("UPDATE otps SET attempts = attempts + 1 WHERE id = ?").bind(row.id).run();
+    return { ok: false, error: "Code galat hai" };
+  }
+  await DB.prepare("UPDATE otps SET used = 1 WHERE id = ?").bind(row.id).run();
+  return { ok: true };
+}
