@@ -1,4 +1,4 @@
-// functions/api/profile.ts — GET: profile+plan+credits | PUT: details update
+// functions/api/profile.ts — GET: profile + plan | PUT: details update
 import { json, verifyJWT, getToken } from "../_lib";
 
 export const onRequestGet = async (context: any) => {
@@ -9,9 +9,7 @@ export const onRequestGet = async (context: any) => {
     const user = await DB.prepare("SELECT id, email, name, phone, city, pincode FROM users WHERE id = ?").bind(payload.sub).first();
     if (!user) return json({ error: "User nahi mila" }, 404);
     const prof = await DB.prepare("SELECT plan FROM profiles WHERE user_id = ?").bind(payload.sub).first();
-    const nowD = new Date();
-    const used = await DB.prepare("SELECT COUNT(*) AS n FROM usage WHERE user_id = ? AND month = ? AND year = ?").bind(payload.sub, nowD.getUTCMonth() + 1, nowD.getUTCFullYear()).first();
-    return json({ ...user, plan: (prof && prof.plan) || "trial", used: (used && used.n) || 0 });
+    return json({ ...user, plan: (prof && prof.plan) || "trial" });
   } catch (e: any) {
     return json({ error: String(e) }, 500);
   }
@@ -27,6 +25,8 @@ export const onRequestPut = async (context: any) => {
     const city = String(body.city || "").trim().slice(0, 60);
     const pincode = String(body.pincode || "").replace(/\D/g, "").slice(0, 10);
     if (!name) return json({ error: "Naam zaroori hai" }, 400);
+    if (phone && phone.length !== 10) return json({ error: "Mobile 10 digits ka hona chahiye" }, 400);
+    if (pincode && pincode.length !== 6) return json({ error: "Pincode 6 digits ka hona chahiye" }, 400);
     const DB = context.env.DB;
     await DB.prepare("UPDATE users SET name = ?, phone = ?, city = ?, pincode = ? WHERE id = ?").bind(name, phone, city, pincode, payload.sub).run();
     return json({ ok: true });

@@ -120,9 +120,10 @@ import Layout from "../layouts/Layout.astro";
       profile = await api("/api/profile");
       $("#d-hello").textContent = "Namaste, " + profile.name + "! 🙏";
       $("#d-plan").textContent = PLAN_NAMES[profile.plan] || profile.plan;
-      const limit = LIMITS[profile.plan] || 3;
-      $("#d-credits").textContent = profile.used + " / " + (limit > 9999 ? "∞" : limit);
-      $("#d-bar").style.width = Math.min(100, (profile.used / limit) * 100) + "%";
+      let used = 0, limit = LIMITS[profile.plan] || 3;
+      try { const c = await api("/api/credits"); used = c.used || 0; if (c.limit) limit = c.limit; } catch (e) {}
+      $("#d-credits").textContent = used + " / " + (limit > 9999 ? "∞" : limit);
+      $("#d-bar").style.width = Math.min(100, (used / limit) * 100) + "%";
       $("#d-name").value = profile.name || "";
       $("#d-email").value = profile.email || "";
       $("#d-phone").value = profile.phone || "";
