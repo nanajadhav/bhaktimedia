@@ -300,7 +300,7 @@ import Layout from "../layouts/Layout.astro";
           const c = document.createElement("canvas");
           c.width = w; c.height = h;
           c.getContext("2d").drawImage(img, 0, 0, w, h);
-          const data = c.toDataURL("image/jpeg", 0.9);
+          const data = c.toDataURL("image/png", 0.9);
           setter(data);
           const prev = document.getElementById(prevId);
           prev.src = data; prev.classList.remove("hidden");
@@ -428,7 +428,7 @@ import Layout from "../layouts/Layout.astro";
       const msg = extra || (t.sugg[lang] || [])[0] || "";
       run({
         photo: photoData,
-        template: `/templates/${design.fest}/${design.id}.jpg`,
+        template: `/templates/${design.fest}/${design.id}.png`,
         name,
         msg,
         size: $("#p-ratio").value,
