@@ -1,5 +1,5 @@
-// functions/api/auth/otp.ts — OTP bhejo (signup / login / reset)
-import { json, sha256hex, otpCode, sendOtpMail } from "../_lib";
+﻿// functions/api/auth/otp.ts â€” OTP bhejo (signup / login / reset)
+import { json, sha256hex, otpCode, sendOtpMail } from "../../_lib";
 
 export const onRequestPost = async (context: any) => {
   try {
@@ -10,7 +10,7 @@ export const onRequestPost = async (context: any) => {
     if (!["signup", "login", "reset"].includes(purpose)) return json({ error: "Galat request" }, 400);
     const DB = context.env.DB;
     const user = await DB.prepare("SELECT id FROM users WHERE email = ?").bind(email).first();
-    if (purpose === "signup" && user) return json({ error: "Is email se account pehle se hai — login karo" }, 409);
+    if (purpose === "signup" && user) return json({ error: "Is email se account pehle se hai â€” login karo" }, 409);
     if ((purpose === "login" || purpose === "reset") && !user) return json({ error: "Is email se koi account nahi mila" }, 404);
 
     const now = Date.now();
@@ -22,12 +22,12 @@ export const onRequestPost = async (context: any) => {
     await DB.prepare("INSERT INTO otps (email, purpose, code_hash, expires_at, created_at) VALUES (?, ?, ?, ?, ?)").bind(email, purpose, code_hash, now + 600000, now).run();
 
     const headings: Record<string, string> = {
-      signup: "Apna email verify karo — signup ke liye",
+      signup: "Apna email verify karo â€” signup ke liye",
       login: "Login ke liye one-time code",
       reset: "Password reset karne ke liye code",
     };
     const ok = await sendOtpMail(context.env, email, code, headings[purpose]);
-    if (!ok) return json({ error: "Email bhejna fail hua — thodi der baad try karo" }, 502);
+    if (!ok) return json({ error: "Email bhejna fail hua â€” thodi der baad try karo" }, 502);
     return json({ sent: true, expires: 600 });
   } catch (e: any) {
     return json({ error: String(e) }, 500);
