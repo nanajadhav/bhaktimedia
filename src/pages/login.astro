@@ -2,50 +2,104 @@
 import Layout from "../layouts/Layout.astro";
 ---
 <Layout title="Login" description="BhaktiMedia account mein login karo.">
-<div class="container-x px-4 pt-32 pb-20 sm:px-6">
-  <div class="mx-auto max-w-md">
+<div class="container-x flex min-h-screen items-center justify-center px-4 pb-16 pt-28 sm:px-6">
+  <div class="w-full max-w-md">
     <div class="card p-8 shadow-lift">
-      <h1 class="font-display text-2xl font-bold">🪔 Login</h1>
-      <p class="mt-1 text-sm text-sandal-deep/60 dark:text-cream/50">Wapas swagat hai! Apne account mein jao.</p>
-      <form id="login-form" class="mt-6 grid gap-4">
+      <div class="text-center">
+        <span class="mx-auto grid size-14 place-items-center rounded-2xl bg-gradient-to-br from-saffron to-golden text-2xl text-white shadow-gold">🪔</span>
+        <h1 class="mt-4 font-display text-2xl font-bold">Wapas Swagat Hai</h1>
+        <p class="mt-1 text-sm text-sandal-deep/60 dark:text-cream/50">Password ya OTP — jo aasan lage</p>
+      </div>
+
+      <div class="mt-6 flex rounded-full bg-sandal/10 p-1 dark:bg-white/5">
+        <button id="tab-pass" class="ltab flex-1 rounded-full px-4 py-2 text-sm font-semibold transition">🔑 Password</button>
+        <button id="tab-otp" class="ltab flex-1 rounded-full px-4 py-2 text-sm font-semibold transition">📬 OTP</button>
+      </div>
+
+      <div id="form-pass" class="mt-6 grid gap-4">
         <label class="block text-sm font-semibold">Email
-          <input id="email" type="email" required class="input mt-1.5" placeholder="you@example.com" />
+          <input id="l-email" type="email" class="input mt-1.5" placeholder="aap@email.com" />
         </label>
         <label class="block text-sm font-semibold">Password
-          <input id="password" type="password" required class="input mt-1.5" placeholder="••••••••" />
+          <input id="l-pass" type="password" class="input mt-1.5" placeholder="Aapka password" />
         </label>
-        <p id="err" class="hidden rounded-xl bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-600"></p>
-        <button class="btn btn-primary w-full justify-center" type="submit">Login →</button>
-      </form>
-      <p class="mt-4 text-center text-sm">Naya account? <a href="/signup" class="font-semibold text-saffron hover:underline">Signup karo</a></p>
+        <button id="l-go" class="btn btn-primary w-full">Login Karo</button>
+        <p class="text-center text-xs"><a href="/forgot" class="font-semibold text-saffron underline">Password bhool gaye?</a></p>
+      </div>
+
+      <div id="form-otp" class="mt-6 hidden gap-4">
+        <label class="block text-sm font-semibold">Email
+          <input id="o-email" type="email" class="input mt-1.5" placeholder="aap@email.com" />
+        </label>
+        <button id="o-send" class="btn btn-outline w-full">📬 Code Bhejo</button>
+        <label id="o-code-wrap" class="hidden block text-sm font-semibold">6-digit Code
+          <input id="o-code" class="input mt-1.5 text-center text-2xl font-bold tracking-[8px]" maxlength="6" inputmode="numeric" placeholder="------" />
+        </label>
+        <button id="o-go" class="hidden btn btn-primary w-full">Login Karo</button>
+        <button id="o-resend" class="hidden text-xs font-semibold text-sandal-deep/60 underline dark:text-cream/50" disabled>Code dobara bhejo (60s)</button>
+      </div>
+
+      <p id="l-err" class="mt-4 hidden rounded-xl bg-red-500/10 px-4 py-2.5 text-center text-sm font-semibold text-red-500"></p>
+      <p class="mt-6 text-center text-sm text-sandal-deep/60 dark:text-cream/50">Naye ho? <a href="/signup" class="font-semibold text-saffron underline">Account banao</a></p>
     </div>
   </div>
 </div>
 <script is:inline>
-document.getElementById("login-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const err = document.getElementById("err");
-  err.classList.add("hidden");
-  const btn = e.target.querySelector("button[type=submit]");
-  btn.disabled = true; btn.textContent = "Login ho raha hai...";
-  try {
-    const r = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: document.getElementById("email").value, password: document.getElementById("password").value }),
-    });
-    const d = await r.json();
-    if (!r.ok || !d.token) throw new Error(d.error || "Login fail");
-    localStorage.setItem("sb-bm-auth-token", JSON.stringify({
-      access_token: d.token,
-      user: { id: d.user.id, email: d.user.email, user_metadata: { name: d.user.name } },
-    }));
+(function () {
+  const $ = (s) => document.querySelector(s);
+  function err(m) { const e = $("#l-err"); if (!m) { e.classList.add("hidden"); return; } e.textContent = m; e.classList.remove("hidden"); }
+  async function api(url, body) { const r = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }); const d = await r.json().catch(() => ({})); if (!r.ok) throw new Error(d.error || "Kuch galat ho gaya"); return d; }
+  function save(d) {
+    localStorage.setItem("sb-bm-auth-token", JSON.stringify({ access_token: d.token, user: { email: d.user.email, user_metadata: { name: d.user.name } } }));
     localStorage.setItem("bm-welcome", "🪔 Wapas swagat hai, " + d.user.name + "!");
     location.href = "/studio";
-  } catch (ex) {
-    err.textContent = ex.message; err.classList.remove("hidden");
-    btn.disabled = false; btn.textContent = "Login →";
   }
-});
+  function setTab(otp) {
+    ["bg-gradient-to-r", "from-saffron", "to-golden", "text-white", "shadow-gold"].forEach((c) => { $("#tab-pass").classList.toggle(c, !otp); $("#tab-otp").classList.toggle(c, otp); });
+    $("#form-pass").classList.toggle("hidden", otp);
+    $("#form-otp").classList.toggle("hidden", !otp);
+    $("#form-otp").classList.toggle("grid", otp);
+    err("");
+  }
+  $("#tab-pass").addEventListener("click", () => setTab(false));
+  $("#tab-otp").addEventListener("click", () => setTab(true));
+  setTab(false);
+
+  $("#l-go").addEventListener("click", async () => {
+    err("");
+    const email = $("#l-email").value.trim().toLowerCase();
+    if (!email || !$("#l-pass").value) return err("Email aur password dono bharo");
+    const b = $("#l-go"); b.disabled = true; b.textContent = "Login ho rahe hain...";
+    try { save(await api("/api/auth/login", { email, password: $("#l-pass").value })); }
+    catch (e) { err(e.message); b.disabled = false; b.textContent = "Login Karo"; }
+  });
+
+  let timer = null;
+  function startTimer() { let s = 60; const b = $("#o-resend"); b.disabled = true; clearInterval(timer); timer = setInterval(() => { s--; b.textContent = "Code dobara bhejo (" + s + "s)"; if (s <= 0) { clearInterval(timer); b.disabled = false; b.textContent = "Code dobara bhejo"; } }, 1000); }
+  $("#o-send").addEventListener("click", async () => {
+    err("");
+    const email = $("#o-email").value.trim().toLowerCase();
+    if (!/^\S+@\S+\.\S+$/.test(email)) return err("Email sahi nahi hai");
+    const b = $("#o-send"); b.disabled = true; b.textContent = "Bhej rahe hain...";
+    try {
+      await api("/api/auth/otp", { email, purpose: "login" });
+      $("#o-code-wrap").classList.remove("hidden");
+      $("#o-go").classList.remove("hidden");
+      $("#o-resend").classList.remove("hidden");
+      startTimer();
+    } catch (e) { err(e.message); }
+    finally { b.disabled = false; b.textContent = "📬 Code Bhejo"; }
+  });
+  $("#o-resend").addEventListener("click", async () => { try { await api("/api/auth/otp", { email: $("#o-email").value.trim().toLowerCase(), purpose: "login" }); startTimer(); err(""); } catch (e) { err(e.message); } });
+  $("#o-go").addEventListener("click", async () => {
+    err("");
+    const email = $("#o-email").value.trim().toLowerCase();
+    const code = $("#o-code").value.trim();
+    if (code.length !== 6) return err("6-digit code daalo");
+    const b = $("#o-go"); b.disabled = true; b.textContent = "Login ho rahe hain...";
+    try { save(await api("/api/auth/login", { email, code })); }
+    catch (e) { err(e.message); b.disabled = false; b.textContent = "Login Karo"; }
+  });
+})();
 </script>
 </Layout>

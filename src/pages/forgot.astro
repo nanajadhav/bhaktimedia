@@ -1,0 +1,76 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+<Layout title="Password Reset" description="OTP se password reset karo.">
+<div class="container-x flex min-h-screen items-center justify-center px-4 pb-16 pt-28 sm:px-6">
+  <div class="w-full max-w-md">
+    <div class="card p-8 shadow-lift">
+      <div class="text-center">
+        <span class="mx-auto grid size-14 place-items-center rounded-2xl bg-gradient-to-br from-saffron to-golden text-2xl text-white shadow-gold">🔐</span>
+        <h1 class="mt-4 font-display text-2xl font-bold">Password Reset</h1>
+        <p class="mt-1 text-sm text-sandal-deep/60 dark:text-cream/50">Email par aaya code daalo, naya password rakho</p>
+      </div>
+
+      <div id="step1" class="mt-6 grid gap-4">
+        <label class="block text-sm font-semibold">Email
+          <input id="f-email" type="email" class="input mt-1.5" placeholder="aap@email.com" />
+        </label>
+        <button id="f-send" class="btn btn-primary w-full">📬 Code Bhejo</button>
+      </div>
+
+      <div id="step2" class="mt-6 hidden gap-4">
+        <p class="rounded-xl bg-saffron/10 px-4 py-3 text-center text-sm font-semibold text-saffron">Code bheja gaya: <span id="f-email-echo"></span></p>
+        <label class="block text-sm font-semibold">6-digit Code
+          <input id="f-code" class="input mt-1.5 text-center text-2xl font-bold tracking-[8px]" maxlength="6" inputmode="numeric" placeholder="------" />
+        </label>
+        <label class="block text-sm font-semibold">Naya Password
+          <input id="f-pass" type="password" class="input mt-1.5" placeholder="Kam se kam 6 characters" />
+        </label>
+        <button id="f-done" class="btn btn-primary w-full">🔓 Password Reset Karo</button>
+        <button id="f-resend" class="text-xs font-semibold text-sandal-deep/60 underline dark:text-cream/50" disabled>Code dobara bhejo (60s)</button>
+      </div>
+
+      <div id="f-ok" class="mt-6 hidden rounded-xl bg-green-500/10 px-4 py-4 text-center">
+        <p class="text-2xl">✅</p>
+        <p class="mt-1 font-semibold text-green-600 dark:text-green-400">Password badal gaya!</p>
+        <a href="/login" class="btn btn-primary mt-3 w-full">Login Karo</a>
+      </div>
+
+      <p id="f-err" class="mt-4 hidden rounded-xl bg-red-500/10 px-4 py-2.5 text-center text-sm font-semibold text-red-500"></p>
+      <p class="mt-6 text-center text-sm text-sandal-deep/60 dark:text-cream/50"><a href="/login" class="font-semibold text-saffron underline">← Wapas login par</a></p>
+    </div>
+  </div>
+</div>
+<script is:inline>
+(function () {
+  const $ = (s) => document.querySelector(s);
+  let email = "";
+  function err(m) { const e = $("#f-err"); if (!m) { e.classList.add("hidden"); return; } e.textContent = m; e.classList.remove("hidden"); }
+  async function api(url, body) { const r = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }); const d = await r.json().catch(() => ({})); if (!r.ok) throw new Error(d.error || "Kuch galat ho gaya"); return d; }
+  let timer = null;
+  function startTimer() { let s = 60; const b = $("#f-resend"); b.disabled = true; clearInterval(timer); timer = setInterval(() => { s--; b.textContent = "Code dobara bhejo (" + s + "s)"; if (s <= 0) { clearInterval(timer); b.disabled = false; b.textContent = "Code dobara bhejo"; } }, 1000); }
+  $("#f-send").addEventListener("click", async () => {
+    err("");
+    email = $("#f-email").value.trim().toLowerCase();
+    if (!/^\S+@\S+\.\S+$/.test(email)) return err("Email sahi nahi hai");
+    const b = $("#f-send"); b.disabled = true; b.textContent = "Bhej rahe hain...";
+    try { await api("/api/auth/otp", { email, purpose: "reset" }); $("#f-email-echo").textContent = email; $("#step1").classList.add("hidden"); $("#step2").classList.remove("hidden"); $("#step2").classList.add("grid"); startTimer(); }
+    catch (e) { err(e.message); }
+    finally { b.disabled = false; b.textContent = "📬 Code Bhejo"; }
+  });
+  $("#f-resend").addEventListener("click", async () => { try { await api("/api/auth/otp", { email, purpose: "reset" }); startTimer(); err(""); } catch (e) { err(e.message); } });
+  $("#f-done").addEventListener("click", async () => {
+    err("");
+    const code = $("#f-code").value.trim(), pass = $("#f-pass").value;
+    if (code.length !== 6) return err("6-digit code daalo");
+    if (pass.length < 6) return err("Password kam se kam 6 characters");
+    const b = $("#f-done"); b.disabled = true; b.textContent = "Reset ho raha hai...";
+    try {
+      await api("/api/auth/reset", { email, code, password: pass });
+      $("#step2").classList.add("hidden");
+      $("#f-ok").classList.remove("hidden");
+    } catch (e) { err(e.message); b.disabled = false; b.textContent = "🔓 Password Reset Karo"; }
+  });
+})();
+</script>
+</Layout>
