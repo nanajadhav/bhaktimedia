@@ -18,6 +18,17 @@ import Layout from "../layouts/Layout.astro";
         <label class="block text-sm font-semibold">Email
           <input id="s-email" type="email" class="input mt-1.5" placeholder="aap@email.com" />
         </label>
+        <div class="grid grid-cols-2 gap-3">
+          <label class="block text-sm font-semibold">Mobile
+            <input id="s-phone" class="input mt-1.5" inputmode="numeric" maxlength="10" placeholder="98220 10800" />
+          </label>
+          <label class="block text-sm font-semibold">Pincode
+            <input id="s-pin" class="input mt-1.5" inputmode="numeric" maxlength="6" placeholder="411035" />
+          </label>
+        </div>
+        <label class="block text-sm font-semibold">City
+          <input id="s-city" class="input mt-1.5" placeholder="Pune" />
+        </label>
         <button id="s-send" class="btn btn-primary w-full">📬 OTP Bhejo</button>
       </div>
 
@@ -61,11 +72,15 @@ import Layout from "../layouts/Layout.astro";
   $("#s-done").addEventListener("click", async () => {
     err("");
     const code = $("#s-code").value.trim(), pass = $("#s-pass").value;
+    const phone = $("#s-phone").value.replace(/\D/g, "");
+    const pin = $("#s-pin").value.replace(/\D/g, "");
     if (code.length !== 6) return err("6-digit code daalo");
     if (pass.length < 6) return err("Password kam se kam 6 characters");
+    if (phone && phone.length !== 10) return err("Mobile 10 digits ka hona chahiye");
+    if (pin && pin.length !== 6) return err("Pincode 6 digits ka hona chahiye");
     const b = $("#s-done"); b.disabled = true; b.textContent = "Ban rahe hain...";
     try {
-      const d = await api("/api/auth/signup", { name: $("#s-name").value.trim(), email, code, password: pass });
+      const d = await api("/api/auth/signup", { name: $("#s-name").value.trim(), email, code, password: pass, phone, city: $("#s-city").value.trim(), pincode: pin });
       localStorage.setItem("sb-bm-auth-token", JSON.stringify({ access_token: d.token, user: { email: d.user.email, user_metadata: { name: d.user.name } } }));
       localStorage.setItem("bm-welcome", "🪔 Swagat hai " + d.user.name + "! 3 free credits mil gaye hain.");
       location.href = "/studio";
