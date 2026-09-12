@@ -1,4 +1,4 @@
-// functions/api/auth/login.ts
+﻿// functions/api/auth/login.ts
 import { json, hashPassword, signJWT } from "../../_lib";
 
 export const onRequestPost = async (context: any) => {

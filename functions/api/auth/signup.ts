@@ -1,4 +1,4 @@
-// functions/api/auth/login.ts — password YA OTP se login
+﻿// functions/api/auth/login.ts â€” password YA OTP se login
 import { json, hashPassword, signJWT, verifyOtp } from "../../_lib";
 
 export const onRequestPost = async (context: any) => {
