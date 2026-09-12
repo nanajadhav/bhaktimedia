@@ -69,7 +69,7 @@ Everything else must remain EXACTLY as image 1 — same layout, same deity artwo
       const form = new FormData();
       form.append("model", MODEL);
       form.append("size", body.size || "1024x1536");
-      form.append("image[]", new File([templateBytes], "template.jpg", { type: "image/jpeg" }));
+      form.append("image[]", new File([templateBytes], "template.png", { type: "image/jpeg" }));
       form.append("image[]", new File([photoBytes], "photo.png", { type: "image/png" }));
       form.append("prompt", prompt);
       r = await fetch("https://api.openai.com/v1/images/edits", { method: "POST", headers: { Authorization: `Bearer ${OPENAI_KEY}` }, body: form });
