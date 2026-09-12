@@ -67,9 +67,9 @@ import Layout from "../layouts/Layout.astro";
               <span id="i-ref1-ico" class="text-xl">📤</span>
             </label>
             <label class="relative grid size-16 cursor-pointer place-items-center overflow-hidden rounded-2xl border-2 border-dashed border-sandal/40 transition hover:border-saffron dark:border-cream/30">
-              <input id="i-ref1" type="file" accept="image/*" class="hidden" />
-              <img id="i-ref1-prev" class="hidden absolute inset-0 h-full w-full rounded-2xl object-cover" alt="" />
-              <span id="i-ref1-ico" class="text-xl">📤</span>
+              <input id="i-ref2" type="file" accept="image/*" class="hidden" />
+              <img id="i-ref2-prev" class="hidden absolute inset-0 h-full w-full rounded-2xl object-cover" alt="" />
+              <span id="i-ref2-ico" class="text-xl">📤</span>
             </label>
           </div>
           <p class="mt-1.5 text-xs font-normal text-sandal-deep/50 dark:text-cream/40">Reference = us photo par transformation • bina reference = nayi image</p>
@@ -187,7 +187,7 @@ import Layout from "../layouts/Layout.astro";
   }
 
   async function loadCredits() {
-    if (isLocal) { $("#credits-chip").textContent = "⚡ DEV / "; return; }
+    if (isLocal) { $("#credits-chip").textContent = "⚡ DEV / ∞"; return; }
     try {
       const r = await fetch("/api/credits", { headers: { Authorization: "Bearer " + token } });
       if (r.ok) { const d = await r.json(); $("#credits-chip").textContent = "⚡ " + d.used + " / " + d.limit; }
