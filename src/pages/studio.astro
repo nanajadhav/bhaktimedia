@@ -1,585 +1,446 @@
 ---
 import Layout from "../layouts/Layout.astro";
 ---
-<Layout title="AI Studio" description="BhaktiMedia AI Studio — image, poster, voice, video.">
-
-<style is:global>
-  html, body { overflow: hidden !important; }
-</style>
-
+<Layout title="AI Studio" description="BhaktiMedia AI Studio — image & poster generation.">
 <style>
-  .studio-app { position: fixed; inset: 5.5rem 0.75rem 4.25rem 0.75rem; }
-  @media (min-width: 1024px) { .studio-app { inset: 5.5rem 1rem 0.75rem 1rem; } }
-  .studio-inner { display: flex; gap: 1.25rem; height: 100%; max-width: 1600px; margin: 0 auto; }
-  #settings-col { width: 300px; flex-shrink: 0; overflow-y: auto; }
-  #content-scroll { flex: 1; overflow-y: auto; min-height: 0; }
-  #settings-col::-webkit-scrollbar, #content-scroll::-webkit-scrollbar { width: 6px; }
-  #settings-col::-webkit-scrollbar-thumb, #content-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,.15); border-radius: 99px; }
-  @media (max-width: 1023px) {
-    #settings-col { position: fixed; left: 0; right: 0; bottom: 3.5rem; max-height: 70vh; width: 100%;
-      transform: translateY(110%); transition: transform .3s ease; z-index: 70;
-      border-radius: 1.5rem 1.5rem 0 0; box-shadow: 0 -12px 40px rgba(0,0,0,.25); }
-    body.sheet-open #settings-col { transform: translateY(0); }
-    #btn-sheet { display: inline-flex; }
-  }
-  @media (min-width: 1024px) { #btn-sheet { display: none; } }
-  #loader-diya { display: inline-block; animation: flicker 1.2s ease-in-out infinite; }
-  @keyframes flicker {
-    0%, 100% { transform: scale(1) rotate(-2deg); filter: drop-shadow(0 0 6px rgba(255,170,60,.5)); }
-    50% { transform: scale(1.12) rotate(2deg); filter: drop-shadow(0 0 22px rgba(255,200,80,.95)); }
+  #settings-sheet { transform: translateY(100%); transition: transform .4s cubic-bezier(.22,1,.36,1); }
+  #settings-sheet.open { transform: translateY(0); }
+  @media (min-width: 1024px) {
+    #settings-sheet { transform: none !important; position: static !important; max-height: none !important; }
+    #sheet-backdrop, #settings-strip { display: none !important; }
   }
 </style>
+<div class="container-x px-4 pt-24 sm:px-6 lg:flex lg:h-dvh lg:flex-col lg:overflow-hidden lg:pb-4">
+  <div id="toast" class="pointer-events-none fixed left-1/2 top-20 z-[90] hidden -translate-x-1/2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-cream shadow-lift dark:bg-white dark:text-ink"></div>
 
-<div class="studio-app">
-<div class="studio-inner">
-
-  <!-- ══════════ SETTINGS SIDEBAR ══════════ -->
-  <aside id="settings-col" class="border border-sandal/10 bg-white p-4 dark:border-white/10 dark:bg-night">
-    <button id="btn-new" class="btn btn-primary w-full justify-center !py-2.5">＋ New</button>
-
-    <nav class="mt-4 hidden space-y-1 lg:block">
-      <button data-view="home" class="snav flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-sandal-deep/80 transition hover:bg-saffron/10 dark:text-cream/70">🏠 Home</button>
-      <button data-view="image" class="snav flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-sandal-deep/80 transition hover:bg-saffron/10 dark:text-cream/70">🖼️ Image</button>
-      <button data-view="poster" class="snav flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-sandal-deep/80 transition hover:bg-saffron/10 dark:text-cream/70">🎨 Poster</button>
-      <button data-view="voice" class="snav flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-sandal-deep/80 transition hover:bg-saffron/10 dark:text-cream/70">🎙️ Voice</button>
-      <button data-view="video" class="snav flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-sandal-deep/80 transition hover:bg-saffron/10 dark:text-cream/70">🎬 Video</button>
-    </nav>
-
-    <!-- IMAGE SETTINGS -->
-    <div id="set-image" class="mt-5 hidden">
-      <p class="text-[11px] font-bold uppercase tracking-widest text-sandal/50 dark:text-cream/40">General settings</p>
-      <label class="mt-3 block text-sm font-semibold">Aspect ratio
-        <select id="img-ratio" class="input mt-1.5"><option>Auto</option><option>1:1</option><option>4:5</option><option>16:9</option><option>9:16</option></select>
-      </label>
-      <label class="mt-3 block text-sm font-semibold">Resolution
-        <select id="img-res" class="input mt-1.5"><option>1K</option><option>2K</option></select>
-      </label>
-      <label class="mt-3 block text-sm font-semibold">Style
-        <select id="img-style" class="input mt-1.5"><option>Traditional</option><option>Cinematic</option><option>Cosmic</option><option>Photorealistic</option></select>
-      </label>
-      <p class="mt-4 text-sm font-semibold">Reference images (<span id="ref-count">0</span>/2)</p>
-      <div id="ref-thumbs" class="mt-2 flex gap-2"></div>
-      <input id="ref-input" type="file" accept="image/*" class="hidden" />
-      <p class="mt-1 text-[11px] text-sandal/50 dark:text-cream/40">Reference = us photo par transformation • bina reference = nayi image</p>
-    </div>
-
-    <!-- POSTER SETTINGS -->
-    <div id="set-poster" class="mt-5 hidden">
-      <p class="text-[11px] font-bold uppercase tracking-widest text-sandal/50 dark:text-cream/40">Poster settings</p>
-      <label class="mt-3 block text-sm font-semibold">Design
-        <select id="p-tpl" class="input mt-1.5"></select>
-      </label>
-      <label class="mt-3 block text-sm font-semibold">Aspect ratio
-        <select id="p-ratio" class="input mt-1.5"><option>4:5</option><option>1:1</option><option>9:16</option></select>
-      </label>
-      <p class="mt-4 text-sm font-semibold">User photo (zaroori)</p>
-      <div id="p-slot-wrap" class="mt-2"></div>
-      <input id="p-photo" type="file" accept="image/*" class="hidden" />
-      <label class="mt-4 block text-sm font-semibold">शुभेच्छुक Name
-        <input id="p-name" class="input mt-1.5" placeholder="श्री. ..." />
-      </label>
-      <label class="mt-3 block text-sm font-semibold">Language
-        <select id="p-lang" class="input mt-1.5"><option value="mr">मराठी</option><option value="en">English</option></select>
-      </label>
-      <p class="mt-4 text-sm font-semibold">Custom message (optional)</p>
-      <div id="p-sugg" class="mt-2 flex flex-wrap gap-2"></div>
-      <textarea id="p-msg" rows="2" class="input mt-2 resize-none" placeholder="Apni wish line likho..."></textarea>
-    </div>
-
-    <!-- HISTORY -->
-    <div class="mt-6 border-t border-sandal/10 pt-4 dark:border-white/10">
-      <div class="flex items-center justify-between">
-        <p class="text-[11px] font-bold uppercase tracking-widest text-sandal/50 dark:text-cream/40">History</p>
-        <button id="clear-history" class="text-xs text-saffron hover:underline">Clear</button>
+  <div class="mt-4 flex gap-5 pb-28 lg:min-h-0 lg:flex-1 lg:pb-0">
+    <!-- ══ SETTINGS (desktop sidebar / mobile sheet) ══ -->
+    <aside id="settings-sheet" class="fixed inset-x-0 bottom-0 z-[70] max-h-[72vh] overflow-y-auto rounded-t-3xl card p-5 shadow-lift lg:static lg:max-h-none lg:w-72 lg:shrink-0 lg:overflow-y-auto lg:rounded-2xl lg:shadow-soft">
+      <div class="mb-4 hidden items-center gap-2 lg:flex">
+        <a href="/ai-services" class="icon-btn" title="Wapas AI Services">←</a>
+        <h1 class="font-display text-lg font-bold">AI Studio</h1>
+        <button id="reset-btn" class="icon-btn ml-auto" title="Sab reset karo">🗑️</button>
       </div>
-      <div id="history" class="mt-3 grid grid-cols-4 gap-2"></div>
-    </div>
-  </aside>
-
-  <!-- ══════════ MAIN ══════════ -->
-  <main class="flex min-w-0 flex-1 flex-col">
-
-    <div class="flex items-center justify-between gap-3 py-2">
-      <div class="min-w-0">
-        <h1 id="view-title" class="truncate font-display text-xl font-bold sm:text-2xl">Recommended for you</h1>
-        <p class="truncate text-xs text-sandal/60 dark:text-cream/50">BhaktiMedia AI Engine ⚡ — divine creativity, powered by AI</p>
+      <div class="mb-3 flex items-center justify-between lg:hidden">
+        <p class="font-display text-lg font-bold">⚙️ Settings</p>
+        <div class="flex items-center gap-1">
+          <button id="reset-btn-m" class="icon-btn" title="Reset">🗑️</button>
+          <button id="sheet-close" class="icon-btn">✕</button>
+        </div>
       </div>
-      <div class="flex shrink-0 items-center gap-2">
-        <span class="chip bg-golden/15 text-golden">⚡ <span id="credits-count">...</span>/<span id="credits-limit">...</span></span>
-        <button id="btn-sheet" class="chip">⚙️</button>
+      <div id="view-tabs" class="mb-4 flex gap-1 rounded-full bg-sandal/10 p-1 dark:bg-white/5">
+        <button data-view="image" class="vtab flex-1 whitespace-nowrap rounded-full px-2 py-1.5 text-xs font-semibold transition">🖼️ Image</button>
+        <button data-view="poster" class="vtab flex-1 whitespace-nowrap rounded-full px-2 py-1.5 text-xs font-semibold transition">🎨 Poster</button>
+        <button data-view="voice" data-lock="1" class="vtab flex-1 whitespace-nowrap rounded-full px-2 py-1.5 text-xs font-semibold opacity-40 transition">🎙️</button>
+        <button data-view="video" data-lock="1" class="vtab flex-1 whitespace-nowrap rounded-full px-2 py-1.5 text-xs font-semibold opacity-40 transition">🎬</button>
       </div>
-    </div>
 
-    <div id="content-scroll" class="pr-1">
-
-      <!-- HOME -->
-      <section id="view-home" class="pb-4">
-        <div class="grid gap-5 sm:grid-cols-2">
-          <button data-view="image" class="group relative overflow-hidden rounded-2xl border border-sandal/10 text-left shadow-soft dark:border-white/10">
-            <img src="https://picsum.photos/seed/cosmic-mahadev-ai/640/420" alt="" class="aspect-[16/10] w-full object-cover transition duration-500 group-hover:scale-105" />
-            <span class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 to-transparent px-4 pb-3 pt-10 font-display text-lg font-bold text-white">🖼️ Generate Image</span>
-          </button>
-          <button data-view="poster" class="group relative overflow-hidden rounded-2xl border border-sandal/10 text-left shadow-soft dark:border-white/10">
-            <img src="https://picsum.photos/seed/ganesh-utsav-poster/640/420" alt="" class="aspect-[16/10] w-full object-cover transition duration-500 group-hover:scale-105" />
-            <span class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 to-transparent px-4 pb-3 pt-10 font-display text-lg font-bold text-white">🎨 Generate Poster</span>
-          </button>
-          <button data-view="voice" class="group relative overflow-hidden rounded-2xl border border-sandal/10 text-left shadow-soft dark:border-white/10">
-            <img src="https://picsum.photos/seed/voice-studio-wave/640/420" alt="" class="aspect-[16/10] w-full object-cover transition duration-500 group-hover:scale-105" />
-            <span class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 to-transparent px-4 pb-3 pt-10 font-display text-lg font-bold text-white">🎙️ Generate Voice</span>
-          </button>
-          <button data-view="video" class="group relative overflow-hidden rounded-2xl border border-sandal/10 text-left shadow-soft dark:border-white/10">
-            <img src="https://picsum.photos/seed/aarti-cinematic-reel/640/420" alt="" class="aspect-[16/10] w-full object-cover opacity-60 transition duration-500 group-hover:scale-105" />
-            <span class="absolute right-3 top-3 rounded-full bg-golden px-3 py-1 text-xs font-bold text-ink">Jald hi</span>
-            <span class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 to-transparent px-4 pb-3 pt-10 font-display text-lg font-bold text-white">🎬 Generate Video</span>
-          </button>
+      <div id="set-image" class="grid gap-4">
+        <p class="eyebrow">General Settings</p>
+        <label class="block text-sm font-semibold">Aspect ratio
+          <select id="i-ratio" class="input mt-1.5">
+            <option value="auto">Auto</option>
+            <option value="1024x1024">1:1 (Square)</option>
+            <option value="1024x1536">2:3 (Portrait)</option>
+            <option value="1536x1024">3:2 (Landscape)</option>
+          </select>
+        </label>
+        <label class="block text-sm font-semibold">Resolution
+          <select id="i-res" class="input mt-1.5">
+            <option value="1K">1K</option>
+            <option value="2K">2K</option>
+          </select>
+        </label>
+        <label class="block text-sm font-semibold">Style
+          <select id="i-style" class="input mt-1.5">
+            <option value="">Auto (Divine)</option>
+            <option value="Traditional">Traditional</option>
+            <option value="Cinematic">Cinematic</option>
+            <option value="Watercolor">Watercolor</option>
+          </select>
+        </label>
+        <div class="text-sm font-semibold">Reference images (<span id="ref-count">0</span>/2)
+          <div class="mt-1.5 flex gap-2">
+            <label class="grid size-16 cursor-pointer place-items-center rounded-2xl border-2 border-dashed border-sandal/40 transition hover:border-saffron dark:border-cream/30">
+              <input id="i-ref1" type="file" accept="image/*" class="hidden" />
+              <img id="i-ref1-prev" class="hidden size-full rounded-2xl object-cover" alt="" />
+              <span id="i-ref1-ico" class="text-xl">📤</span>
+            </label>
+            <label class="grid size-16 cursor-pointer place-items-center rounded-2xl border-2 border-dashed border-sandal/40 transition hover:border-saffron dark:border-cream/30">
+              <input id="i-ref2" type="file" accept="image/*" class="hidden" />
+              <img id="i-ref2-prev" class="hidden size-full rounded-2xl object-cover" alt="" />
+              <span id="i-ref2-ico" class="text-xl">📤</span>
+            </label>
+          </div>
+          <p class="mt-1.5 text-xs font-normal text-sandal-deep/50 dark:text-cream/40">Reference = us photo par transformation • bina reference = nayi image</p>
         </div>
-      </section>
+      </div>
 
-      <!-- IMAGE -->
-      <section id="view-image" class="hidden pb-4">
-        <div id="img-empty" class="flex h-full min-h-[50vh] flex-col items-center justify-center text-center">
-          <span class="grid size-20 place-items-center rounded-3xl bg-gradient-to-br from-saffron/20 to-golden/20 text-4xl">🖼️</span>
-          <h2 class="mt-5 font-display text-2xl font-bold">Start generating images</h2>
-          <p class="mt-2 max-w-sm text-sm text-sandal/60 dark:text-cream/50">Neeche prompt mein apni kalpana likho — BhaktiMedia AI Engine usey saakar karega.</p>
-        </div>
-        <div id="img-results" class="hidden grid grid-cols-2 gap-4 xl:grid-cols-3"></div>
-      </section>
-
-      <!-- POSTER -->
-      <section id="view-poster" class="hidden pb-4">
-        <div id="p-empty" class="flex h-full min-h-[50vh] flex-col items-center justify-center text-center">
-          <span class="grid size-20 place-items-center rounded-3xl bg-gradient-to-br from-saffron/20 to-golden/20 text-4xl">🎨</span>
-          <h2 class="mt-5 font-display text-2xl font-bold">Start creating posters</h2>
-          <p class="mt-2 max-w-sm text-sm text-sandal/60 dark:text-cream/50">Design chuno, photo lagao, naam likho — festival poster ready!</p>
-        </div>
-        <div id="p-result" class="hidden text-center">
-          <img id="p-img" alt="Poster" class="mx-auto max-h-[58vh] rounded-2xl shadow-lift" />
-          <div class="mt-4 flex flex-wrap justify-center gap-3 pb-2">
-            <a id="p-download" class="btn btn-primary" download>⬇️ Download</a>
-            <button id="share-wa" class="btn btn-ghost">🟢 WhatsApp</button>
-            <button id="share-fb" class="btn btn-ghost">🔵 Facebook</button>
-            <button id="share-ig" class="btn btn-ghost">📸 Instagram</button>
+      <div id="set-poster" class="hidden grid gap-4">
+        <p class="eyebrow">Poster Settings</p>
+        <label class="block text-sm font-semibold">Design
+          <select id="p-tpl" class="input mt-1.5"></select>
+        </label>
+        <label class="block text-sm font-semibold">Aspect ratio
+          <select id="p-ratio" class="input mt-1.5">
+            <option value="1024x1536">4:5 (Poster)</option>
+            <option value="1024x1024">1:1 (Square)</option>
+            <option value="1536x1024">3:2 (Landscape)</option>
+          </select>
+        </label>
+        <div class="text-sm font-semibold">User photo (zaroori)
+          <div class="mt-1.5 flex items-center gap-3">
+            <label class="grid size-16 cursor-pointer place-items-center rounded-2xl border-2 border-dashed border-sandal/40 transition hover:border-saffron dark:border-cream/30">
+              <input id="p-photo" type="file" accept="image/*" class="hidden" />
+              <img id="p-photo-prev" class="hidden size-full rounded-2xl object-cover" alt="" />
+              <span id="p-photo-ico" class="text-xl">📤</span>
+            </label>
+            <span class="text-xs font-normal text-sandal-deep/50 dark:text-cream/40">Chehre ki saaf photo</span>
           </div>
         </div>
-      </section>
-
-      <!-- VOICE -->
-      <section id="view-voice" class="hidden pb-4">
-        <div class="rounded-2xl border border-golden/30 bg-white p-10 text-center shadow-lift dark:bg-night">
-          <span class="text-5xl">🎙️</span>
-          <h2 class="mt-4 font-display text-xl font-bold">Voice Studio</h2>
-          <p class="mt-2 text-sm text-sandal/60 dark:text-cream/60">TTS / STT / Cloning ke liye abhi purana studio use karo:</p>
-          <a href="/ai-services?studio=voice" class="btn btn-primary mt-5">Purana Voice Studio Kholo</a>
-        </div>
-      </section>
-
-      <!-- VIDEO -->
-      <section id="view-video" class="hidden pb-4">
-        <div class="rounded-2xl border border-golden/30 bg-white p-10 text-center shadow-lift dark:bg-night">
-          <span class="text-5xl">🎬</span>
-          <h2 class="mt-4 font-display text-xl font-bold">Video Generation — Jald aa raha hai</h2>
-          <p class="mt-2 text-sm text-sandal/60 dark:text-cream/60">Divine reels & cinematic videos — Phase-2 mein.</p>
-        </div>
-      </section>
-    </div>
-
-    <!-- PROMPT BAR -->
-    <div id="promptbar" class="pt-2 pb-1">
-      <div class="rounded-2xl border border-sandal/10 bg-white p-3 shadow-lift dark:border-white/10 dark:bg-night">
-        <textarea id="prompt" rows="2" placeholder="Describe the image you want to generate..."
-          class="w-full resize-none bg-transparent px-2 py-1 text-base focus:outline-none"></textarea>
-        <div class="mt-1 flex items-center justify-between px-1">
-          <span class="text-[11px] font-semibold text-sandal/50 dark:text-cream/40">BhaktiMedia AI Engine ⚡</span>
-          <button id="btn-send" aria-label="Generate"
-            class="grid size-10 place-items-center rounded-full bg-gradient-to-br from-saffron to-golden text-white shadow-glow transition hover:scale-105 disabled:opacity-40">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>
-          </button>
+        <label class="block text-sm font-semibold">Shubhchintak Name
+          <input id="p-name" class="input mt-1.5" placeholder="श्री. ..." />
+        </label>
+        <label class="block text-sm font-semibold">Language
+          <select id="p-lang" class="input mt-1.5">
+            <option value="mr">मराठी</option>
+            <option value="en">English</option>
+          </select>
+        </label>
+        <div class="text-sm font-semibold">Message suggestions
+          <div id="p-sugg" class="mt-1.5 flex flex-wrap gap-1.5"></div>
         </div>
       </div>
-    </div>
-  </main>
-</div>
+    </aside>
+    <div id="sheet-backdrop" class="pointer-events-none fixed inset-0 z-[60] bg-ink/60 opacity-0 backdrop-blur-sm transition-opacity duration-300 [&.open]:pointer-events-auto [&.open]:opacity-100"></div>
 
-<!-- ══════════ LOADING OVERLAY ══════════ -->
-<div id="loader" class="pointer-events-none absolute inset-0 z-40 hidden items-center justify-center bg-cream/70 backdrop-blur-sm dark:bg-night/70">
-  <div class="flex flex-col items-center rounded-3xl border border-golden/40 bg-white/95 px-10 py-8 shadow-lift dark:bg-night/95">
-    <span id="loader-diya" class="text-6xl">🪔</span>
-    <p id="loader-text" class="mt-4 font-display text-lg font-bold">Generate ho raha hai...</p>
-    <p class="mt-1 text-xs text-sandal/60 dark:text-cream/50">BhaktiMedia AI Engine ⚡</p>
-    <div class="mt-5 h-2 w-56 overflow-hidden rounded-full bg-sandal/15 dark:bg-white/10">
-      <div id="loader-bar" class="h-full w-0 rounded-full bg-gradient-to-r from-saffron to-golden transition-all duration-300"></div>
-    </div>
-    <p id="loader-pct" class="mt-2 text-sm font-bold text-saffron">0%</p>
-  </div>
-</div>
+    <!-- ══ CANVAS COLUMN ══ -->
+    <div class="min-w-0 flex-1 lg:flex lg:min-h-0 lg:flex-col">
+      <div class="flex flex-wrap items-start justify-between gap-3 lg:shrink-0">
+        <div>
+          <h2 id="view-title" class="font-display text-2xl font-bold sm:text-3xl">Image Generation</h2>
+          <p class="mt-1 text-sm text-sandal-deep/60 dark:text-cream/50">BhaktiMedia AI Engine ⚡ — divine creativity, powered by AI</p>
+        </div>
+        <span id="credits-chip" class="chip bg-golden/15 text-golden">⚡ … / …</span>
+      </div>
 
-<!-- MOBILE BOTTOM NAV -->
-<nav id="bottom-nav" class="fixed inset-x-0 bottom-0 z-50 border-t border-sandal/10 bg-white/95 backdrop-blur-xl dark:border-white/10 dark:bg-night/95 lg:hidden">
-  <div class="grid grid-cols-5">
-    <button data-view="home" class="bnav flex flex-col items-center gap-0.5 py-2.5 text-[10px] font-semibold text-sandal-deep/70 dark:text-cream/60"><span class="text-lg">🏠</span>Home</button>
-    <button data-view="image" class="bnav flex flex-col items-center gap-0.5 py-2.5 text-[10px] font-semibold text-sandal-deep/70 dark:text-cream/60"><span class="text-lg">🖼️</span>Image</button>
-    <button data-view="poster" class="bnav flex flex-col items-center gap-0.5 py-2.5 text-[10px] font-semibold text-sandal-deep/70 dark:text-cream/60"><span class="text-lg">🎨</span>Poster</button>
-    <button data-view="voice" class="bnav flex flex-col items-center gap-0.5 py-2.5 text-[10px] font-semibold text-sandal-deep/70 dark:text-cream/60"><span class="text-lg">🎙️</span>Voice</button>
-    <button data-view="video" class="bnav flex flex-col items-center gap-0.5 py-2.5 text-[10px] font-semibold text-sandal-deep/70 dark:text-cream/60"><span class="text-lg">🎬</span>Video</button>
+      <div id="canvas" class="relative mt-4 flex min-h-[380px] items-center justify-center overflow-hidden rounded-3xl card p-6 shadow-soft lg:min-h-0 lg:flex-1">
+        <div id="empty" class="max-w-sm text-center">
+          <span id="empty-ico" class="mx-auto grid size-20 place-items-center rounded-3xl bg-saffron/15 text-4xl">🖼️</span>
+          <h3 class="mt-4 font-display text-2xl font-bold">Start generating images</h3>
+          <p id="empty-text" class="mt-2 text-sm text-sandal-deep/60 dark:text-cream/50">Neeche prompt mein apni kalpana likho — BhaktiMedia AI Engine use saakar karega.</p>
+        </div>
+        <div id="loader" class="hidden text-center">
+          <span class="mx-auto block size-16 animate-pulse text-5xl">🪔</span>
+          <p class="mt-3 text-sm font-semibold text-sandal-deep/70 dark:text-cream/60">Divine creation ho rahi hai...</p>
+        </div>
+        <img id="result" class="hidden max-h-[62vh] rounded-2xl shadow-lift lg:max-h-full" alt="Generated" />
+        <div id="actions" class="absolute bottom-4 right-4 hidden gap-2">
+          <a id="dl" class="btn btn-primary !py-2 !text-sm" download="bhaktimedia-creation.png">⬇ Download</a>
+        </div>
+      </div>
+
+      <div class="mt-4 rounded-2xl card p-3 shadow-soft lg:shrink-0">
+        <textarea id="prompt" rows="2" class="w-full resize-none bg-transparent p-2 text-sm outline-none" placeholder="Describe the image you want to generate... (poster mein ye optional message hai)"></textarea>
+        <div class="flex items-center justify-between px-2 pb-1">
+          <span class="text-xs text-sandal-deep/50 dark:text-cream/40">BhaktiMedia AI Engine ⚡</span>
+          <button id="gen" class="btn btn-primary !px-6 !py-2">Generate 🚀</button>
+        </div>
+      </div>
+
+      <div id="recent-wrap" class="mt-5 hidden lg:shrink-0">
+        <p class="eyebrow">Recent creations</p>
+        <div id="recent" class="mt-2 flex gap-2 overflow-x-auto pb-1"></div>
+      </div>
+    </div>
   </div>
-</nav>
+
+  <!-- ══ MOBILE FLOATING DOCK ══ -->
+  <div id="settings-strip" class="fixed bottom-4 left-1/2 z-[50] w-[calc(100%-1.5rem)] max-w-md -translate-x-1/2 lg:hidden">
+    <div class="flex items-center gap-2 rounded-2xl border border-sandal/20 bg-temple/90 px-2.5 py-2 shadow-lift backdrop-blur-xl dark:border-cream/10 dark:bg-night/90">
+      <a href="/ai-services" class="grid size-9 shrink-0 place-items-center rounded-xl bg-sandal/10 text-base font-bold transition hover:bg-sandal/20 dark:bg-white/5" title="Wapas AI Services">←</a>
+      <button id="strip-open" class="flex shrink-0 items-center gap-1.5 rounded-xl bg-gradient-to-r from-saffron to-golden px-3.5 py-2 text-xs font-bold text-white shadow-gold transition hover:scale-105">⚙️ Settings</button>
+      <span id="strip-values" class="flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto"></span>
+    </div>
+  </div>
 </div>
 
 <script is:inline>
-(() => {
+(function () {
   const $ = (s) => document.querySelector(s);
-  const $$ = (s) => document.querySelectorAll(s);
+  const $$ = (s) => [...document.querySelectorAll(s)];
   const isLocal = location.hostname === "localhost" || location.hostname === "127.0.0.1";
-  const API = isLocal ? "http://localhost:3002/api/generate-image" : "/api/generate-image";
-  const state = { view: "home", refs: [], photo: null };
 
-  /* ---------- session ---------- */
-  function getSession() {
+  let token = "";
+  try {
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
-      if (k && k.indexOf("sb-") === 0 && k.indexOf("auth-token") !== -1) {
-        try { return JSON.parse(localStorage.getItem(k)); } catch { return null; }
-      }
+      if (k && k.indexOf("sb-") === 0 && k.indexOf("auth-token") !== -1) { token = JSON.parse(localStorage.getItem(k)).access_token; break; }
     }
-    return null;
-  }
-  const sess = getSession();
-  const token = sess?.access_token || null;
-  if (sess?.user) {
-    const nm = sess.user.user_metadata?.name || sess.user.email || "";
-    if (nm) $("#p-name").value = nm;
+  } catch (e) {}
+  if (!token && !isLocal) location.href = "/login";
+
+  function toast(msg) {
+    const t = $("#toast");
+    t.textContent = msg; t.classList.remove("hidden");
+    setTimeout(() => t.classList.add("hidden"), 2600);
   }
 
-  /* ---------- credits ---------- */
   async function loadCredits() {
-    if (isLocal) { $("#credits-count").textContent = "DEV"; $("#credits-limit").textContent = "∞"; return; }
-    if (!token) return;
+    if (isLocal) { $("#credits-chip").textContent = "⚡ DEV / "; return; }
     try {
-            const r = await fetch("/api/credits", { headers: { Authorization: `Bearer ${token}` } });
-      if (r.ok) { const d = await r.json(); $("#credits-count").textContent = d.used; $("#credits-limit").textContent = d.limit; }
-    } catch {}
+      const r = await fetch("/api/credits", { headers: { Authorization: "Bearer " + token } });
+      if (r.ok) { const d = await r.json(); $("#credits-chip").textContent = "⚡ " + d.used + " / " + d.limit; }
+    } catch (e) {}
   }
   loadCredits();
 
-  /* ---------- loading progress ---------- */
-  let progTimer = null, progVal = 0;
-  function startProgress(label) {
-    progVal = 0;
-    $("#loader-text").textContent = label;
-    $("#loader-pct").textContent = "0%";
-    $("#loader-bar").style.width = "0%";
-    $("#loader").classList.remove("hidden");
-    $("#loader").classList.add("flex");
-    clearInterval(progTimer);
-    progTimer = setInterval(() => {
-      if (progVal < 90) {
-        progVal += Math.random() * 4 + 1;
-        if (progVal > 90) progVal = 90;
-        $("#loader-bar").style.width = progVal + "%";
-        $("#loader-pct").textContent = Math.floor(progVal) + "%";
-      }
-    }, 500);
-  }
-  function stopProgress() {
-    clearInterval(progTimer);
-    $("#loader-bar").style.width = "100%";
-    $("#loader-pct").textContent = "100%";
-    setTimeout(() => {
-      $("#loader").classList.add("hidden");
-      $("#loader").classList.remove("flex");
-    }, 600);
-  }
-
-  /* ---------- view switching ---------- */
-  const TITLES = { home: "Recommended for you", image: "Image Generation", poster: "Poster Generation", voice: "Voice Studio", video: "Video Generation" };
-  function setView(v) {
-    state.view = v;
-    history.replaceState(null, "", v === "home" ? "/studio" : `/studio?view=${v}`);
-    $("#view-title").textContent = TITLES[v];
-    ["home", "image", "poster", "voice", "video"].forEach((x) => $("#view-" + x).classList.toggle("hidden", x !== v));
-    $("#set-image").classList.toggle("hidden", v !== "image");
-    $("#set-poster").classList.toggle("hidden", v !== "poster");
-    $("#promptbar").style.display = v === "image" || v === "poster" ? "" : "none";
-    $("#prompt").placeholder = v === "poster" ? "Custom message (optional)..." : "Describe the image you want to generate...";
-    $$("[data-view]").forEach((b) => {
-      const on = b.dataset.view === v;
-      if (b.classList.contains("snav") || b.classList.contains("bnav")) {
-        b.classList.toggle("bg-saffron/10", on);
-        b.classList.toggle("text-saffron", on);
-      }
-    });
-    document.body.classList.remove("sheet-open");
-  }
-  $$("[data-view]").forEach((b) => b.addEventListener("click", () => setView(b.dataset.view)));
-  $("#btn-sheet").addEventListener("click", () => document.body.classList.toggle("sheet-open"));
-  $("#btn-new").addEventListener("click", () => { $("#prompt").value = ""; setView(state.view === "home" ? "image" : state.view); $("#prompt").focus(); });
-
-  /* ---------- history ---------- */
-  const HKEY = "bm-studio-history";
-  const loadH = () => { try { return JSON.parse(localStorage.getItem(HKEY) || "[]"); } catch { return []; } };
-  const saveH = (h) => { localStorage.setItem(HKEY, JSON.stringify(h.slice(0, 12))); renderH(); };
-  function renderH() {
-    $("#history").innerHTML = loadH().map((h) =>
-      `<img src="${h.thumb}" title="${h.prompt}" data-p="${h.prompt}" class="aspect-square w-full cursor-pointer rounded-lg object-cover ring-1 ring-golden/30">`
-    ).join("") || `<p class="col-span-4 text-xs text-sandal/50 dark:text-cream/40">Abhi koi generation nahi</p>`;
-    $$("#history img").forEach((im) => im.addEventListener("click", () => { $("#prompt").value = im.dataset.p; }));
-  }
-  $("#clear-history").addEventListener("click", () => saveH([]));
-  renderH();
-
-  /* ---------- IMAGE: 2 reference slots ---------- */
-  $("#ref-input").addEventListener("change", (e) => {
-    const f = e.target.files[0];
-    if (f && state.refs.length < 2) state.refs.push(f);
-    e.target.value = "";
-    drawRefs();
-  });
-  function drawRefs() {
-    $("#ref-count").textContent = state.refs.length;
-    let html = "";
-    for (let i = 0; i < 2; i++) {
-      if (state.refs[i]) {
-        html += `<span class="relative"><img src="${URL.createObjectURL(state.refs[i])}" class="size-16 rounded-xl object-cover ring-2 ring-golden/60">
-          <button data-rm="${i}" class="absolute -right-1.5 -top-1.5 grid size-5 place-items-center rounded-full bg-ink text-xs text-white">×</button></span>`;
-      } else {
-        html += `<label data-add class="grid size-16 cursor-pointer place-items-center rounded-xl border-2 border-dashed border-sandal/25 text-xl hover:border-saffron dark:border-white/20">📤</label>`;
-      }
-    }
-    $("#ref-thumbs").innerHTML = html;
-    $$("#ref-thumbs [data-rm]").forEach((b) => b.addEventListener("click", () => { state.refs.splice(+b.dataset.rm, 1); drawRefs(); }));
-    $$("#ref-thumbs [data-add]").forEach((l) => l.addEventListener("click", () => $("#ref-input").click()));
-  }
-  drawRefs();
-
-  /* ---------- POSTER: 1 photo slot ---------- */
-  $("#p-photo").addEventListener("change", (e) => {
-    const f = e.target.files[0];
-    if (!f) return;
-    state.photo = f;
-    renderPSlot();
-  });
-  function renderPSlot() {
-    const wrap = $("#p-slot-wrap");
-    if (!wrap) return;
-    if (state.photo) {
-      wrap.innerHTML = `<span class="relative inline-block">
-        <img src="${URL.createObjectURL(state.photo)}" class="size-16 rounded-xl object-cover ring-2 ring-golden/60">
-        <button id="p-remove" class="absolute -right-1.5 -top-1.5 grid size-5 place-items-center rounded-full bg-ink text-xs text-white">×</button></span>`;
-      $("#p-remove").addEventListener("click", () => { state.photo = null; renderPSlot(); });
-    } else {
-      wrap.innerHTML = `<label class="grid size-16 cursor-pointer place-items-center rounded-xl border-2 border-dashed border-sandal/25 text-xl hover:border-saffron dark:border-white/20">📤</label>`;
-      wrap.querySelector("label").addEventListener("click", () => $("#p-photo").click());
-    }
-  }
-  renderPSlot();
-
-  /* ---------- POSTER TEMPLATES ---------- */
-  const TPL = [
-    { id: "ganesh", name: "🐘 Ganesh Utsav",
-      scene: "Lord Ganesha seated majestically on an ornate golden throne at LEFT side, carved temple backdrop, hanging brass oil lamps, marigold garlands, modak plate, warm golden glow",
-      shloka: "॥ श्री गणेशाय नमः ॥",
+  const STYLE_SUFFIX = {
+    Traditional: ", traditional classical Indian temple painting style, rich gold ornaments, devotional mood",
+    Cinematic: ", cinematic dramatic lighting, ultra realistic detail",
+    Watercolor: ", soft pastel watercolor illustration style",
+  };
+  const FEST = {
+    ganesh: { name: "🐘 Ganesh Utsav", shloka: "॥ श्री गणेशाय नमः ॥",
       title: { mr: "श्री गणेश जयंती", en: "Ganesh Jayanti" },
-      sub: { mr: "निमित्त सर्वांना मंगलमय शुभेच्छा...!", en: "Warm wishes to all...!" },
+      sub: { mr: "निमित्त सर्व भक्तांना मंगलमय शुभेच्छा...!", en: "Warm wishes to all devotees...!" },
       para: { mr: "विघ्नांचे नाशक, मंगलमूर्ती, बुद्धीचे दाता श्री गणेशाच्या कृपेने आपल्या जीवनात सुख, शांती, समृद्धी व सचुखी नांदो...", en: "May Lord Ganesha's blessings bring peace, prosperity and success to your life..." },
       bold: { mr: "गणपती बाप्पा मोरया मंगलमूर्ती मोरया..!", en: "Ganpati Bappa Morya!" },
       sugg: { mr: ["सुख, समृद्धी आणि आरोग्य लाभो!", "बाप्पाची कृपा सदैव राहो!"], en: ["May Bappa bless your home!", "Wishing you prosperity!"] } },
-    { id: "diwali", name: "🪔 Diwali",
-      scene: "rows of glowing clay diyas and golden rangoli on LEFT side, fireworks bokeh in night sky, marigold garlands, warm amber glow, elegant temple courtyard",
-      shloka: "॥ शुभ दीपावली ॥",
+    diwali: { name: "🪔 Diwali", shloka: "॥ शुभ दीपावली ॥",
       title: { mr: "शुभ दीपावली", en: "Happy Diwali" },
       sub: { mr: "प्रकाशाचा सण, आनंदाचा क्षण!", en: "Festival of lights, moment of joy!" },
       para: { mr: "दिव्यांच्या प्रकाशाने तुमचे जीवन उजळून निघो, घरोघरी सुख आणि समृद्धी नांदो.", en: "May the light of diyas brighten your life with joy and prosperity." },
       bold: { mr: "शुभ दीपावली!", en: "Happy Diwali!" },
       sugg: { mr: ["प्रकाश आणि आनंद लाभो!", "दिवाळी शुभेच्छा!"], en: ["Lights and joy to your home!", "Have a sparkling Diwali!"] } },
-    { id: "navratri", name: "🌺 Navratri",
-      scene: "Goddess Durga idol with garlands on LEFT side, red and gold drapes, dandiya sticks, marigold decoration, festive warm glow",
-      shloka: "॥ जय माता दी ॥",
+    navratri: { name: "🌺 Navratri", shloka: "॥ जय माता दी ॥",
       title: { mr: "नवरात्रि शुभेच्छा", en: "Happy Navratri" },
       sub: { mr: "माईच्या कृपेने मंगलमय वर्ष!", en: "Blessings of Maa Durga!" },
       para: { mr: "नऊ दिवसांची भक्ती, माईचा आशीर्वाद — तुमच्या जीवनात सुख, समृद्धी आणि आरोग्य नांदो.", en: "May Maa Durga's nine nights of devotion bring health, wealth and joy to you." },
       bold: { mr: "जय माता दी!", en: "Jai Mata Di!" },
       sugg: { mr: ["नवरात्री शुभेच्छा!", "माईचा आशीर्वाद लाभो!"], en: ["Happy Navratri!", "Blessings of Maa Durga!"] } },
-    { id: "holi", name: "🎨 Holi",
-      scene: "colorful gulal powder clouds and water splashes around, temple silhouette, vibrant pink yellow green colors, joyful festive bokeh",
-      shloka: "॥ राधे राधे ॥",
+    holi: { name: "🎨 Holi", shloka: "॥ राधे राधे ॥",
       title: { mr: "होळी शुभेच्छा", en: "Happy Holi" },
       sub: { mr: "रंगांचा सण, आनंदाचा क्षण!", en: "Festival of colors and joy!" },
       para: { mr: "रंगांनी तुमचे जीवन भरून जावो, प्रत्येक दिवस आनंदाने उजळून निघो.", en: "May your life be filled with colors and every day shine with joy." },
       bold: { mr: "होली मुबारक!", en: "Happy Holi!" },
       sugg: { mr: ["रंगभर शुभेच्छा!", "होळी शुभेच्छा!"], en: ["Wishing you a colorful Holi!", "Holi greetings!"] } },
-    { id: "hanuman", name: "🚩 Hanuman Jayanti",
-      scene: "Lord Hanuman with mace and saffron flag on LEFT side, mountain temple backdrop, saffron orange glow, powerful divine aura",
-      shloka: "॥ जय हनुमान ॥",
+    hanuman: { name: "🚩 Hanuman Jayanti", shloka: "॥ जय हनुमान ॥",
       title: { mr: "हनुमान जयंती", en: "Hanuman Jayanti" },
       sub: { mr: "बळ आणि भक्तीचे प्रतीक!", en: "Symbol of strength and devotion!" },
       para: { mr: "हनुमंताच्या कृपेने तुम्हाला बळ, धैर्य आणि विजय लाभो.", en: "May Hanuman bless you with strength, courage and victory." },
       bold: { mr: "जय श्री राम! जय हनुमान!", en: "Jai Shri Ram! Jai Hanuman!" },
       sugg: { mr: ["बजरंगबली की जय!", "हनुमंत आशीर्वाद!"], en: ["Jai Bajrangbali!", "Hanuman's blessings!"] } },
-    { id: "swami", name: "🙏 Swami Samarth",
-      scene: "Swami Samarth seated in meditation on LEFT side, akkalkot temple backdrop, soft saffron and cream glow, peaceful divine aura",
-      shloka: "॥ श्री स्वामी समर्थ ॥",
+    swami: { name: "🙏 Swami Samarth", shloka: "॥ श्री स्वामी समर्थ ॥",
       title: { mr: "स्वामी समर्थ", en: "Swami Samarth" },
       sub: { mr: "भक्ती आणि शरणागतीचे प्रतीक!", en: "Faith and surrender!" },
       para: { mr: "स्वामींच्या कृपेने तुमचे जीवन शांत, सुखी आणि समृद्ध होवो.", en: "May Swami's grace keep your life peaceful and prosperous." },
       bold: { mr: "श्री स्वामी समर्थ!", en: "Shri Swami Samarth!" },
       sugg: { mr: ["स्वामी समर्थ!", "भय नको, स्वामी आहेत!"], en: ["Swami Samarth!", "Fear not, Swami is with you!"] } },
-    { id: "newyear", name: "🎉 New Year",
-      scene: "golden fireworks and confetti in night sky, elegant champagne glasses, clock tower at midnight, warm golden glow",
-      shloka: "॥ शुभ नववर्ष ॥",
+    newyear: { name: "🎉 New Year", shloka: "॥ शुभ नववर्ष ॥",
       title: { mr: "नववर्ष शुभेच्छा", en: "Happy New Year" },
       sub: { mr: "नवे स्वप्न, नवी सुरुवात!", en: "New dreams, new beginnings!" },
       para: { mr: "नवे वर्ष तुम्हाला सुख, समृद्धी आणि यश घेऊन येवो.", en: "May the new year bring you joy, prosperity and success." },
       bold: { mr: "नववर्षाच्या शुभेच्छा!", en: "Happy New Year!" },
       sugg: { mr: ["नववर्ष शुभेच्छा!", "यशस्वी नवे वर्ष!"], en: ["Cheers to the new year!", "Wishing you a great year!"] } },
+  };
+  const DESIGNS = [
+    { id: "ganesh-1", fest: "ganesh", name: "Golden Throne", scene: "Lord Ganesha seated majestically on an ornate golden throne at LEFT side, carved temple backdrop, hanging brass oil lamps, marigold garlands, modak plate, warm golden glow" },
+    { id: "ganesh-2", fest: "ganesh", name: "Palkhi Utsav", scene: "Ganesha idol on a decorated silver palkhi palanquin carried by devotees at LEFT side, street procession, dhol tasha drums, orange flags, joyful crowd bokeh" },
+    { id: "ganesh-3", fest: "ganesh", name: "Modak Blessing", scene: "close-up of Lord Ganesha holding a modak sweet at LEFT side, soft pastel cream background, ornate floral frame, gentle morning light, serene mood" },
+    { id: "diwali-1", fest: "diwali", name: "Diya Rows", scene: "rows of glowing clay diyas and golden rangoli on LEFT side, fireworks bokeh in night sky, marigold garlands, warm amber glow, elegant temple courtyard" },
+    { id: "diwali-2", fest: "diwali", name: "Laxmi Pujan", scene: "Goddess Laxmi idol on decorated altar at LEFT side, gold coins, kalash, marigold flowers, warm candlelight, rich red velvet backdrop" },
+    { id: "diwali-3", fest: "diwali", name: "Fireworks Night", scene: "colorful fireworks over temple skyline on LEFT side, hanging kandil lanterns, family silhouettes holding diyas, deep blue night sky" },
+    { id: "navratri-1", fest: "navratri", name: "Durga Idol", scene: "Goddess Durga idol with garlands on LEFT side, red and gold drapes, dandiya sticks, marigold decoration, festive warm glow" },
+    { id: "navratri-2", fest: "navratri", name: "Garba Night", scene: "circular garba dancers with dandiya sticks on LEFT side, colorful chaniya choli swirls, stage lights bokeh, festive energy" },
+    { id: "navratri-3", fest: "navratri", name: "Nine Colors", scene: "nine colored ornate panels with deity silhouette on LEFT side, traditional border patterns, gold foil accents, devotional glow" },
+    { id: "holi-1", fest: "holi", name: "Gulal Clouds", scene: "colorful gulal powder clouds and water splashes around, temple silhouette, vibrant pink yellow green colors, joyful festive bokeh" },
+    { id: "holi-2", fest: "holi", name: "Radha Krishna", scene: "Radha Krishna playing with pichkari colors on LEFT side, Vrindavan garden backdrop, pastel color mist, playful divine mood" },
+    { id: "holi-3", fest: "holi", name: "Water Splash", scene: "vibrant water balloon splash frozen in motion on LEFT side, rainbow colors, laughing crowd bokeh, sunny festive day" },
+    { id: "hanuman-1", fest: "hanuman", name: "Saffron Flag", scene: "Lord Hanuman with mace and saffron flag on LEFT side, mountain temple backdrop, saffron orange glow, powerful divine aura" },
+    { id: "hanuman-2", fest: "hanuman", name: "Chalisa Pose", scene: "Lord Hanuman in prayer pose with open chalisa book on LEFT side, mountain cave temple, divine light rays, humble devotion" },
+    { id: "hanuman-3", fest: "hanuman", name: "Gada Power", scene: "Lord Hanuman lifting his gada mace in powerful stance on LEFT side, stormy dramatic sky, orange energy aura, muscular devotion" },
+    { id: "swami-1", fest: "swami", name: "Meditation", scene: "Swami Samarth seated in meditation on LEFT side, akkalkot temple backdrop, soft saffron and cream glow, peaceful divine aura" },
+    { id: "swami-2", fest: "swami", name: "Akkalkot Darbar", scene: "Akkalkot temple courtyard darbar scene on LEFT side, Swami seated on wooden paduka, devotees offering flowers, warm lamplight" },
+    { id: "swami-3", fest: "swami", name: "Blessing Hand", scene: "close-up of Swami's blessing hand with vibhuti on LEFT side, soft cream background, peacock feather, serene sacred mood" },
+    { id: "newyear-1", fest: "newyear", name: "Fireworks", scene: "golden fireworks and confetti in night sky, elegant champagne glasses, clock tower at midnight, warm golden glow" },
+    { id: "newyear-2", fest: "newyear", name: "Midnight Clock", scene: "ornate golden clock tower striking midnight on LEFT side, confetti rain, champagne glow, elegant art deco frame" },
+    { id: "newyear-3", fest: "newyear", name: "Sunrise Garlands", scene: "sunrise over temple spire with fresh marigold garland on LEFT side, calendar-style ornate frame, hopeful golden morning" },
   ];
-  $("#p-tpl").innerHTML = TPL.map((t, i) => `<option value="${i}">${t.name}</option>`).join("");
+
+  $("#p-tpl").innerHTML = Object.keys(FEST).map((fid) =>
+    `<optgroup label="${FEST[fid].name}">${DESIGNS.filter((d) => d.fest === fid).map((d) => `<option value="${d.id}">${d.name}</option>`).join("")}</optgroup>`
+  ).join("");
   function renderSugg() {
-    const t = TPL[+$("#p-tpl").value], lang = $("#p-lang").value;
+    const design = DESIGNS.find((d) => d.id === $("#p-tpl").value) || DESIGNS[0];
+    const t = FEST[design.fest], lang = $("#p-lang").value;
     $("#p-sugg").innerHTML = (t.sugg[lang] || []).map((s) =>
       `<button data-sugg="${s}" class="filter-btn !px-2 !py-1 !text-[11px]">${s}</button>`).join("");
-    $$("#p-sugg [data-sugg]").forEach((b) => b.addEventListener("click", () => { $("#p-msg").value = b.dataset.sugg; }));
+    $$("#p-sugg [data-sugg]").forEach((b) => b.addEventListener("click", () => { $("#prompt").value = b.dataset.sugg; }));
   }
-  $("#p-tpl").addEventListener("change", renderSugg);
-  $("#p-lang").addEventListener("change", renderSugg);
-  renderSugg();
+  $("#p-tpl").addEventListener("change", () => { renderSugg(); updateStrip(); });
+  $("#p-lang").addEventListener("change", () => { renderSugg(); updateStrip(); });
+  ["i-ratio", "i-res", "i-style", "p-ratio"].forEach((id) => document.getElementById(id).addEventListener("change", updateStrip));
 
-  /* ---------- helpers ---------- */
-  function loadImg(src) { return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; }); }
-  function fileToB64(f) { return new Promise((res) => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(f); }); }
-  function needLogin() {
-    localStorage.setItem("bm-welcome", "🙏 Pehle login karo — AI Studio ke liye");
-    location.href = "/login";
+  let photoData = "";
+  const refs = { 1: "", 2: "" };
+  function bindUpload(inputId, prevId, icoId, setter) {
+    document.getElementById(inputId).addEventListener("change", (e) => {
+      const f = e.target.files[0];
+      if (!f) return;
+      const r = new FileReader();
+      r.onload = () => {
+        setter(r.result);
+        const prev = document.getElementById(prevId);
+        prev.src = r.result; prev.classList.remove("hidden");
+        document.getElementById(icoId).classList.add("hidden");
+        updateRefCount();
+      };
+      r.readAsDataURL(f);
+    });
+  }
+  bindUpload("p-photo", "p-photo-prev", "p-photo-ico", (v) => { photoData = v; });
+  bindUpload("i-ref1", "i-ref1-prev", "i-ref1-ico", (v) => { refs[1] = v; });
+  bindUpload("i-ref2", "i-ref2-prev", "i-ref2-ico", (v) => { refs[2] = v; });
+  function updateRefCount() {
+    $("#ref-count").textContent = (refs[1] ? 1 : 0) + (refs[2] ? 1 : 0);
   }
 
-  const SIZES = {
-    "1K": { Auto: "1024x1024", "1:1": "1024x1024", "4:5": "1024x1536", "16:9": "1536x1024", "9:16": "1024x1536" },
-    "2K": { Auto: "2048x2048", "1:1": "2048x2048", "4:5": "1536x2048", "16:9": "2048x1536", "9:16": "1536x2048" },
-  };
-  const STYLES = {
-    Traditional: "traditional Indian devotional art, ornate details, ",
-    Cinematic: "cinematic lighting, photorealistic, dramatic, ",
-    Cosmic: "cosmic spiritual, ethereal golden glow, nebula, ",
-    Photorealistic: "ultra photorealistic, 8k detail, ",
-  };
+  let view = "image";
+  function setView(v) {
+    view = v;
+    $$(".vtab").forEach((b) => {
+      const on = b.dataset.view === v;
+      ["bg-gradient-to-r", "from-saffron", "to-golden", "text-white", "shadow-gold"].forEach((c) => b.classList.toggle(c, on));
+    });
+    $("#set-image").classList.toggle("hidden", v !== "image");
+    $("#set-poster").classList.toggle("hidden", v !== "poster");
+    $("#view-title").textContent = v === "poster" ? "Poster Generation" : "Image Generation";
+    $("#empty-ico").textContent = v === "poster" ? "🎨" : "🖼️";
+    $("#empty").querySelector("h3").textContent = v === "poster" ? "Start creating posters" : "Start generating images";
+    $("#empty-text").textContent = v === "poster"
+      ? "Design chuno, photo lagao, naam likho — festival poster ready!"
+      : "Neeche prompt mein apni kalpana likho — BhaktiMedia AI Engine use saakar karega.";
+    updateStrip();
+  }
+  $$(".vtab").forEach((b) => b.addEventListener("click", () => {
+    if (b.dataset.lock) { toast("🔒 " + b.textContent.trim() + " jald aa raha hai!"); return; }
+    setView(b.dataset.view);
+  }));
 
-  $("#btn-send").addEventListener("click", async () => {
-    if (!token) return needLogin();
-    if (state.view === "image") return genImage();
-    if (state.view === "poster") return genPoster();
+  function updateStrip() {
+    const chips = [];
+    if (view === "image") {
+      chips.push("Ratio: " + $("#i-ratio").selectedOptions[0].text);
+      chips.push("Res: " + $("#i-res").value);
+      chips.push("Style: " + ($("#i-style").value || "Auto"));
+    } else {
+      const d = DESIGNS.find((x) => x.id === $("#p-tpl").value);
+      chips.push("Design: " + (d ? d.name : "-"));
+      chips.push("Ratio: " + $("#p-ratio").selectedOptions[0].text);
+      chips.push("Lang: " + $("#p-lang").selectedOptions[0].text);
+    }
+    $("#strip-values").innerHTML = chips.map((c) => `<span class="shrink-0 whitespace-nowrap rounded-lg bg-sandal/10 px-2.5 py-1.5 text-[11px] font-semibold text-sandal-deep/80 dark:bg-white/5 dark:text-cream/70">${c}</span>`).join("");
+  }
+
+  const openSheet = () => { $("#settings-sheet").classList.add("open"); $("#sheet-backdrop").classList.add("open"); };
+  const closeSheet = () => { $("#settings-sheet").classList.remove("open"); $("#sheet-backdrop").classList.remove("open"); };
+  $("#strip-open").addEventListener("click", openSheet);
+  $("#sheet-close").addEventListener("click", closeSheet);
+  $("#sheet-backdrop").addEventListener("click", closeSheet);
+
+  function loadH() { try { return JSON.parse(localStorage.getItem("bm-studio-hist") || "[]"); } catch (e) { return []; } }
+  function saveH(h) { localStorage.setItem("bm-studio-hist", JSON.stringify(h.slice(0, 12))); }
+  function renderRecent() {
+    const h = loadH();
+    $("#recent-wrap").classList.toggle("hidden", h.length === 0);
+    $("#recent").innerHTML = h.map((x) =>
+      `<img src="${x.thumb}" title="${(x.prompt || "").replace(/"/g, "")}" class="h-20 w-16 shrink-0 cursor-pointer rounded-xl object-cover shadow-soft transition hover:scale-105" />`
+    ).join("");
+    $$("#recent img").forEach((im, i) => im.addEventListener("click", () => window.open(h[i].thumb, "_blank")));
+  }
+
+  async function run(body) {
+    $("#empty").classList.add("hidden");
+    $("#result").classList.add("hidden");
+    $("#actions").classList.add("hidden");
+    $("#loader").classList.remove("hidden");
+    try {
+      const r = await fetch("/api/generate-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+        body: JSON.stringify(body),
+      });
+      const d = await r.json();
+      if (!r.ok || !d.image) throw new Error(d.error || "Generation fail");
+      $("#result").src = d.image;
+      $("#dl").href = d.image;
+      $("#result").classList.remove("hidden");
+      $("#actions").classList.remove("hidden");
+      saveH([{ prompt: body.tag || "creation", thumb: d.image, t: Date.now() }, ...loadH()]);
+      renderRecent();
+      loadCredits();
+    } catch (e) {
+      $("#empty").classList.remove("hidden");
+      toast("❌ " + e.message);
+    } finally {
+      $("#loader").classList.add("hidden");
+    }
+  }
+
+  $("#gen").addEventListener("click", () => {
+    const extra = $("#prompt").value.trim();
+    if (view === "image") {
+      if (!extra) return toast("Pehle prompt likho!");
+      const body = { prompt: extra + (STYLE_SUFFIX[$("#i-style").value] || ""), size: $("#i-ratio").value === "auto" ? "1024x1024" : $("#i-ratio").value, tag: extra };
+      const ref = refs[1] || refs[2];
+      if (ref) body.photo = ref;
+      run(body);
+    } else {
+      if (!photoData) return toast("Photo upload karna zaroori hai!");
+      const name = $("#p-name").value.trim();
+      if (!name) return toast("Shubhchintak ka naam likho!");
+      const design = DESIGNS.find((d) => d.id === $("#p-tpl").value) || DESIGNS[0];
+      const t = FEST[design.fest], lang = $("#p-lang").value;
+      const msg = extra || (t.sugg[lang] || [])[0] || "";
+      const prompt = `Festival greeting poster, ${$("#p-ratio").value === "1024x1536" ? "portrait" : $("#p-ratio").value === "1536x1024" ? "landscape" : "square"} format.
+SCENE: ${design.scene}.
+FACE: Use the UPLOADED photo's face for the devotee figure in the scene (respectful, modest traditional clothing, namaste or blessing pose). Keep the face recognisable and dignified.
+TEXT (Devanagari/Latin exactly as given, crisp and correctly spelled):
+TOP SHLOKA: ${t.shloka}
+MAIN TITLE (big ornate): ${t.title[lang]}
+SUB LINE: ${t.sub[lang]}
+PARAGRAPH (small): ${t.para[lang]}
+BOLD LINE: ${t.bold[lang]}
+NAME BLOCK: ${name}${msg ? " — " + msg : ""}
+STYLE: premium Indian festival poster, ornate gold borders, balanced typography, print quality.`;
+      run({ prompt, photo: photoData, size: $("#p-ratio").value, tag: design.name + " — " + name });
+    }
   });
 
-  async function callAPI(payload) {
-    const r = await fetch(API, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-      body: JSON.stringify(payload),
-    });
-    const d = await r.json();
-    if (!r.ok || !d.image) throw new Error(d.error || "Generation fail");
-    return d;
-  }
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest("#reset-btn, #reset-btn-m")) return;
+    $("#prompt").value = "";
+    $("#p-name").value = "";
+    photoData = ""; refs[1] = ""; refs[2] = "";
+    ["p-photo", "i-ref1", "i-ref2"].forEach((id) => { document.getElementById(id).value = ""; });
+    ["p-photo-prev", "i-ref1-prev", "i-ref2-prev"].forEach((id) => { document.getElementById(id).classList.add("hidden"); });
+    ["p-photo-ico", "i-ref1-ico", "i-ref2-ico"].forEach((id) => { document.getElementById(id).classList.remove("hidden"); });
+    updateRefCount();
+    $("#result").classList.add("hidden");
+    $("#actions").classList.add("hidden");
+    $("#empty").classList.remove("hidden");
+    ["i-ratio", "i-res", "i-style", "p-tpl", "p-ratio", "p-lang"].forEach((id) => { document.getElementById(id).selectedIndex = 0; });
+    renderSugg(); updateStrip();
+    toast("🗑️ Sab reset ho gaya!");
+  });
 
-  /* ---------- IMAGE ---------- */
-  async function genImage() {
-    const prompt = $("#prompt").value.trim();
-    if (!prompt) { $("#prompt").focus(); return; }
-    const btn = $("#btn-send"); btn.disabled = true;
-    startProgress("Image generate ho raha hai...");
-    try {
-      const ratio = $("#img-ratio").value, res = $("#img-res").value, style = $("#img-style").value;
-      const size = (SIZES[res] || SIZES["1K"])[ratio] || "1024x1024";
-      const payload = { size };
-      if (state.refs[0]) {
-        payload.photo = await fileToB64(state.refs[0]);
-        payload.prompt = `Using the input photo as the base image, apply this transformation while keeping the person's face, identity and key details intact: ${(STYLES[style] || "") + prompt}`;
-      } else {
-        payload.prompt = (STYLES[style] || "") + prompt;
-      }
-      const d = await callAPI(payload);
-      $("#img-empty").classList.add("hidden");
-      $("#img-results").classList.remove("hidden");
-      const card = document.createElement("div");
-      card.className = "group relative overflow-hidden rounded-2xl shadow-soft";
-      card.innerHTML = `<img src="${d.image}" class="w-full object-cover" alt="Generated">
-        <div class="absolute inset-0 bg-gradient-to-t from-ink/90 to-transparent opacity-0 transition group-hover:opacity-100">
-          <div class="absolute inset-x-0 bottom-0 p-3"><a href="${d.image}" download="bhaktimedia-${Date.now()}.png" class="btn btn-primary w-full justify-center !py-1.5 !text-xs">⬇️ Download</a></div>
-        </div>`;
-      $("#img-results").prepend(card);
-      saveH([{ prompt, thumb: d.image, t: Date.now() }, ...loadH()]);
-      if (d.used !== "DEV") { $("#credits-count").textContent = d.used; $("#credits-limit").textContent = d.limit; }
-      localStorage.setItem("bm-welcome", `🎨 Image ready! ${d.used}/${d.limit}`);
-    } catch (e) {
-      localStorage.setItem("bm-welcome", "❌ " + e.message);
-    }
-    stopProgress();
-    btn.disabled = false;
-  }
-
-  /* ---------- POSTER (EDITS pipeline) ---------- */
-  async function genPoster() {
-    if (!state.photo) { localStorage.setItem("bm-welcome", "📷 Pehle user photo upload karo!"); return; }
-    const btn = $("#btn-send"); btn.disabled = true;
-    startProgress("Poster generate ho raha hai...");
-    const t = TPL[+$("#p-tpl").value], lang = $("#p-lang").value;
-    const name = $("#p-name").value.trim() || "श्री. भक्त";
-    const custom = $("#p-msg").value.trim();
-    const ratio = $("#p-ratio").value;
-    const aiSize = ratio === "1:1" ? "1024x1024" : "1024x1536";
-    const fmt = ratio === "1:1" ? "square 1:1" : ratio === "9:16" ? "tall portrait 9:16" : "portrait 4:5";
-    const L = (o) => o[lang];
-    try {
-      const photo = await fileToB64(state.photo);
-      const prompt =
-`Create a professional Indian devotional festival greeting poster in ${fmt} format.
-SCENE: ${t.scene}.
-PERSON: Use the EXACT person from the input photo - identical face, hair and clothing. Remove the photo background completely and place the person naturally inside the scene on the RIGHT side, fully integrated with matching warm lighting and soft shadows.
-TEXT - render EXACTLY with perfect spelling in elegant golden Devanagari calligraphy:
-Top small line: "${t.shloka}"
-Big decorative title: "${L(t.title)}"
-Under title small line: "${L(t.sub)}"
-Paragraph: "${custom || L(t.para)}"
-Bottom decorative panel: "${L(t.bold)}"
-Small line near bottom: "शुभेच्छुक : ${name}"
-STYLE: photorealistic devotional art, warm golden light, ultra detailed, professional print quality, balanced composition, all text clearly readable.`;
-      const d = await callAPI({ prompt, size: aiSize, photo });
-      const img = await loadImg(d.image);
-      const canvas = document.createElement("canvas");
-      canvas.width = img.width; canvas.height = img.height;
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(img, 0, 0);
-      ctx.fillStyle = "rgba(255,255,255,0.85)";
-      ctx.font = `700 ${Math.round(img.height * 0.014)}px sans-serif`;
-      ctx.textAlign = "right";
-      ctx.fillText("BhaktiMedia.in", img.width - img.width * 0.02, img.height - img.height * 0.015);
-      const url = canvas.toDataURL("image/png");
-      $("#p-empty").classList.add("hidden");
-      $("#p-result").classList.remove("hidden");
-      $("#p-img").src = url;
-      $("#p-download").href = url;
-      $("#p-download").download = `bhaktimedia-${t.id}-poster.png`;
-      $("#share-wa").onclick = async () => {
-        const blob = await (await fetch(url)).blob();
-        const file = new File([blob], "poster.png", { type: "image/png" });
-        if (navigator.share && navigator.canShare?.({ files: [file] })) navigator.share({ files: [file], text: L(t.bold) }).catch(() => {});
-        else window.open("https://wa.me/?text=" + encodeURIComponent("🪔 " + L(t.bold) + " — BhaktiMedia.in"), "_blank");
-      };
-      $("#share-fb").onclick = () => window.open("https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent("https://bhaktimedia.in"), "_blank");
-      $("#share-ig").onclick = () => {
-        const a = document.createElement("a"); a.href = url; a.download = "bhaktimedia-poster.png"; a.click();
-        localStorage.setItem("bm-welcome", "📸 PNG download ho gayi — Instagram story mein upload karo!");
-      };
-      saveH([{ prompt: t.name + " — " + name, thumb: url, t: Date.now() }, ...loadH()]);
-      localStorage.setItem("bm-welcome", "✅ Poster ready!");
-    } catch (e) {
-      localStorage.setItem("bm-welcome", "❌ " + e.message);
-    }
-    stopProgress();
-    btn.disabled = false;
-  }
-
-  /* ---------- init ---------- */
-  const v = new URLSearchParams(location.search).get("view");
-  setView(["image", "poster", "voice", "video"].includes(v) ? v : "home");
+  const params = new URLSearchParams(location.search);
+  setView(params.get("view") === "poster" ? "poster" : "image");
+  const tplParam = params.get("tpl");
+  if (tplParam && DESIGNS.some((d) => d.id === tplParam)) $("#p-tpl").value = tplParam;
+  renderSugg();
+  renderRecent();
 })();
 </script>
 </Layout>

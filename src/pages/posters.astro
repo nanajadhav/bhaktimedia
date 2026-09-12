@@ -1,0 +1,103 @@
+---
+import Layout from "../layouts/Layout.astro";
+const FEST = [
+  { id: "ganesh", name: "Ganesh Utsav", icon: "🐘", desc: "Ganpati Bappa ke mangal designs" },
+  { id: "diwali", name: "Diwali", icon: "🪔", desc: "Roshni aur divyon ke designs" },
+  { id: "navratri", name: "Navratri", icon: "🌺", desc: "Maa Durga ke nau din" },
+  { id: "holi", name: "Holi", icon: "🎨", desc: "Rangon ka tyohar" },
+  { id: "hanuman", name: "Hanuman Jayanti", icon: "🚩", desc: "Bajrangbali ki shakti" },
+  { id: "swami", name: "Swami Samarth", icon: "🙏", desc: "Shraddha aur shanti" },
+  { id: "newyear", name: "New Year", icon: "🎉", desc: "Naye varsh ki shubhkamnayein" },
+];
+const DESIGNS = [
+  { id: "ganesh-1", fest: "ganesh", name: "Golden Throne", seed: "ganesh-golden-throne" },
+  { id: "ganesh-2", fest: "ganesh", name: "Palkhi Utsav", seed: "ganesh-palkhi-procession" },
+  { id: "ganesh-3", fest: "ganesh", name: "Modak Blessing", seed: "ganesh-modak-soft" },
+  { id: "diwali-1", fest: "diwali", name: "Diya Rows", seed: "diwali-diya-rows" },
+  { id: "diwali-2", fest: "diwali", name: "Laxmi Pujan", seed: "diwali-laxmi-altar" },
+  { id: "diwali-3", fest: "diwali", name: "Fireworks Night", seed: "diwali-fireworks-kandil" },
+  { id: "navratri-1", fest: "navratri", name: "Durga Idol", seed: "navratri-durga-idol" },
+  { id: "navratri-2", fest: "navratri", name: "Garba Night", seed: "navratri-garba-dandiya" },
+  { id: "navratri-3", fest: "navratri", name: "Nine Colors", seed: "navratri-nine-colors" },
+  { id: "holi-1", fest: "holi", name: "Gulal Clouds", seed: "holi-gulal-clouds" },
+  { id: "holi-2", fest: "holi", name: "Radha Krishna", seed: "holi-radha-krishna" },
+  { id: "holi-3", fest: "holi", name: "Water Splash", seed: "holi-water-splash" },
+  { id: "hanuman-1", fest: "hanuman", name: "Saffron Flag", seed: "hanuman-saffron-flag" },
+  { id: "hanuman-2", fest: "hanuman", name: "Chalisa Pose", seed: "hanuman-chalisa-pose" },
+  { id: "hanuman-3", fest: "hanuman", name: "Gada Power", seed: "hanuman-gada-power" },
+  { id: "swami-1", fest: "swami", name: "Meditation", seed: "swami-meditation-peace" },
+  { id: "swami-2", fest: "swami", name: "Akkalkot Darbar", seed: "swami-akkalkot-darbar" },
+  { id: "swami-3", fest: "swami", name: "Blessing Hand", seed: "swami-blessing-hand" },
+  { id: "newyear-1", fest: "newyear", name: "Fireworks", seed: "newyear-fireworks-gold" },
+  { id: "newyear-2", fest: "newyear", name: "Midnight Clock", seed: "newyear-midnight-clock" },
+  { id: "newyear-3", fest: "newyear", name: "Sunrise Garlands", seed: "newyear-sunrise-garland" },
+];
+const previewsOf = (fid: string) => DESIGNS.filter((d) => d.fest === fid).slice(0, 3);
+---
+<Layout title="Devotional Poster Templates" description="Festival wise traditional poster designs — pasand karo aur generate karo.">
+<div class="container-x px-4 pt-32 pb-20 sm:px-6">
+  <div class="text-center">
+    <p class="eyebrow">🪔 Traditional Templates</p>
+    <h1 id="pg-title" class="mt-3 font-display text-3xl font-bold sm:text-5xl">Devotional Poster Templates</h1>
+    <p id="pg-sub" class="mx-auto mt-4 max-w-xl text-sandal-deep/70 dark:text-cream/60">Festival chuno — andar ke saare designs dekho, pasand ka design Studio mein kholo!</p>
+  </div>
+
+  <div id="fest-grid" class="mx-auto mt-12 grid max-w-6xl gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    {FEST.map((f, i) => {
+      const pre = previewsOf(f.id);
+      return (
+        <a href={`/posters?fest=${f.id}`} class={`group relative overflow-hidden rounded-3xl shadow-soft transition duration-500 hover:-translate-y-1.5 hover:shadow-lift ${i === 0 ? "lg:col-span-2" : ""}`}>
+          <div class={`relative overflow-hidden ${i === 0 ? "aspect-[16/9]" : "aspect-[4/3]"}`}>
+            <div class="grid h-full w-full grid-cols-3 grid-rows-2 gap-1 transition duration-700 group-hover:scale-105">
+              <img src={`/templates/${pre[0]?.fest}/${pre[0]?.id}.png`} onerror={`this.onerror=null;this.src='https://picsum.photos/seed/${pre[0]?.seed}/600/600'`} alt="" class="col-span-2 row-span-2 h-full w-full object-cover" />
+              <img src={`/templates/${pre[1]?.fest}/${pre[1]?.id}.png`} onerror={`this.onerror=null;this.src='https://picsum.photos/seed/${pre[1]?.seed}/300/300'`} alt="" class="h-full w-full object-cover" />
+              <img src={`/templates/${pre[2]?.fest}/${pre[2]?.id}.png`} onerror={`this.onerror=null;this.src='https://picsum.photos/seed/${pre[2]?.seed}/300/300'`} alt="" class="h-full w-full object-cover" />
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-t from-ink/95 via-ink/30 to-transparent" />
+            <span class="absolute right-3 top-3 chip bg-white/15 text-white backdrop-blur-md">{pre.length} designs</span>
+            <div class="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-5">
+              <div>
+                <span class="text-2xl drop-shadow">{f.icon}</span>
+                <h2 class="mt-1 font-display text-xl font-bold text-white sm:text-2xl">{f.name}</h2>
+                <p class="mt-0.5 text-xs text-white/70 sm:text-sm">{f.desc}</p>
+              </div>
+              <span class="grid size-11 shrink-0 translate-y-2 place-items-center rounded-full bg-gradient-to-br from-saffron to-golden text-lg text-white opacity-0 shadow-gold transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">→</span>
+            </div>
+          </div>
+        </a>
+      );
+    })}
+  </div>
+
+  {FEST.map((f) => (
+    <section id={`designs-${f.id}`} data-name={`${f.icon} ${f.name}`} class="hidden mx-auto mt-10 max-w-6xl">
+      <a href="/posters" class="inline-flex items-center gap-2 text-sm font-semibold text-saffron hover:underline">← Sab Festivals</a>
+      <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {DESIGNS.filter((d) => d.fest === f.id).map((d) => (
+          <a href={`/studio?view=poster&tpl=${d.id}`} class="group relative overflow-hidden rounded-3xl shadow-soft transition duration-500 hover:-translate-y-1.5 hover:shadow-lift">
+            <img src={`/templates/${d.fest}/${d.id}.png`} onerror={`this.onerror=null;this.src='https://picsum.photos/seed/${d.seed}/480/600'`} alt={d.name} class="aspect-[4/5] w-full object-cover transition duration-700 group-hover:scale-110" />
+            <div class="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/20 to-transparent" />
+            <span class="absolute left-3 top-3 chip bg-white/15 text-white backdrop-blur-md">{f.icon} {f.name}</span>
+            <div class="absolute inset-x-0 bottom-0 p-4">
+              <h2 class="font-display text-lg font-bold text-white">{d.name}</h2>
+              <span class="mt-2 inline-flex translate-y-3 items-center gap-2 rounded-full bg-gradient-to-r from-saffron to-golden px-4 py-1.5 text-xs font-bold text-white opacity-0 shadow-gold transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">Design Chuno →</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  ))}
+</div>
+<script is:inline>
+(function () {
+  var fest = new URLSearchParams(location.search).get("fest");
+  var sec = fest ? document.getElementById("designs-" + fest) : null;
+  if (sec) {
+    document.getElementById("fest-grid").style.display = "none";
+    sec.classList.remove("hidden");
+    document.getElementById("pg-title").textContent = sec.getAttribute("data-name") + " Designs";
+    document.getElementById("pg-sub").textContent = "Pasand ka design chuno — Studio usi design ke saath khulega.";
+  }
+})();
+</script>
+</Layout>
