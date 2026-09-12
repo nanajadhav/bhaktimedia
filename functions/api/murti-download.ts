@@ -7,7 +7,9 @@ export const onRequestPost = async (context: any) => {
     if (!payload) return json({ error: "Pehle login karo" }, 401);
     const body = await context.request.json();
     const id = String(body.id || "");
+    const cat = String(body.cat || "").toLowerCase();
     if (!/^[a-z0-9-]+$/i.test(id)) return json({ error: "Galat image id" }, 400);
+    if (!/^[a-z]{2,20}$/.test(cat)) return json({ error: "Galat category" }, 400);
     const DB = context.env.DB;
     const prof = await DB.prepare("SELECT plan FROM profiles WHERE user_id = ?").bind(payload.sub).first();
     const plan = (prof?.plan as string) || "trial";
@@ -18,7 +20,7 @@ export const onRequestPost = async (context: any) => {
     if (used >= limit) return json({ error: "Murti quota khatam! Plan upgrade karo." }, 402);
     if (row) await DB.prepare("UPDATE usage SET used = ? WHERE id = ?").bind(used + 1, row.id).run();
     else await DB.prepare("INSERT INTO usage (user_id, feature, used, period) VALUES (?, ?, ?, ?)").bind(payload.sub, "murti", 1, period).run();
-    return json({ ok: true, url: `/murti/full/${id}.jpg`, left: limit - used - 1, cost: 0.5 });
+    return json({ ok: true, url: `/murti/${cat}/full/${id}.png`, left: limit - used - 1, cost: 0.5 });
   } catch (e: any) {
     return json({ error: String(e) }, 500);
   }

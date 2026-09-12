@@ -7,7 +7,7 @@ import { picsum } from "../lib/utils";
 ---
 <Layout title="Divine Gallery" description="Deity-wise devotional gallery — stock-style downloads, ratios, related images aur watermark protection.">
   <PageHeader eyebrow="Divine Gallery" title="Darshan In Every Frame" dev="॥ दर्शन गैलरी ॥"
-    description="Deity chuno, ratio dekho, download karo. Free = watermark preview • Premium = full HD clean." />
+    description="Deity chuno, ratio dekho, download karo. Preview = watermark free • Plan mein clean full HD (0.5⚡)." />
 
   <!-- data for JS -->
   <script type="application/json" id="gallery-data" set:html={JSON.stringify(
@@ -31,12 +31,12 @@ import { picsum } from "../lib/utils";
         ))}
       </div>
 
-      <!-- count + plan -->
+      <!-- count + plan quota -->
       <div class="mt-6 flex flex-wrap items-center justify-between gap-3">
         <p id="gallery-count" class="text-sm text-sandal/70 dark:text-cream/60"></p>
         <div class="flex items-center gap-2">
-          <span id="plan-chip" class="chip bg-ink/10 text-ink dark:bg-white/10 dark:text-cream">🆓 Free — watermark downloads</span>
-          <button id="btn-premium" class="btn btn-gold !px-4 !py-1.5 !text-xs">⭐ Go Premium (demo)</button>
+          <span id="plan-chip" class="chip bg-ink/10 text-ink dark:bg-white/10 dark:text-cream">🪔 Quota load ho raha hai...</span>
+          <a href="/pricing" class="btn btn-gold !px-4 !py-1.5 !text-xs">⭐ Upgrade Plan</a>
         </div>
       </div>
 
@@ -44,11 +44,13 @@ import { picsum } from "../lib/utils";
       <div id="gallery-grid" class="mt-4 columns-2 gap-4 md:columns-3 xl:columns-4">
         {deityGallery.map((d) =>
           d.images.map((img) => (
-            <figure data-deity={d.id} data-seed={img.seed} data-w={img.w} data-h={img.h}
+            <figure data-deity={d.id} data-seed={img.seed} data-id={img.id || img.seed} data-w={img.w} data-h={img.h}
                     data-ratio={img.ratio} data-title={`${d.name} — ${img.title}`}
                     class="group relative mb-4 block w-full break-inside-avoid overflow-hidden rounded-2xl border border-sandal/10 shadow-soft transition duration-300 hover:shadow-lift dark:border-white/10">
               <button data-lightbox class="block w-full text-left">
-                <img src={picsum(img.seed, img.w, img.h)} alt={img.title} loading="lazy"
+                <img src={img.id ? `/murti/${d.id}/preview/${img.id}.png` : picsum(img.seed, img.w, img.h)}
+                     onerror={img.id ? `this.onerror=null;this.src='${picsum(img.seed, img.w, img.h)}'` : undefined}
+                     alt={img.title} loading="lazy"
                      class="w-full object-cover transition duration-700 group-hover:scale-[1.04]" />
                 <span class="chip absolute left-3 top-3 bg-ink/60 text-[10px] text-white backdrop-blur">{img.ratio}</span>
                 <span class="absolute inset-x-0 bottom-0 translate-y-2 bg-gradient-to-t from-ink/85 to-transparent px-4 pb-3 pt-10 opacity-0 transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">
@@ -79,7 +81,7 @@ import { picsum } from "../lib/utils";
         <span class="flex items-center gap-2">
           <button id="lb-download" class="btn btn-primary !px-5 !py-2 !text-xs">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>
-            Download
+            Download (0.5⚡)
           </button>
           <form method="dialog"><button class="btn btn-glass !py-2 !text-cream">✕</button></form>
         </span>
@@ -104,7 +106,17 @@ import { picsum } from "../lib/utils";
   const $$ = (s) => document.querySelectorAll(s);
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const DATA = JSON.parse($("#gallery-data").textContent);
-  const isPremium = () => localStorage.getItem("bm-premium") === "1";
+
+  /* ---------- auth token + quota state ---------- */
+  let token = "";
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.indexOf("sb-") === 0 && k.indexOf("auth-token") !== -1) { token = JSON.parse(localStorage.getItem(k)).access_token; break; }
+    }
+  } catch (e) {}
+  let quota = null;
+  const hasQuota = () => !!quota && quota.murtiUsed < quota.murtiLimit;
 
   /* ---------- toast ---------- */
   let toastTimer;
@@ -116,25 +128,21 @@ import { picsum } from "../lib/utils";
     toastTimer = setTimeout(() => el.classList.add("hidden"), 3500);
   }
 
-  /* ---------- premium demo toggle ---------- */
-  function refreshPlan() {
-    const chip = $("#plan-chip"), btn = $("#btn-premium");
-    if (isPremium()) {
-      chip.textContent = "⭐ Premium — full HD, no watermark";
-      chip.className = "chip bg-golden/20 text-sandal dark:text-golden";
-      btn.textContent = "Switch to Free (demo)";
-    } else {
-      chip.textContent = "🆓 Free — watermark downloads";
-      chip.className = "chip bg-ink/10 text-ink dark:bg-white/10 dark:text-cream";
-      btn.textContent = "⭐ Go Premium (demo)";
-    }
+  /* ---------- real plan quota (server se) ---------- */
+  async function loadQuota() {
+    const chip = $("#plan-chip");
+    if (!token) { chip.textContent = "🆓 Preview mode — login karo, plan mein clean downloads"; return; }
+    try {
+      const r = await fetch("/api/credits", { headers: { Authorization: "Bearer " + token } });
+      if (r.ok) {
+        quota = await r.json();
+        const left = quota.murtiLimit - quota.murtiUsed;
+        chip.textContent = `🪔 ${String(quota.plan).toUpperCase()} — ${left}/${quota.murtiLimit} clean photos baaki (0.5⚡ each)`;
+        chip.className = left > 0 ? "chip bg-golden/20 text-sandal dark:text-golden" : "chip bg-red-500/15 text-red-500";
+      }
+    } catch (e) {}
   }
-  $("#btn-premium").addEventListener("click", () => {
-    localStorage.setItem("bm-premium", isPremium() ? "0" : "1");
-    refreshPlan();
-    toast(isPremium() ? "⭐ Premium activated! Ab full HD clean downloads" : "Free plan active — watermark downloads");
-  });
-  refreshPlan();
+  loadQuota();
 
   /* ---------- category filtering ---------- */
   function setCat(id) {
@@ -155,6 +163,18 @@ import { picsum } from "../lib/utils";
   }
   $$("#cat-bar [data-cat]").forEach((c) => c.addEventListener("click", () => setCat(c.dataset.cat)));
   setCat("all");
+
+  /* ---------- url helpers (.png murti files) ---------- */
+  function srcFor(item, w) {
+    if (item.id && String(item.id) !== String(item.seed)) return `/murti/${item.deityId || item.cat}/preview/${item.id}.png`;
+    return `https://picsum.photos/seed/${item.seed}/${w}/${Math.round((w * item.h) / item.w)}`;
+  }
+  async function fetchBlob(item, w) {
+    const primary = srcFor(item, w);
+    let res = await fetch(primary).catch(() => null);
+    if (!res || !res.ok) res = await fetch(`https://picsum.photos/seed/${item.seed}/${w}/${Math.round((w * item.h) / item.w)}`);
+    return res.blob();
+  }
 
   /* ---------- watermark (canvas) ---------- */
   function drawWatermark(ctx, w, h) {
@@ -182,32 +202,66 @@ import { picsum } from "../lib/utils";
     });
   }
 
-  /* ---------- stock-style download ---------- */
-  async function download(item) {
-    const premium = isPremium();
-    const width = premium ? 1600 : 640; // free = low size
-    const url = `https://picsum.photos/seed/${item.seed}/${width}/${Math.round((width * item.h) / item.w)}`;
-    toast(premium ? "⬇️ Full HD download ho raha hai..." : "⬇️ Watermark preview download ho raha hai...");
+  /* ---------- FREE watermark preview download ---------- */
+  async function watermarkPreview(item) {
+    toast("⬇️ Watermark preview download ho raha hai...");
     try {
-      const res = await fetch(url);
+      const blob = await fetchBlob(item, 640);
+      const { i, url: objUrl } = await loadImg(blob);
+      const canvas = document.createElement("canvas");
+      canvas.width = i.width; canvas.height = i.height;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(i, 0, 0);
+      drawWatermark(ctx, canvas.width, canvas.height);
+      canvas.toBlob((b) => {
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(b);
+        a.download = `bhaktimedia-${item.seed}-preview-watermark.jpg`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+        URL.revokeObjectURL(objUrl);
+        toast("✅ Preview mili! Login karo — plan mein clean full HD downloads 🪔");
+      }, "image/jpeg", 0.92);
+    } catch {
+      toast("⚠️ Download failed — dobara try karo");
+    }
+  }
+
+  /* ---------- GATED clean full-HD download (0.5⚡) ---------- */
+  async function download(item) {
+    if (!token) return watermarkPreview(item);
+    if (!hasQuota()) { toast("❌ Murti quota khatam! Plan upgrade karo ⭐"); return; }
+    toast("⚡ Quota check + clean download...");
+    try {
+      const r = await fetch("/api/murti-download", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+        body: JSON.stringify({ id: item.id || item.seed, cat: item.deityId || item.cat || "ganesh" }),
+      });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || "Download fail");
+      let srcUrl = d.url || "";
+      const probe = await fetch(srcUrl, { method: "HEAD" }).catch(() => null);
+      if (!probe || !probe.ok) srcUrl = `https://picsum.photos/seed/${item.seed}/1600/${Math.round((1600 * item.h) / item.w)}`;
+      const res = await fetch(srcUrl);
       const blob = await res.blob();
       const { i, url: objUrl } = await loadImg(blob);
       const canvas = document.createElement("canvas");
       canvas.width = i.width; canvas.height = i.height;
       const ctx = canvas.getContext("2d");
       ctx.drawImage(i, 0, 0);
-      if (!premium) drawWatermark(ctx, canvas.width, canvas.height);
       canvas.toBlob((b) => {
         const a = document.createElement("a");
         a.href = URL.createObjectURL(b);
-        a.download = `bhaktimedia-${item.seed}-${premium ? "fullhd" : "preview-watermark"}.jpg`;
+        a.download = `bhaktimedia-${item.id || item.seed}-fullhd.png`;
         a.click();
         URL.revokeObjectURL(a.href);
         URL.revokeObjectURL(objUrl);
-        toast(premium ? "✅ Full HD clean download complete!" : "✅ Preview downloaded — Premium lo, watermark hatayein ⭐");
-      }, "image/jpeg", 0.92);
-    } catch {
-      toast("⚠️ Download failed — dobara try karo");
+        toast(`✅ Clean full HD download! ${d.left} photos baaki`);
+      }, "image/png");
+      loadQuota();
+    } catch (e) {
+      toast("❌ " + e.message);
     }
   }
 
@@ -216,7 +270,7 @@ import { picsum } from "../lib/utils";
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
       const f = btn.closest("figure");
-      download({ seed: f.dataset.seed, w: f.dataset.w, h: f.dataset.h });
+      download({ id: f.dataset.id, seed: f.dataset.seed, w: f.dataset.w, h: f.dataset.h, deityId: f.dataset.deity });
     })
   );
 
@@ -226,32 +280,27 @@ import { picsum } from "../lib/utils";
   async function openLightbox(item) {
     current = item;
     $("#lb-title").textContent = item.title;
-    $("#lb-ratio").textContent = isPremium()
-      ? `Ratio ${item.ratio} • ${item.deityName} • ⭐ Premium clean preview`
-      : `Ratio ${item.ratio} • ${item.deityName} • 🛡️ Protected preview`;
+    $("#lb-ratio").textContent = `Ratio ${item.ratio} • ${item.deityName} • 🛡️ Protected preview • Clean download = 0.5⚡`;
     renderRelated();
     $("#lightbox").showModal();
 
     // Watermark BURN into preview — right-click save = watermarked milegi
     const lbImg = $("#lb-img");
     lbImg.classList.add("opacity-40");
-    const width = 1200;
-    const rawUrl = `https://picsum.photos/seed/${item.seed}/${width}/${Math.round((width * item.h) / item.w)}`;
     try {
-      const res = await fetch(rawUrl);
-      const blob = await res.blob();
+      const blob = await fetchBlob(item, 1200);
       const { i, url } = await loadImg(blob);
       const canvas = document.createElement("canvas");
       canvas.width = i.width; canvas.height = i.height;
       const ctx = canvas.getContext("2d");
       ctx.drawImage(i, 0, 0);
-      if (!isPremium()) drawWatermark(ctx, canvas.width, canvas.height);
+      drawWatermark(ctx, canvas.width, canvas.height);
       const old = lbImg.src;
       lbImg.src = canvas.toDataURL("image/jpeg", 0.9);
       if (old.startsWith("blob:")) URL.revokeObjectURL(old);
       URL.revokeObjectURL(url);
     } catch {
-      lbImg.src = rawUrl;
+      lbImg.src = srcFor(item, 1200);
     }
     lbImg.alt = item.title;
     lbImg.classList.remove("opacity-40");
@@ -261,15 +310,17 @@ import { picsum } from "../lib/utils";
     const deity = DATA.find((d) => d.id === current.deityId);
     if (!deity) return;
     $("#lb-related").innerHTML = deity.images
-      .filter((i) => i.seed !== current.seed)
+      .filter((i) => (i.id || i.seed) !== (current.id || current.seed))
       .map((i) => `
-        <button data-rel="${i.seed}" class="shrink-0 overflow-hidden rounded-xl border border-white/10 opacity-70 transition hover:opacity-100 hover:ring-2 hover:ring-golden">
-          <img src="https://picsum.photos/seed/${i.seed}/120/120" alt="${i.title}" class="size-16 object-cover" />
+        <button data-rel="${i.id || i.seed}" class="shrink-0 overflow-hidden rounded-xl border border-white/10 opacity-70 transition hover:opacity-100 hover:ring-2 hover:ring-golden">
+          <img src="${i.id ? `/murti/${deity.id}/preview/${i.id}.png` : `https://picsum.photos/seed/${i.seed}/120/120`}"
+               onerror="this.onerror=null;this.src='https://picsum.photos/seed/${i.seed}/120/120'"
+               alt="${i.title}" class="size-16 object-cover" />
         </button>`).join("");
     $$("#lb-related [data-rel]").forEach((b) =>
       b.addEventListener("click", () => {
-        const img = deity.images.find((i) => i.seed === b.dataset.rel);
-        openLightbox({ ...img, deityId: deity.id, deityName: deity.name });
+        const img = deity.images.find((i) => (i.id || i.seed) === b.dataset.rel);
+        openLightbox({ ...img, id: img.id || img.seed, deityId: deity.id, deityName: deity.name });
       })
     );
   }
@@ -279,7 +330,7 @@ import { picsum } from "../lib/utils";
       const f = btn.closest("figure");
       const deity = DATA.find((d) => d.id === f.dataset.deity);
       openLightbox({
-        seed: f.dataset.seed, w: f.dataset.w, h: f.dataset.h,
+        id: f.dataset.id, seed: f.dataset.seed, w: f.dataset.w, h: f.dataset.h,
         ratio: f.dataset.ratio, title: f.dataset.title,
         deityId: deity.id, deityName: deity.name,
       });
@@ -289,12 +340,11 @@ import { picsum } from "../lib/utils";
   $("#lb-download").addEventListener("click", () => current && download(current));
   $("#lightbox").addEventListener("click", (e) => { if (e.target === $("#lightbox")) $("#lightbox").close(); });
 
-  /* ---------- right-click protection (free users) ---------- */
+  /* ---------- right-click protection (SAB users) ---------- */
   ["#gallery-grid", "#lightbox"].forEach((sel) => {
     $(sel).addEventListener("contextmenu", (e) => {
-      if (isPremium()) return; // ⭐ Premium = save allowed (unji privilege)
       e.preventDefault();
-      toast("🙏 Right-click save disabled — Download button use karo • Premium = clean full HD");
+      toast("🙏 Right-click save disabled — Download button se clean full HD (0.5⚡)");
     });
   });
 })();

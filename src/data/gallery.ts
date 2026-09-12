@@ -1,75 +1,105 @@
+// src/data/gallery.ts — Divine Gallery data
+// ASLI photo: `id` field = /murti/{cat}/preview/ aur /full/ ka file naam (bina .png)
+// Bina id: picsum placeholder
 export interface GalleryImage {
-  seed: string; w: number; h: number; title: string; ratio: string;
+  seed: string;
+  id?: string;
+  title: string;
+  ratio: string;
+  w: number;
+  h: number;
 }
-export interface DeityCategory {
-  id: string; name: string; dev: string; seed: string; images: GalleryImage[];
+export interface DeityGallery {
+  id: string;
+  name: string;
+  dev: string;
+  seed: string;
+  images: GalleryImage[];
 }
 
-export const deityGallery: DeityCategory[] = [
+export const deityGallery: DeityGallery[] = [
   {
-    id: "datta", name: "Shri Datta", dev: "श्री दत्त", seed: "shri-datta-temple",
+    id: "datta",
+    name: "Shri Datta",
+    dev: "॥ श्री दत्तात्रेय नमः ॥",
+    seed: "datta",
     images: [
-      { seed: "datta-mandir-sunrise", w: 600, h: 800, title: "Datta Mandir Sunrise", ratio: "3:4" },
-      { seed: "datta-avtar-kala", w: 640, h: 640, title: "Datta Avtar Art", ratio: "1:1" },
-      { seed: "datta-jayanti-utsav", w: 800, h: 450, title: "Datta Jayanti Utsav", ratio: "16:9" },
-      { seed: "datta-paduka-pooja", w: 600, h: 1000, title: "Paduka Pooja", ratio: "3:5" },
-      { seed: "datta-guru-charitra", w: 600, h: 750, title: "Guru Charitra", ratio: "4:5" },
-      { seed: "datta-deepam-evening", w: 800, h: 500, title: "Sandhya Deepam", ratio: "16:10" },
+      { seed: "datta-1", id: "dt-001", title: "Datta Darshan — Morning Aarti", ratio: "3:4", w: 900, h: 1200 },
+      { seed: "datta-2", id: "dt-002", title: "Shri Datta — Temple Sanctum", ratio: "4:5", w: 960, h: 1200 },
+      { seed: "datta-3", id: "dt-003", title: "Dattatreya — Avadhut Roop", ratio: "1:1", w: 1200, h: 1200 },
+      { seed: "datta-4", id: "dt-004", title: "Datta Paduka — Akkalkot", ratio: "3:4", w: 900, h: 1200 },
+      { seed: "datta-5", id: "dt-005", title: "Datta — Kamandalu Roop", ratio: "16:9", w: 1600, h: 900 },
+      { seed: "datta-6", id: "dt-006", title: "Datta Jayanti Special", ratio: "4:5", w: 960, h: 1200 },
+      { seed: "datta-7", id: "dt-007", title: "Datta — Guru Charitra", ratio: "2:3", w: 800, h: 1200 },
+      { seed: "datta-8", id: "dt-008", title: "Datta — Sunset Bhajan", ratio: "3:4", w: 900, h: 1200 },
     ],
   },
   {
-    id: "swami", name: "Shri Swami Samarth", dev: "श्री स्वामी समर्थ", seed: "shri-swami-samarth",
+    id: "swami",
+    name: "Shri Swami Samarth",
+    dev: "॥ श्री स्वामी समर्थ ॥",
+    seed: "swami",
     images: [
-      { seed: "swami-samarth-portrait", w: 600, h: 800, title: "Swami Samarth Portrait", ratio: "3:4" },
-      { seed: "swami-akrapur-math", w: 800, h: 450, title: "Akrapur Math", ratio: "16:9" },
-      { seed: "swami-bhakti-art", w: 640, h: 640, title: "Bhakti Art", ratio: "1:1" },
-      { seed: "swami-vruttipatra", w: 600, h: 750, title: "Vruttipatra", ratio: "4:5" },
-      { seed: "swami-temple-lamp", w: 600, h: 1000, title: "Temple Lamp", ratio: "3:5" },
-      { seed: "swami-aarti-morning", w: 800, h: 500, title: "Pratah Aarti", ratio: "16:10" },
+      { seed: "swami-1", title: "Swami Samarth — Meditation", ratio: "3:4", w: 900, h: 1200 },
+      { seed: "swami-2", title: "Akkalkot Darbar", ratio: "16:9", w: 1600, h: 900 },
+      { seed: "swami-3", title: "Swami — Blessing Hand", ratio: "4:5", w: 960, h: 1200 },
+      { seed: "swami-4", title: "Swami — Peepal Tree", ratio: "1:1", w: 1200, h: 1200 },
+      { seed: "swami-5", title: "Swami — Night Aarti", ratio: "3:4", w: 900, h: 1200 },
+      { seed: "swami-6", title: "Swami — Bhakt Mandali", ratio: "16:10", w: 1600, h: 1000 },
     ],
   },
   {
-    id: "ganesh", name: "Shri Ganesh", dev: "श्री गणेश", seed: "shri-ganesh-idol",
+    id: "ganesh",
+    name: "Shri Ganesh",
+    dev: "॥ श्री गणेशाय नमः ॥",
+    seed: "ganesh",
     images: [
-      { seed: "ganesh-idol-festival", w: 600, h: 800, title: "Ganesh Idol", ratio: "3:4" },
-      { seed: "ganesh-chaturthi-murti", w: 640, h: 640, title: "Chaturthi Murti", ratio: "1:1" },
-      { seed: "ganesh-utsav-pandal", w: 800, h: 450, title: "Utsav Pandal", ratio: "16:9" },
-      { seed: "ganesh-ashtavinayak", w: 600, h: 750, title: "Ashtavinayak Darshan", ratio: "4:5" },
-      { seed: "ganesh-modak-naivedya", w: 600, h: 1000, title: "Modak Naivedya", ratio: "3:5" },
-      { seed: "ganesh-temple-morning", w: 800, h: 500, title: "Temple Morning", ratio: "16:10" },
+      { seed: "ganesh-1", title: "Marble Ganesh — 12 inch", ratio: "3:4", w: 900, h: 1200 },
+      { seed: "ganesh-2", title: "Brass Ganesh Laddoo", ratio: "4:5", w: 960, h: 1200 },
+      { seed: "ganesh-3", title: "Ganesh — Modak Blessing", ratio: "1:1", w: 1200, h: 1200 },
+      { seed: "ganesh-4", title: "Ganesh Utsav Palkhi", ratio: "16:9", w: 1600, h: 900 },
+      { seed: "ganesh-5", title: "Ganesh — Silver Idol", ratio: "2:3", w: 800, h: 1200 },
+      { seed: "ganesh-6", title: "Ganesh — Temple Door", ratio: "3:4", w: 900, h: 1200 },
     ],
   },
   {
-    id: "hanuman", name: "Shri Hanuman", dev: "श्री हनुमान", seed: "shri-hanuman-temple",
+    id: "hanuman",
+    name: "Shri Hanuman",
+    dev: "॥ जय हनुमान ॥",
+    seed: "hanuman",
     images: [
-      { seed: "hanuman-statue-sunset", w: 600, h: 800, title: "Hanuman Statue Sunset", ratio: "3:4" },
-      { seed: "hanuman-chalisa-art", w: 640, h: 640, title: "Chalisa Art", ratio: "1:1" },
-      { seed: "hanuman-temple-flag", w: 800, h: 450, title: "Temple Flag", ratio: "16:9" },
-      { seed: "hanuman-bajrangbali", w: 600, h: 750, title: "Bajrangbali", ratio: "4:5" },
-      { seed: "hanuman-gada-symbol", w: 600, h: 1000, title: "Gada Symbol", ratio: "3:5" },
-      { seed: "hanuman-aarti-flame", w: 800, h: 500, title: "Aarti Flame", ratio: "16:10" },
+      { seed: "hanuman-1", title: "Hanuman — Gada Pose", ratio: "3:4", w: 900, h: 1200 },
+      { seed: "hanuman-2", title: "Hanuman — Chalisa", ratio: "4:5", w: 960, h: 1200 },
+      { seed: "hanuman-3", title: "Hanuman — Saffron Flag", ratio: "16:9", w: 1600, h: 900 },
+      { seed: "hanuman-4", title: "Hanuman — Mountain Temple", ratio: "1:1", w: 1200, h: 1200 },
+      { seed: "hanuman-5", title: "Hanuman — Bhakti Aura", ratio: "3:4", w: 900, h: 1200 },
     ],
   },
   {
-    id: "krishna", name: "Shri Krishna", dev: "श्री कृष्ण", seed: "shri-krishna-flute",
+    id: "krishna",
+    name: "Shri Krishna",
+    dev: "॥ राधे कृष्ण ॥",
+    seed: "krishna",
     images: [
-      { seed: "krishna-flute-vrindavan", w: 600, h: 800, title: "Flute of Vrindavan", ratio: "3:4" },
-      { seed: "krishna-peacock-crown", w: 640, h: 640, title: "Peacock Crown", ratio: "1:1" },
-      { seed: "krishna-janmashtami", w: 800, h: 450, title: "Janmashtami", ratio: "16:9" },
-      { seed: "krishna-radha-prem", w: 600, h: 750, title: "Radha Krishna Prem", ratio: "4:5" },
-      { seed: "krishna-makhan-chor", w: 600, h: 1000, title: "Makhan Chor", ratio: "3:5" },
-      { seed: "krishna-gita-updesh", w: 800, h: 500, title: "Gita Updesh", ratio: "16:10" },
+      { seed: "krishna-1", title: "Krishna — Flute Divine", ratio: "3:4", w: 900, h: 1200 },
+      { seed: "krishna-2", title: "Radha Krishna — Brass", ratio: "4:5", w: 960, h: 1200 },
+      { seed: "krishna-3", title: "Krishna — Peacock Crown", ratio: "1:1", w: 1200, h: 1200 },
+      { seed: "krishna-4", title: "Krishna — Vrindavan", ratio: "16:9", w: 1600, h: 900 },
+      { seed: "krishna-5", title: "Krishna — Butter Thief", ratio: "2:3", w: 800, h: 1200 },
+      { seed: "krishna-6", title: "Krishna — Gita Updesh", ratio: "3:4", w: 900, h: 1200 },
     ],
   },
   {
-    id: "lakshmi", name: "Shri Lakshmi", dev: "श्री लक्ष्मी", seed: "shri-lakshmi-lotus",
+    id: "lakshmi",
+    name: "Shri Lakshmi",
+    dev: "॥ श्री महालक्ष्म्यै नमः ॥",
+    seed: "lakshmi",
     images: [
-      { seed: "lakshmi-lotus-divine", w: 600, h: 800, title: "Lotus Divine", ratio: "3:4" },
-      { seed: "lakshmi-diwalipooja", w: 640, h: 640, title: "Diwali Pooja", ratio: "1:1" },
-      { seed: "lakshmi-temple-gold", w: 800, h: 450, title: "Golden Temple", ratio: "16:9" },
-      { seed: "lakshmi-shree-yantra", w: 600, h: 750, title: "Shree Yantra", ratio: "4:5" },
-      { seed: "lakshmi-haldi-kumkum", w: 600, h: 1000, title: "Haldi Kumkum", ratio: "3:5" },
-      { seed: "lakshmi-rangoli-deep", w: 800, h: 500, title: "Rangoli & Deep", ratio: "16:10" },
+      { seed: "lakshmi-1", title: "Silver Laxmi Ganesh", ratio: "1:1", w: 1200, h: 1200 },
+      { seed: "lakshmi-2", title: "Laxmi — Kamal Asana", ratio: "3:4", w: 900, h: 1200 },
+      { seed: "lakshmi-3", title: "Laxmi — Gold Coins", ratio: "4:5", w: 960, h: 1200 },
+      { seed: "lakshmi-4", title: "Laxmi — Diwali Altar", ratio: "16:9", w: 1600, h: 900 },
+      { seed: "lakshmi-5", title: "Laxmi — Temple Brass", ratio: "3:4", w: 900, h: 1200 },
     ],
   },
 ];

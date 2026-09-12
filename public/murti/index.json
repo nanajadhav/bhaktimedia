@@ -1,0 +1,16 @@
+{
+  "categories": [
+    { "id": "datta",   "name": "Shri Datta",         "dev": "॥ श्री दत्तात्रेय नमः ॥" },
+    { "id": "swami",   "name": "Shri Swami Samarth", "dev": "॥ श्री स्वामी समर्थ ॥" },
+    { "id": "ganesh",  "name": "Shri Ganesh",        "dev": "॥ श्री गणेशाय नमः ॥" },
+    { "id": "hanuman", "name": "Shri Hanuman",       "dev": "॥ जय हनुमान ॥" },
+    { "id": "krishna", "name": "Shri Krishna",       "dev": "॥ राधे कृष्ण ॥" },
+    { "id": "lakshmi", "name": "Shri Lakshmi",       "dev": "॥ श्री महालक्ष्म्यै नमः ॥" }
+  ],
+  "images": [
+    { "id": "gn-001", "cat": "ganesh",  "name": "Marble Ganesh — 12 inch",  "ratio": "3:4",  "w": 900, "h": 1200 },
+    { "id": "gn-002", "cat": "ganesh",  "name": "Brass Ganesh Laddoo",      "ratio": "4:5",  "w": 960, "h": 1200 },
+    { "id": "sw-001", "cat": "swami",   "name": "Akkalkot Swami Darbar",    "ratio": "16:9", "w": 1600, "h": 900 },
+    { "id": "lk-001", "cat": "lakshmi", "name": "Silver Laxmi Ganesh",      "ratio": "1:1",  "w": 1200, "h": 1200 }
+  ]
+}
