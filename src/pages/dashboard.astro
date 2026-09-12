@@ -1,51 +1,195 @@
 ---
 import Layout from "../layouts/Layout.astro";
 ---
-<Layout title="Mera Dashboard" description="Aapka BhaktiMedia dashboard.">
-  <section class="section">
-    <div class="container-x max-w-3xl">
-      <div id="dash" class="card p-8 text-center">🪔 Loading...</div>
+<Layout title="Dashboard" description="Aapka BhaktiMedia dashboard — plan, credits, profile.">
+<div class="container-x px-4 pb-16 pt-28 sm:px-6">
+  <div id="toast" class="pointer-events-none fixed left-1/2 top-20 z-[90] hidden -translate-x-1/2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-cream shadow-lift dark:bg-white dark:text-ink"></div>
+
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <p class="eyebrow">🪔 Mera Dashboard</p>
+      <h1 id="d-hello" class="mt-2 font-display text-3xl font-bold sm:text-4xl">Namaste!</h1>
     </div>
-  </section>
+    <button id="d-logout" class="btn btn-outline !py-2 !text-sm">🚪 Logout</button>
+  </div>
 
-  <script>
-    import { supabase } from "../lib/supabase";
+  <div class="mt-8 grid gap-5 sm:grid-cols-3">
+    <div class="card p-6 shadow-soft">
+      <p class="eyebrow">📦 Plan</p>
+      <p id="d-plan" class="mt-3 font-display text-2xl font-bold">—</p>
+      <p class="mt-1 text-sm text-sandal-deep/60 dark:text-cream/50">Mahine ka subscription</p>
+      <a href="/pricing" class="mt-4 inline-flex items-center gap-1 text-sm font-bold text-saffron">Upgrade karo →</a>
+    </div>
+    <div class="card p-6 shadow-soft">
+      <p class="eyebrow">⚡ Credits</p>
+      <p id="d-credits" class="mt-3 font-display text-2xl font-bold">— / —</p>
+      <div class="mt-3 h-2 overflow-hidden rounded-full bg-sandal/15 dark:bg-white/10">
+        <div id="d-bar" class="h-full rounded-full bg-gradient-to-r from-saffron to-golden transition-all" style="width:0%"></div>
+      </div>
+      <p class="mt-2 text-xs text-sandal-deep/60 dark:text-cream/50">Har mahine ki 1 tarikh ko reset</p>
+    </div>
+    <div class="card p-6 shadow-soft">
+      <p class="eyebrow">🎨 Creations</p>
+      <p id="d-count" class="mt-3 font-display text-2xl font-bold">0</p>
+      <p class="mt-1 text-sm text-sandal-deep/60 dark:text-cream/50">Is device par bani creations</p>
+      <a href="/studio" class="mt-4 inline-flex items-center gap-1 text-sm font-bold text-saffron">Studio kholo →</a>
+    </div>
+  </div>
 
-    async function main() {
-      const { data } = await supabase.auth.getSession();
-      const session = data.session;
-      if (!session) { window.location.href = "/login"; return; }
-
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", session.user.id)
-        .single();
-
-      const plan = profile?.plan || "trial";
-      const credits = plan === "trial" ? 3 : plan === "starter" ? 20 : plan === "growth" ? 100 : "∞";
-
-      (document.getElementById("dash") as HTMLElement).innerHTML = `
-        <div class="text-left">
-          <h1 class="font-display text-2xl font-bold">🪔 Namaste, ${profile?.name || "Bhakti User"}</h1>
-          <p class="mt-1 text-sm text-sandal-deep/70 dark:text-cream/60">${session.user.email}</p>
-          <div class="mt-6 grid grid-cols-2 gap-4 text-center">
-            <div class="rounded-xl bg-golden/10 p-5">
-              <p class="text-2xl font-extrabold text-saffron uppercase">${plan}</p>
-              <p class="mt-1 text-xs">Current Plan</p>
-            </div>
-            <div class="rounded-xl bg-golden/10 p-5">
-              <p class="text-2xl font-extrabold text-saffron">${credits}</p>
-              <p class="mt-1 text-xs">Available Credits</p>
-            </div>
-          </div>
-          <div class="mt-6 flex gap-3">
-            <a href="/choose-plan" class="btn btn-primary flex-1 justify-center">Plan Badlo</a>
-            <a href="/ai-services" class="btn btn-ghost flex-1 justify-center">AI Studio Kholo</a>
-          </div>
+  <div class="mt-6 grid gap-5 lg:grid-cols-2">
+    <div class="card p-6 shadow-soft">
+      <div class="flex items-center justify-between">
+        <p class="eyebrow">👤 Profile</p>
+        <button id="p-edit" class="chip bg-golden/15 text-golden">✏️ Edit</button>
+      </div>
+      <div class="mt-4 grid gap-3">
+        <label class="block text-sm font-semibold">Naam
+          <input id="d-name" class="input mt-1.5" disabled />
+        </label>
+        <label class="block text-sm font-semibold">Email
+          <input id="d-email" class="input mt-1.5" disabled />
+        </label>
+        <div class="grid grid-cols-2 gap-3">
+          <label class="block text-sm font-semibold">Mobile
+            <input id="d-phone" class="input mt-1.5" disabled />
+          </label>
+          <label class="block text-sm font-semibold">Pincode
+            <input id="d-pin" class="input mt-1.5" disabled />
+          </label>
         </div>
-      `;
+        <label class="block text-sm font-semibold">City
+          <input id="d-city" class="input mt-1.5" disabled />
+        </label>
+        <div id="p-save-row" class="hidden gap-2">
+          <button id="p-save" class="btn btn-primary flex-1 !py-2 !text-sm">💾 Save Karo</button>
+          <button id="p-cancel" class="btn btn-outline flex-1 !py-2 !text-sm">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-6 shadow-soft">
+      <p class="eyebrow">🔐 Security</p>
+      <p class="mt-3 text-sm text-sandal-deep/60 dark:text-cream/50">Password change karne ke liye pehle email par code bhejo — phir code + naya password daalo.</p>
+      <button id="cp-send" class="btn btn-outline mt-4 w-full !py-2 !text-sm">📬 Code Bhejo</button>
+      <div id="cp-box" class="mt-4 hidden gap-3">
+        <label class="block text-sm font-semibold">6-digit Code
+          <input id="cp-code" class="input mt-1.5 text-center text-xl font-bold tracking-[6px]" maxlength="6" inputmode="numeric" placeholder="------" />
+        </label>
+        <label class="block text-sm font-semibold">Naya Password
+          <input id="cp-pass" type="password" class="input mt-1.5" placeholder="Kam se kam 6 characters" />
+        </label>
+        <button id="cp-go" class="btn btn-primary w-full !py-2 !text-sm">🔓 Password Badlo</button>
+        <button id="cp-resend" class="text-xs font-semibold text-sandal-deep/60 underline dark:text-cream/50" disabled>Code dobara bhejo (60s)</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="rec-wrap" class="mt-8 hidden">
+    <p class="eyebrow">🖼️ Recent Creations</p>
+    <div id="recent" class="mt-3 flex gap-3 overflow-x-auto pb-2"></div>
+  </div>
+</div>
+<script is:inline>
+(function () {
+  const $ = (s) => document.querySelector(s);
+  const $$ = (s) => [...document.querySelectorAll(s)];
+  function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.remove("hidden"); setTimeout(() => t.classList.add("hidden"), 2600); }
+
+  let token = "";
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.indexOf("sb-") === 0 && k.indexOf("auth-token") !== -1) { token = JSON.parse(localStorage.getItem(k)).access_token; break; }
     }
-    main();
-  </script>
+  } catch (e) {}
+  if (!token) location.href = "/login";
+
+  const LIMITS = { trial: 3, starter: 20, growth: 100, scale: 999999 };
+  const PLAN_NAMES = { trial: "Trial (Free)", starter: "Starter", growth: "Growth", scale: "Scale" };
+  let profile = null;
+
+  async function api(url, opts = {}) {
+    const r = await fetch(url, Object.assign({ headers: { "Content-Type": "application/json", Authorization: "Bearer " + token } }, opts));
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(d.error || "Kuch galat ho gaya");
+    return d;
+  }
+
+  async function load() {
+    try {
+      profile = await api("/api/profile");
+      $("#d-hello").textContent = "Namaste, " + profile.name + "! 🙏";
+      $("#d-plan").textContent = PLAN_NAMES[profile.plan] || profile.plan;
+      const limit = LIMITS[profile.plan] || 3;
+      $("#d-credits").textContent = profile.used + " / " + (limit > 9999 ? "∞" : limit);
+      $("#d-bar").style.width = Math.min(100, (profile.used / limit) * 100) + "%";
+      $("#d-name").value = profile.name || "";
+      $("#d-email").value = profile.email || "";
+      $("#d-phone").value = profile.phone || "";
+      $("#d-pin").value = profile.pincode || "";
+      $("#d-city").value = profile.city || "";
+    } catch (e) { toast("❌ " + e.message); }
+  }
+  load();
+
+  $("#p-edit").addEventListener("click", () => {
+    const editing = !$("#d-name").disabled;
+    ["#d-name", "#d-phone", "#d-pin", "#d-city"].forEach((id) => { $(id).disabled = editing; });
+    $("#p-save-row").classList.toggle("hidden", editing);
+    $("#p-save-row").classList.toggle("grid", !editing);
+    $("#p-edit").textContent = editing ? "✏️ Edit" : "Band karo";
+  });
+  $("#p-cancel").addEventListener("click", () => { load(); $("#p-edit").click(); });
+  $("#p-save").addEventListener("click", async () => {
+    try {
+      await api("/api/profile", { method: "PUT", body: JSON.stringify({ name: $("#d-name").value.trim(), phone: $("#d-phone").value.trim(), city: $("#d-city").value.trim(), pincode: $("#d-pin").value.trim() }) });
+      toast("✅ Profile save ho gayi!");
+      await load();
+      $("#p-edit").click();
+    } catch (e) { toast("❌ " + e.message); }
+  });
+
+  let timer = null;
+  function startTimer() { let s = 60; const b = $("#cp-resend"); b.disabled = true; clearInterval(timer); timer = setInterval(() => { s--; b.textContent = "Code dobara bhejo (" + s + "s)"; if (s <= 0) { clearInterval(timer); b.disabled = false; b.textContent = "Code dobara bhejo"; } }, 1000); }
+  $("#cp-send").addEventListener("click", async () => {
+    try {
+      await api("/api/auth/otp", { method: "POST", body: JSON.stringify({ purpose: "change" }) });
+      $("#cp-box").classList.remove("hidden"); $("#cp-box").classList.add("grid");
+      toast("📬 Code email par gaya!");
+      startTimer();
+    } catch (e) { toast("❌ " + e.message); }
+  });
+  $("#cp-resend").addEventListener("click", async () => { try { await api("/api/auth/otp", { method: "POST", body: JSON.stringify({ purpose: "change" }) }); startTimer(); } catch (e) { toast("❌ " + e.message); } });
+  $("#cp-go").addEventListener("click", async () => {
+    const code = $("#cp-code").value.trim(), pass = $("#cp-pass").value;
+    if (code.length !== 6) return toast("6-digit code daalo");
+    if (pass.length < 6) return toast("Password kam se kam 6 characters");
+    try {
+      await api("/api/auth/change-pass", { method: "POST", body: JSON.stringify({ code, password: pass }) });
+      toast("✅ Password badal gaya!");
+      $("#cp-code").value = ""; $("#cp-pass").value = "";
+      $("#cp-box").classList.add("hidden"); $("#cp-box").classList.remove("grid");
+    } catch (e) { toast("❌ " + e.message); }
+  });
+
+  try {
+    const h = JSON.parse(localStorage.getItem("bm-studio-hist") || "[]");
+    $("#d-count").textContent = h.length;
+    if (h.length) {
+      $("#rec-wrap").classList.remove("hidden");
+      $("#recent").innerHTML = h.map((x) => `<img src="${x.thumb}" title="${(x.prompt || "").replace(/"/g, "")}" class="h-28 w-24 shrink-0 cursor-pointer rounded-xl object-cover shadow-soft transition hover:scale-105" />`).join("");
+      $$("#recent img").forEach((im, i) => im.addEventListener("click", () => window.open(h[i].thumb, "_blank")));
+    }
+  } catch (e) {}
+
+  $("#d-logout").addEventListener("click", () => {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.indexOf("sb-") === 0) { localStorage.removeItem(k); i--; }
+    }
+    localStorage.setItem("bm-welcome", "👋 Logout ho gaya. Phir milenge!");
+    location.href = "/";
+  });
+})();
+</script>
 </Layout>
