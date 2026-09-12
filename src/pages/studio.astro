@@ -61,15 +61,15 @@ import Layout from "../layouts/Layout.astro";
         </label>
         <div class="text-sm font-semibold">Reference images (<span id="ref-count">0</span>/2)
           <div class="mt-1.5 flex gap-2">
-            <label class="grid size-16 cursor-pointer place-items-center rounded-2xl border-2 border-dashed border-sandal/40 transition hover:border-saffron dark:border-cream/30">
+            <label class="relative grid size-16 cursor-pointer place-items-center overflow-hidden rounded-2xl border-2 border-dashed border-sandal/40 transition hover:border-saffron dark:border-cream/30">
               <input id="i-ref1" type="file" accept="image/*" class="hidden" />
-              <img id="i-ref1-prev" class="hidden size-full rounded-2xl object-cover" alt="" />
+              <img id="i-ref1-prev" class="hidden absolute inset-0 h-full w-full rounded-2xl object-cover" alt="" />
               <span id="i-ref1-ico" class="text-xl">📤</span>
             </label>
-            <label class="grid size-16 cursor-pointer place-items-center rounded-2xl border-2 border-dashed border-sandal/40 transition hover:border-saffron dark:border-cream/30">
-              <input id="i-ref2" type="file" accept="image/*" class="hidden" />
-              <img id="i-ref2-prev" class="hidden size-full rounded-2xl object-cover" alt="" />
-              <span id="i-ref2-ico" class="text-xl">📤</span>
+            <label class="relative grid size-16 cursor-pointer place-items-center overflow-hidden rounded-2xl border-2 border-dashed border-sandal/40 transition hover:border-saffron dark:border-cream/30">
+              <input id="i-ref1" type="file" accept="image/*" class="hidden" />
+              <img id="i-ref1-prev" class="hidden absolute inset-0 h-full w-full rounded-2xl object-cover" alt="" />
+              <span id="i-ref1-ico" class="text-xl">📤</span>
             </label>
           </div>
           <p class="mt-1.5 text-xs font-normal text-sandal-deep/50 dark:text-cream/40">Reference = us photo par transformation • bina reference = nayi image</p>
@@ -90,9 +90,9 @@ import Layout from "../layouts/Layout.astro";
         </label>
         <div class="text-sm font-semibold">User photo (zaroori)
           <div class="mt-1.5 flex items-center gap-3">
-            <label class="grid size-16 cursor-pointer place-items-center rounded-2xl border-2 border-dashed border-sandal/40 transition hover:border-saffron dark:border-cream/30">
+            <label class="relative grid size-16 cursor-pointer place-items-center overflow-hidden rounded-2xl border-2 border-dashed border-sandal/40 transition hover:border-saffron dark:border-cream/30">
               <input id="p-photo" type="file" accept="image/*" class="hidden" />
-              <img id="p-photo-prev" class="hidden size-full rounded-2xl object-cover" alt="" />
+              <img id="p-photo-prev" class="hidden absolute inset-0 h-full w-full rounded-2xl object-cover" alt="" />
               <span id="p-photo-ico" class="text-xl">📤</span>
             </label>
             <span class="text-xs font-normal text-sandal-deep/50 dark:text-cream/40">Chehre ki saaf photo</span>
@@ -290,11 +290,22 @@ import Layout from "../layouts/Layout.astro";
       if (!f) return;
       const r = new FileReader();
       r.onload = () => {
-        setter(r.result);
-        const prev = document.getElementById(prevId);
-        prev.src = r.result; prev.classList.remove("hidden");
-        document.getElementById(icoId).classList.add("hidden");
-        updateRefCount();
+        const img = new Image();
+        img.onload = () => {
+          const max = 1024;
+          let w = img.width, h = img.height;
+          if (w > max || h > max) { const s = max / Math.max(w, h); w = Math.round(w * s); h = Math.round(h * s); }
+          const c = document.createElement("canvas");
+          c.width = w; c.height = h;
+          c.getContext("2d").drawImage(img, 0, 0, w, h);
+          const data = c.toDataURL("image/jpeg", 0.9);
+          setter(data);
+          const prev = document.getElementById(prevId);
+          prev.src = data; prev.classList.remove("hidden");
+          document.getElementById(icoId).classList.add("hidden");
+          updateRefCount();
+        };
+        img.src = r.result;
       };
       r.readAsDataURL(f);
     });
