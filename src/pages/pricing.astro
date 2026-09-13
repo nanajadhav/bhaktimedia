@@ -211,7 +211,7 @@ import Layout from "../layouts/Layout.astro";
         else { b.textContent = "🔑 Login Karo Pehle"; b.onclick = () => (location.href = "/login"); }
       } else {
         b.textContent = pid === "trial" ? "⬇ Downgrade — Trial" : "Switch Plan →";
-        b.onclick = () => openSwitch(pid);
+        b.onclick = () => (location.href = "/checkout?plan=" + pid);
       }
     });
     const line = $("#cur-plan-line");
