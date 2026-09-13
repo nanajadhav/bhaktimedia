@@ -1,88 +1,145 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import PageHeader from "../components/PageHeader.astro";
 ---
 <Layout title="Contact" description="BhaktiMedia se sampark karo — support, billing, template requests.">
-  <PageHeader eyebrow="Contact" title="Sampark Karo" dev="॥ संपर्क ॥"
-    description="Sawaal, sujhav ya madad — hum 24 ghante mein jawab dete hain." />
+<div class="relative overflow-hidden">
+  <!-- decoration -->
+  <div class="pointer-events-none absolute -top-24 right-0 h-96 w-96 rounded-full bg-saffron/10 blur-3xl"></div>
+  <div class="pointer-events-none absolute top-40 -left-24 h-72 w-72 rounded-full bg-golden/10 blur-3xl"></div>
+  <span class="pointer-events-none absolute right-8 top-32 select-none font-dev text-[120px] text-saffron/5">ॐ</span>
 
-  <section class="section !pt-4">
-    <div class="container-x grid gap-6 lg:grid-cols-[1fr,360px]">
-      <!-- ═══ FORM ═══ -->
-      <div class="card p-6 shadow-soft sm:p-8">
-        <p class="eyebrow">📬 Message Bhejo</p>
-        <div class="mt-5 grid gap-4 sm:grid-cols-2">
+  <div class="container-x px-4 pb-20 pt-28 sm:px-6">
+    <!-- hero -->
+    <div class="mx-auto max-w-2xl text-center">
+      <span class="chip bg-saffron/10 text-saffron">🪔 Contact</span>
+      <h1 class="mt-4 font-display text-4xl font-bold sm:text-5xl">Baat Karo, <span class="bg-gradient-to-r from-saffron to-golden bg-clip-text text-transparent">Seva Karo</span></h1>
+      <p class="mt-3 font-dev text-sm text-goldsoft">॥ संपर्क ॥</p>
+      <p class="mt-3 text-sm text-sandal-deep/60 dark:text-cream/50">Sawaal, sujhav ya madad — hum 24 ghante mein jawab dete hain.</p>
+    </div>
+
+    <!-- ═══ LEFT FORM + RIGHT INFO ═══ -->
+    <div class="mt-12 grid gap-8 md:grid-cols-[1.15fr,0.85fr]">
+      <!-- LEFT: FORM -->
+      <div class="relative rounded-3xl border border-golden/20 bg-white/80 p-6 shadow-lift backdrop-blur-xl dark:bg-night/70 sm:p-8">
+        <div class="flex items-center gap-3">
+          <span class="grid size-11 place-items-center rounded-2xl bg-gradient-to-br from-saffron to-golden text-xl text-white shadow-gold">📬</span>
+          <div>
+            <p class="font-display text-lg font-bold">Message Bhejo</p>
+            <p class="text-xs text-sandal-deep/60 dark:text-cream/50">Form bharo — seedha hamari team tak</p>
+          </div>
+        </div>
+
+        <input type="hidden" id="ct-topic" value="General" />
+        <div class="mt-6 grid gap-4 sm:grid-cols-2">
           <label class="block text-sm font-semibold">Naam
-            <input id="ct-name" class="input mt-1.5" placeholder="Aapka naam" />
+            <input id="ct-name" class="input mt-1.5 !rounded-2xl" placeholder="Aapka naam" />
           </label>
           <label class="block text-sm font-semibold">Email
-            <input id="ct-email" type="email" class="input mt-1.5" placeholder="aap@email.com" />
+            <input id="ct-email" type="email" class="input mt-1.5 !rounded-2xl" placeholder="aap@email.com" />
           </label>
         </div>
-        <label class="mt-4 block text-sm font-semibold">Topic
-          <select id="ct-topic" class="input mt-1.5">
-            <option>General</option>
-            <option>Support</option>
-            <option>Billing / Payment</option>
-            <option>Template Request</option>
-            <option>Murti Collection</option>
-          </select>
-        </label>
+
+        <p class="mt-4 text-sm font-semibold">Topic</p>
+        <div id="topic-pills" class="mt-2 flex flex-wrap gap-2">
+          <button data-topic="General" class="chip cursor-pointer bg-saffron/10 text-saffron ring-2 ring-saffron">💬 General</button>
+          <button data-topic="Support" class="chip cursor-pointer bg-sandal/10 text-sandal-deep dark:bg-white/5 dark:text-cream/70">🛠️ Support</button>
+          <button data-topic="Billing / Payment" class="chip cursor-pointer bg-sandal/10 text-sandal-deep dark:bg-white/5 dark:text-cream/70">💳 Billing</button>
+          <button data-topic="Template Request" class="chip cursor-pointer bg-sandal/10 text-sandal-deep dark:bg-white/5 dark:text-cream/70">🎨 Template</button>
+          <button data-topic="Murti Collection" class="chip cursor-pointer bg-sandal/10 text-sandal-deep dark:bg-white/5 dark:text-cream/70">🪔 Murti</button>
+        </div>
+
         <label class="mt-4 block text-sm font-semibold">Message
-          <textarea id="ct-msg" rows="5" class="input mt-1.5 resize-y" placeholder="Aapka sawaal ya sujhav..."></textarea>
+          <textarea id="ct-msg" rows="5" class="input mt-1.5 !rounded-2xl resize-y" placeholder="Aapka sawaal ya sujhav..."></textarea>
         </label>
-        <p id="ct-err" class="mt-3 hidden rounded-xl bg-red-500/10 px-4 py-2.5 text-sm font-semibold text-red-500"></p>
-        <p id="ct-ok" class="mt-3 hidden rounded-xl bg-green-500/10 px-4 py-2.5 text-sm font-semibold text-green-600">✅ Message bhej diya! 24 ghante mein jawab milega — confirmation email bhi aaya hai 📧</p>
-        <button id="ct-go" class="btn btn-primary mt-5 w-full !py-3">📨 Message Bhejo</button>
+
+        <p id="ct-err" class="mt-3 hidden rounded-2xl bg-red-500/10 px-4 py-2.5 text-sm font-semibold text-red-500"></p>
+        <p id="ct-ok" class="mt-3 hidden rounded-2xl bg-green-500/10 px-4 py-2.5 text-sm font-semibold text-green-600">✅ Message bhej diya! 24 ghante mein jawab milega — confirmation email bhi aaya hai 📧</p>
+        <button id="ct-go" class="btn btn-primary mt-5 w-full !rounded-2xl !py-3.5">📨 Message Bhejo</button>
       </div>
 
-      <!-- ═══ INFO ═══ -->
-      <div class="grid gap-5 content-start">
-        <div class="card p-6 shadow-soft">
-          <p class="eyebrow">📧 Email</p>
-          <a href="mailto:support@bhaktimedia.in" class="mt-2 block font-semibold text-saffron underline">support@bhaktimedia.in</a>
-          <p class="mt-1 text-xs text-sandal-deep/60 dark:text-cream/50">Billing: billing@bhaktimedia.in</p>
+      <!-- RIGHT: INFO -->
+      <div class="grid content-start gap-5">
+        <a href="mailto:support@bhaktimedia.in" class="rounded-3xl border border-sandal/10 bg-white/80 p-5 shadow-soft backdrop-blur-xl transition hover:-translate-y-0.5 hover:shadow-lift dark:border-white/10 dark:bg-night/70">
+          <div class="flex items-center gap-3">
+            <span class="grid size-11 place-items-center rounded-2xl bg-saffron/10 text-xl">📧</span>
+            <div>
+              <p class="text-xs font-bold uppercase tracking-widest text-sandal-deep/50 dark:text-cream/40">Email</p>
+              <p class="font-semibold text-saffron underline decoration-saffron/40 underline-offset-4">support@bhaktimedia.in</p>
+            </div>
+          </div>
+          <p class="mt-3 text-xs text-sandal-deep/60 dark:text-cream/50">Billing: billing@bhaktimedia.in</p>
+        </a>
+
+        <a id="ct-wa" href="#" target="_blank" class="rounded-3xl border border-sandal/10 bg-white/80 p-5 shadow-soft backdrop-blur-xl transition hover:-translate-y-0.5 hover:shadow-lift dark:border-white/10 dark:bg-night/70">
+          <div class="flex items-center gap-3">
+            <span class="grid size-11 place-items-center rounded-2xl bg-green-500/10 text-xl">📱</span>
+            <div>
+              <p class="text-xs font-bold uppercase tracking-widest text-sandal-deep/50 dark:text-cream/40">WhatsApp</p>
+              <p class="font-semibold text-green-600 underline decoration-green-500/40 underline-offset-4">WhatsApp par baat karo</p>
+            </div>
+          </div>
+          <p class="mt-3 text-xs text-sandal-deep/60 dark:text-cream/50">Growth/Scale members: priority support</p>
+        </a>
+
+        <div class="rounded-3xl border border-sandal/10 bg-white/80 p-5 shadow-soft backdrop-blur-xl dark:border-white/10 dark:bg-night/70">
+          <div class="flex items-center gap-3">
+            <span class="grid size-11 place-items-center rounded-2xl bg-golden/10 text-xl">⏰</span>
+            <p class="text-xs font-bold uppercase tracking-widest text-sandal-deep/50 dark:text-cream/40">Response Time</p>
+          </div>
+          <ul class="mt-4 grid gap-2.5 text-sm">
+            <li class="flex justify-between"><span class="text-sandal-deep/70 dark:text-cream/60">General</span><b>24 ghante</b></li>
+            <li class="flex justify-between"><span class="text-sandal-deep/70 dark:text-cream/60">Billing</span><b>12 ghante</b></li>
+            <li class="flex justify-between"><span class="text-sandal-deep/70 dark:text-cream/60">Scale plan</span><b class="text-saffron">2 ghante</b></li>
+          </ul>
         </div>
-        <div class="card p-6 shadow-soft">
-          <p class="eyebrow">📱 WhatsApp</p>
-          <a id="ct-wa" href="#" target="_blank" class="mt-2 block font-semibold text-saffron underline">WhatsApp par baat karo</a>
-          <p class="mt-1 text-xs text-sandal-deep/60 dark:text-cream/50">Growth/Scale members ke liye priority support</p>
-        </div>
-        <div class="card p-6 shadow-soft">
-          <p class="eyebrow">⏰ Response Time</p>
-          <p class="mt-2 text-sm text-sandal-deep/70 dark:text-cream/60">General: 24 ghante • Billing: 12 ghante • Scale plan: 2 ghante</p>
+
+        <div class="rounded-3xl bg-gradient-to-br from-saffron to-golden p-5 text-white shadow-gold">
+          <p class="font-display text-lg font-bold">Turant madad chahiye? 🙏</p>
+          <p class="mt-1 text-xs text-white/80">FAQ mein zyada tar sawaalon ke jawab pehle se hain.</p>
+          <a href="/pricing" class="btn mt-3 bg-white !text-saffron hover:bg-cream !py-2 !text-xs">❓ FAQ Dekho</a>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</div>
 
 <script is:inline>
 (function () {
   const $ = (s) => document.querySelector(s);
-  const WA = "919822010800"; // ← apna WhatsApp number yahan
+  const $$ = (s) => [...document.querySelectorAll(s)];
+  const WA = "919822010800"; // ← apna WhatsApp number
   $("#ct-wa").href = "https://wa.me/" + WA + "?text=" + encodeURIComponent("Namaste! Mujhe BhaktiMedia ke baare mein madad chahiye.");
-  function show(id, m) {
-    const e = $(id);
-    if (!m) { e.classList.add("hidden"); return; }
-    e.textContent = m; e.classList.remove("hidden");
-  }
+
+  const ACTIVE = ["ring-2", "ring-saffron", "bg-saffron/10", "text-saffron"];
+  const IDLE = ["bg-sandal/10", "text-sandal-deep", "dark:bg-white/5", "dark:text-cream/70"];
+  $$("#topic-pills [data-topic]").forEach((b) =>
+    b.addEventListener("click", () => {
+      $$("#topic-pills [data-topic]").forEach((x) => { x.classList.remove(...ACTIVE); x.classList.add(...IDLE); });
+      b.classList.remove(...IDLE);
+      b.classList.add(...ACTIVE);
+      $("#ct-topic").value = b.dataset.topic;
+    })
+  );
+
+  function showErr(m) { const e = $("#ct-err"); if (!m) { e.classList.add("hidden"); return; } e.textContent = m; e.classList.remove("hidden"); }
+
   $("#ct-go").addEventListener("click", async () => {
-    show("#ct-err", ""); show("#ct-ok", "");
+    showErr(""); $("#ct-ok").classList.add("hidden");
     const name = $("#ct-name").value.trim();
     const email = $("#ct-email").value.trim();
     const message = $("#ct-msg").value.trim();
-    if (name.length < 2) return show("#ct-err", "Naam sahi bharo");
-    if (!/^\S+@\S+\.\S+$/.test(email)) return show("#ct-err", "Email sahi nahi hai");
-    if (message.length < 10) return show("#ct-err", "Message thoda detail mein likho (kam se kam 10 characters)");
+    if (name.length < 2) return showErr("Naam sahi bharo");
+    if (!/^\S+@\S+\.\S+$/.test(email)) return showErr("Email sahi nahi hai");
+    if (message.length < 10) return showErr("Message thoda detail mein likho (kam se kam 10 characters)");
     const b = $("#ct-go");
     b.disabled = true; b.textContent = "⏳ Bhej rahe hain...";
     try {
       const r = await fetch("/api/contact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, email, topic: $("#ct-topic").value, message }) });
       const d = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(d.error || "Fail");
-      show("#ct-ok", "x"); $("#ct-ok").classList.remove("hidden");
+      $("#ct-ok").classList.remove("hidden");
       $("#ct-name").value = ""; $("#ct-email").value = ""; $("#ct-msg").value = "";
-    } catch (e) { show("#ct-err", "❌ " + e.message); }
+    } catch (e) { showErr("❌ " + e.message); }
     finally { b.disabled = false; b.textContent = "📨 Message Bhejo"; }
   });
 })();
