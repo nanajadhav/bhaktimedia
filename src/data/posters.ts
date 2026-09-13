@@ -13,7 +13,7 @@ export interface Poster {
 
 export const posters: Poster[] = [
   { id: "navratri-utsav", title: "Navratri Utsav", deity: "Maa Durga", file: "/templates/navratri-utsav.png", fest: "navratri", added: "2026-09-10" },
-  { id: "ganesh-utsav", title: "Ganesh Utsav 2026", deity: "Shri Ganesh", file: "/templates/ganesh-utsav.png", fest: "ganesh", added: "2026-08-25" },
+  { id: "ganesh-utsav", title: "Ganesh Utsav 2026", deity: "Shri Ganesh", file: "/templates/ganesh/ganesh-3.png", fest: "ganesh", added: "2026-08-25" },
   { id: "hanuman-chalisa", title: "Hanuman Chalisa", deity: "Shri Hanuman", file: "/templates/hanuman-chalisa.png", fest: "hanuman", added: "2026-08-10" },
   { id: "datta-jayanti", title: "Datta Jayanti", deity: "Shri Datta", file: "/templates/datta-jayanti.png", fest: "datta", added: "2026-07-28" },
   { id: "swami-samarth-jayanti", title: "Swami Samarth Jayanti", deity: "Shri Swami Samarth", file: "/templates/swami-samarth-jayanti.png", fest: "swami", added: "2026-07-15" },
