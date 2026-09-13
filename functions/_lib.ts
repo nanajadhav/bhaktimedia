@@ -56,7 +56,6 @@ export function getToken(context: any): string {
   return (context.request.headers.get("Authorization") || "").replace("Bearer ", "");
 }
 export const LIMITS: Record<string, number> = { trial: 3, starter: 60, growth: 225, scale: 540 };
-
 export const MURTI_LIMITS: Record<string, number> = { trial: 3, starter: 15, growth: 30, scale: 60 };
 
 // ═══ OTP + EMAIL ═══

@@ -15,7 +15,7 @@ export const onRequestPost = async (context: any) => {
     const DB = context.env.DB;
     const prof = await DB.prepare("SELECT plan FROM profiles WHERE user_id = ?").bind(payload.sub).first();
     const plan = (prof?.plan as string) || "trial";
-    const limit = MURTI_LIMITS[plan] ?? 5;
+    const limit = MURTI_LIMITS[plan] ?? 3;
     const period = new Date().toISOString().slice(0, 7);
     const row = await DB.prepare("SELECT id, used FROM usage WHERE user_id = ? AND feature = 'murti' AND period = ?").bind(payload.sub, period).first();
     const used = (row?.used as number) || 0;

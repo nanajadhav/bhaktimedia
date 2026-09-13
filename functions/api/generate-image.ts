@@ -1,4 +1,4 @@
-// functions/api/generate-image.ts — D1 auth + credits (3/creation, 6/HD) + template-locked edits
+// functions/api/generate-image.ts — D1 auth + credits (3⚡/creation, 6⚡/HD) + template-locked edits
 import { json, getToken, verifyJWT, LIMITS } from "../_lib";
 
 function bufToB64(buf: ArrayBuffer) {
@@ -19,7 +19,7 @@ function cleanText(s: string) {
 
 export const onRequestPost = async (context: any) => {
   try {
-    const OPENAI_KEY = context.env.OPENAI_KEY || context.env.OPENAI_API_KEY || "";
+    const OPENAI_KEY = context.env.OPENAI_API_KEY || "";
     const MODEL = context.env.OPENAI_IMAGE_MODEL || "gpt-image-2";
     if (!OPENAI_KEY) return json({ error: "Server key missing" }, 500);
 
