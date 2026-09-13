@@ -1,10 +1,9 @@
-// src/data/posters.ts — homepage poster strip ka data
-// Build time par public/templates ke folders AUTO-SCAN hote hain — file naam likhne ki zaroorat NAHI!
+// src/data/posters.ts — poster data (build-time auto-scan)
+// public/templates/<festival>/ folder mein PNG daalo → git push → web par aa jayega
+// Koi manual entry NAHI chahiye — file naam aur folder se sab kuch banta hai
 //
-// NAYA POSTER ADD KARNA HO:
-//   1) PNG ko apne festival folder mein daalo (public/templates/navratri/...)
-//   2) Neeche FESTIVALS mein us folder ki `added` date = aaj ki date karo
-//   → Homepage strip mein sabse pehle dikhega + 🆕 NEW badge milega
+// Order: bada number = naya = pehle (ganesh-13 → ganesh-1)
+// 🆕 NEW badge: jiska festival 30 din se naya hai
 
 import { readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
@@ -30,6 +29,8 @@ export interface Poster {
   added: string; // YYYY-MM-DD
 }
 
+const pretty = (s: string) => s.replace(/[-_]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+
 function scanFolder(folder: string): string[] {
   const dir = join(ROOT, folder);
   try {
@@ -40,7 +41,7 @@ function scanFolder(folder: string): string[] {
   try {
     return readdirSync(dir)
       .filter((f) => /\.(png|jpe?g|webp)$/i.test(f))
-      .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+      .sort((a, b) => b.localeCompare(a, undefined, { numeric: true })); // newest number FIRST
   } catch {
     return [];
   }
@@ -49,19 +50,23 @@ function scanFolder(folder: string): string[] {
 function scan(): Poster[] {
   const out: Poster[] = [];
   for (const [folder, meta] of Object.entries(FESTIVALS)) {
-    const files = scanFolder(folder).slice(0, 2); // har festival ke max 2 designs strip mein
+    const files = scanFolder(folder); // SAARI files — koi limit nahi
     files.forEach((f, i) => {
+      const base = f.replace(/\.[^.]+$/, "");
+      const num = base.match(/\d+$/)?.[0];
       out.push({
-        id: `${folder}-${i + 1}`,
-        title: i === 0 ? meta.title : `${meta.title} — Design ${i + 1}`,
+        id: `${folder}-${base}`,
+        title: num ? `${meta.title} — Design ${num}` : meta.title,
         deity: meta.deity,
-        file: `/templates/${folder}/${f}`,   // ← asli path: folder ke andar jo file hai wahi
+        file: `/templates/${folder}/${f}`,
         fest: meta.fest,
         added: meta.added,
       });
     });
   }
-  return out.sort((a, b) => +new Date(b.added) - +new Date(a.added)); // newest first
+  return out.sort((a, b) => +new Date(b.added) - +new Date(a.added)); // newest festival first
 }
 
 export const posters: Poster[] = scan();
+
+export const isRecent = (p: Poster) => Date.now() - +new Date(p.added) < 30 * 24 * 60 * 60 * 1000;
