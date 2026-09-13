@@ -40,8 +40,8 @@ import Layout from "../layouts/Layout.astro";
     <div class="card relative flex flex-col p-6 shadow-soft">
       <span id="badge-starter" class="absolute -top-3 left-1/2 hidden -translate-x-1/2 rounded-full bg-green-500 px-4 py-1 text-xs font-bold text-white shadow-soft">🪔 AAPKA PLAN</span>
       <p class="eyebrow">🎨 Starter</p>
-      <p class="mt-3 font-display text-4xl font-bold">₹1<span class="text-sm font-normal text-sandal-deep/50 dark:text-cream/40">/mahina (TEST)</span></p>
-      <p class="text-xs text-sandal-deep/50 dark:text-cream/40">₹10 per creation (launch ke baad)</p>
+      <p class="mt-3 font-display text-4xl font-bold">₹199<span class="text-sm font-normal text-sandal-deep/50 dark:text-cream/40">/mahina</span></p>
+      <p class="text-xs text-sandal-deep/50 dark:text-cream/40">₹10 per creation</p>
       <p class="mt-4 rounded-xl bg-saffron/10 px-3 py-2 text-center text-sm font-bold text-saffron">60 ⚡ = 20 creations</p>
       <ul class="mt-4 grid gap-2 text-sm text-sandal-deep/70 dark:text-cream/60">
         <li>✅ 20 images/posters monthly</li>
@@ -128,8 +128,8 @@ import Layout from "../layouts/Layout.astro";
         <p class="mt-2 text-sm text-sandal-deep/60 dark:text-cream/50">Har plan mein murti credits milte hain: 1K clean download = 0.3⚡, Full HD = 0.5⚡. Free plan mein 10 × 1K photos har mahine FREE. Watermark preview hamesha free.</p>
       </details>
       <details class="card group p-4 shadow-soft">
-        <summary class="cursor-pointer text-sm font-bold">Plan switch kaise karoon?</summary>
-        <p class="mt-2 text-sm text-sandal-deep/60 dark:text-cream/50">"Switch Plan" dabao → UPI QR scan karo (amount bhara hua aayega) → payment ke baad UTR number daalo → verification ke baad plan active + invoice email par!</p>
+        <summary class="cursor-pointer text-sm font-bold">Payment kaise hoti hai?</summary>
+        <p class="mt-2 text-sm text-sandal-deep/60 dark:text-cream/50">"Switch Plan" dabao → UPI QR scan karo (GPay/PhonePe/Paytm) → payment hote hi plan TURANT active + invoice email par. Razorpay secure checkout — zero waiting!</p>
       </details>
       <details class="card group p-4 shadow-soft">
         <summary class="cursor-pointer text-sm font-bold">Packs expire hote hain kya?</summary>
@@ -145,7 +145,7 @@ import Layout from "../layouts/Layout.astro";
   </div>
 </div>
 
-<!-- ═══ SWITCH PLAN MODAL — UPI QR + UTR ═══ -->
+<!-- ═══ SWITCH PLAN MODAL — RAZORPAY UPI QR + MANUAL FALLBACK ═══ -->
 <dialog id="switch-modal" class="relative m-auto w-[min(94vw,480px)] rounded-3xl border border-golden/30 bg-temple p-6 shadow-lift dark:bg-night">
   <form method="dialog" class="absolute right-3 top-3">
     <button class="grid size-9 place-items-center rounded-full bg-sandal/10 transition hover:bg-sandal/20 dark:bg-white/10" aria-label="Band karo">✕</button>
@@ -154,20 +154,26 @@ import Layout from "../layouts/Layout.astro";
   <h3 id="sw-title" class="mt-2 font-display text-2xl font-bold"></h3>
   <p id="sw-price" class="mt-1 text-sm text-sandal-deep/60 dark:text-cream/50"></p>
 
-  <div class="mt-4 grid gap-4 sm:grid-cols-[auto,1fr] sm:items-center">
-    <div class="mx-auto rounded-2xl bg-white p-3 shadow-soft">
-      <img id="sw-qr" alt="UPI QR" class="size-40" />
-      <p class="mt-1 text-center text-[10px] font-semibold text-ink/60">GPay / PhonePe / Paytm se scan karo</p>
+  <button id="sw-rzp" class="btn btn-primary mt-4 w-full !py-3">📱 UPI QR se Pay Karo — auto confirm ⚡</button>
+  <p class="mt-2 text-center text-[11px] text-sandal-deep/50 dark:text-cream/40">QR scan → pay → plan TURANT active + invoice 📧 • zero waiting</p>
+
+  <details class="mt-4">
+    <summary class="cursor-pointer text-center text-xs font-semibold text-sandal-deep/60 underline dark:text-cream/50">Manual UPI + UTR (fallback)</summary>
+    <div class="mt-3 grid gap-4 sm:grid-cols-[auto,1fr] sm:items-center">
+      <div class="mx-auto rounded-2xl bg-white p-3 shadow-soft">
+        <img id="sw-qr" alt="UPI QR" class="size-40" />
+        <p class="mt-1 text-center text-[10px] font-semibold text-ink/60">GPay / PhonePe / Paytm se scan karo</p>
+      </div>
+      <div class="grid gap-2 text-sm">
+        <p class="font-semibold">1️⃣ QR scan karo (amount bhara hua)</p>
+        <button id="sw-upi" class="btn btn-outline w-full !py-2 !text-xs">💳 UPI ID Copy Karo</button>
+        <p class="font-semibold">2️⃣ Payment ke baad UTR / Ref No. daalo</p>
+        <input id="sw-utr" class="input" placeholder="12-digit UTR number" maxlength="22" />
+        <button id="sw-submit" class="btn btn-primary w-full !py-2 !text-sm">✅ Payment Confirm Karo</button>
+        <p class="text-[11px] text-sandal-deep/50 dark:text-cream/40">Verification ke baad plan active + invoice 📧</p>
+      </div>
     </div>
-    <div class="grid gap-2 text-sm">
-      <p class="font-semibold">1️⃣ QR scan karo (amount bhara hua aayega)</p>
-      <button id="sw-upi" class="btn btn-outline w-full !py-2 !text-xs">💳 UPI ID Copy Karo</button>
-      <p class="font-semibold">2️⃣ Payment ke baad UTR / Ref No. daalo</p>
-      <input id="sw-utr" class="input" placeholder="12-digit UTR number" maxlength="22" />
-      <button id="sw-submit" class="btn btn-primary w-full !py-2 !text-sm">✅ Payment Confirm Karo</button>
-      <p class="text-[11px] text-sandal-deep/50 dark:text-cream/40">Verification ke baad plan active + invoice email par 📧</p>
-    </div>
-  </div>
+  </details>
 </dialog>
 
 <script is:inline>
@@ -177,11 +183,11 @@ import Layout from "../layouts/Layout.astro";
 
   const PLANS = {
     trial: { name: "Trial", price: "₹0 /mahina", amount: 0 },
-    starter: { name: "Starter", price: "₹1 /mahina (TEST)", amount: 1 },
+    starter: { name: "Starter", price: "₹199 /mahina", amount: 199 },
     growth: { name: "Growth", price: "₹599 /mahina", amount: 599 },
     scale: { name: "Scale", price: "₹1199 /mahina", amount: 1199 },
   };
-  const UPI_ID = "jyotijadhav702093@oksbi";           // ← apni UPI id yahan badlo
+  const UPI_ID = "bhaktimedia@upi";           // ← apni UPI id yahan badlo
 
   let token = "";
   try {
@@ -222,6 +228,7 @@ import Layout from "../layouts/Layout.astro";
     if (curPlan) { line.textContent = `🪔 Aapka current plan: ${PLANS[curPlan].name} — neeche se switch kar sakte ho`; line.classList.remove("hidden"); }
   }
 
+  /* ---------- modal + manual QR ---------- */
   let swPlan = null;
   function openSwitch(pid) {
     swPlan = pid;
@@ -230,7 +237,10 @@ import Layout from "../layouts/Layout.astro";
     $("#sw-price").textContent = p.price + " — UPI se payment karo";
     const note = "BHM-" + pid + "-" + Date.now().toString().slice(-6);
     const upi = `upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent("BhaktiMedia")}&am=${p.amount}&cu=INR&tn=${note}`;
-    $("#sw-qr").src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upi)}`;
+    const qr = $("#sw-qr");
+    const gen = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upi)}`;
+    qr.onerror = () => { qr.onerror = null; qr.src = gen; };
+    qr.src = "/pay/qr.png";
     $("#sw-utr").value = "";
     $("#switch-modal").showModal();
   }
@@ -248,9 +258,60 @@ import Layout from "../layouts/Layout.astro";
       });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error || "Fail");
-      toast("✅ Request mil gayi! Verification ke baad plan active + invoice email par 📧");
+      toast("✅ Request mil gayi! Verification ke baad plan active + invoice 📧");
       $("#switch-modal").close();
     } catch (e) { toast("❌ " + e.message); }
+  });
+
+  /* ---------- Razorpay UPI QR checkout ---------- */
+  function loadCheckout() {
+    return new Promise((res) => {
+      if (window.Razorpay) return res();
+      const s = document.createElement("script");
+      s.src = "https://checkout.razorpay.com/v1/checkout.js";
+      s.onload = res;
+      document.head.appendChild(s);
+    });
+  }
+  async function waitActivation(plan) {
+    for (let i = 0; i < 14; i++) {
+      await new Promise((r) => setTimeout(r, 2500));
+      try {
+        const r = await fetch("/api/credits", { headers: { Authorization: "Bearer " + token } });
+        if (r.ok) { const c = await r.json(); if (c.plan === plan) { toast("🎉 Plan active ho gaya! Invoice email par 📧"); curPlan = plan; renderButtons(); return; } }
+      } catch (e) {}
+    }
+    toast("✅ Payment mila — activation 1-2 min mein, page refresh karte raho");
+  }
+  $("#sw-rzp").addEventListener("click", async () => {
+    const b = $("#sw-rzp");
+    const label = "📱 UPI QR se Pay Karo — auto confirm ⚡";
+    try {
+      b.disabled = true; b.textContent = "⏳ Order ban raha hai...";
+      const r = await fetch("/api/razorpay-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+        body: JSON.stringify({ plan: swPlan }),
+      });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || "Order fail");
+      await loadCheckout();
+      const rzp = new window.Razorpay({
+        key: d.key,
+        amount: d.amount,
+        currency: "INR",
+        name: "BhaktiMedia.in",
+        description: PLANS[swPlan].name + " plan — monthly",
+        order_id: d.orderId,
+        theme: { color: "#f97316" },
+        method: { upi: { flow: "qr_code" }, card: false, netbanking: false, wallet: false },
+        handler: () => { $("#switch-modal").close(); waitActivation(swPlan); },
+        modal: { ondismiss: () => { b.disabled = false; b.textContent = label; } },
+      });
+      rzp.on("payment.failed", (e) => toast("❌ Payment fail: " + ((e.error && e.error.description) || "dobara try karo")));
+      rzp.open();
+      b.disabled = false; b.textContent = label;
+    } catch (e) { toast("❌ " + e.message); b.disabled = false; b.textContent = label; }
   });
 
   document.querySelectorAll("[data-soon]").forEach((b) => b.addEventListener("click", () => toast("🚧 Packs ka payment gateway jald aa raha hai!")));
