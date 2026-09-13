@@ -139,7 +139,7 @@ import { picsum } from "../lib/utils";
       if (r.ok) {
         quota = await r.json();
         const left = quota.murtiLimit - quota.murtiUsed;
-        chip.textContent = `🪔 ${String(quota.plan).toUpperCase()} — ${left.toFixed(1)}/${quota.murtiLimit} murti credits (1K=0.3⚡ • Full=0.5⚡)`;
+        chip.textContent = `🪔 ${String(quota.plan).toUpperCase()} — ${Math.floor(left / 0.3)} × 1K ya ${Math.floor(left / 0.5)} × Full baaki (${left.toFixed(1)}⚡)`;
         chip.className = left >= 0.3 ? "chip bg-golden/20 text-sandal dark:text-golden" : "chip bg-red-500/15 text-red-500";
       }
     } catch (e) {}
