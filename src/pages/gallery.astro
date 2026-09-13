@@ -69,29 +69,30 @@ import { picsum } from "../lib/utils";
     </div>
   </section>
 
-  <!-- ══════════ LIGHTBOX (stock-style) ══════════ -->
-  <dialog id="lightbox" class="m-auto w-[min(94vw,900px)] rounded-3xl border border-golden/30 bg-night/95 p-3 text-cream shadow-lift">
+  <!-- ══════════ LIGHTBOX — STOCK-STYLE DOWNLOAD PANEL ══════════ -->
+  <dialog id="lightbox" class="relative m-auto w-[min(94vw,900px)] rounded-3xl border border-golden/30 bg-night/95 p-3 text-cream shadow-lift">
+    <form method="dialog" class="absolute right-3 top-3 z-10">
+      <button class="grid size-9 place-items-center rounded-full bg-white/10 text-cream transition hover:bg-white/20" aria-label="Band karo">✕</button>
+    </form>
     <figure>
-      <img id="lb-img" class="max-h-[62vh] w-full rounded-2xl object-contain" alt="" />
-      <figcaption class="flex flex-wrap items-center justify-between gap-3 px-2 py-3">
-        <span>
-          <span id="lb-title" class="block font-display text-sm font-semibold"></span>
-          <span id="lb-ratio" class="text-xs text-goldsoft"></span>
-        </span>
-        <span class="flex items-center gap-2">
-          <button id="lb-preview" class="btn btn-glass !px-4 !py-2 !text-xs !text-cream">⬇ Preview (watermark, free)</button>
-          <button id="lb-download" class="btn btn-primary !px-5 !py-2 !text-xs">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>
-            <span id="lb-dl-label">Full HD (0.5⚡)</span>
-          </button>
-          <form method="dialog"><button class="btn btn-glass !py-2 !text-cream">✕</button></form>
-        </span>
+      <img id="lb-img" class="max-h-[54vh] w-full rounded-2xl object-contain" alt="" />
+      <figcaption class="px-2 py-3">
+        <div class="flex flex-wrap items-start justify-between gap-3 pr-10">
+          <span>
+            <span id="lb-title" class="block font-display text-sm font-semibold"></span>
+            <span id="lb-ratio" class="text-xs text-goldsoft"></span>
+          </span>
+          <span id="lb-status" class="chip bg-white/10 text-cream"></span>
+        </div>
+
+        <!-- state-based clear options -->
+        <div id="lb-actions" class="mt-3 grid gap-2 sm:grid-cols-2"></div>
+
+        <div class="mt-3">
+          <p class="text-[10px] uppercase tracking-widest text-cream/50">Related — same deity</p>
+          <div id="lb-related" class="no-scrollbar mt-2 flex gap-2 overflow-x-auto"></div>
+        </div>
       </figcaption>
-      <!-- related images -->
-      <div class="px-2 pb-2">
-        <p class="text-[10px] uppercase tracking-widest text-cream/50">Related — same deity</p>
-        <div id="lb-related" class="no-scrollbar mt-2 flex gap-2 overflow-x-auto"></div>
-      </div>
     </figure>
   </dialog>
 
@@ -177,7 +178,7 @@ import { picsum } from "../lib/utils";
     return res.blob();
   }
 
-  /* ---------- watermark + canvas helpers ---------- */
+  /* ---------- canvas helpers ---------- */
   function drawWatermark(ctx, w, h) {
     ctx.save();
     const size = Math.max(16, Math.floor(w / 20));
@@ -210,9 +211,9 @@ import { picsum } from "../lib/utils";
     });
   }
 
-  /* ---------- TIER 1: FREE watermark preview (guest + quota khatam) ---------- */
+  /* ---------- TIER FREE: 0.6K watermark (guest + credits khatam) ---------- */
   async function watermarkPreview(item) {
-    toast("⬇️ Watermark preview (0.6K) download ho raha hai...");
+    toast("⬇️ Free preview (0.6K watermark) download ho raha hai...");
     try {
       const blob = await fetchBlob(item, 640);
       const { i, url: objUrl } = await loadImg(blob);
@@ -225,16 +226,14 @@ import { picsum } from "../lib/utils";
         a.click();
         URL.revokeObjectURL(a.href);
         URL.revokeObjectURL(objUrl);
-        toast(token && quota && !hasQuota(0.3)
-          ? "❌ Credits khatam — 0.6K watermark preview • Upgrade karo ⭐"
-          : "✅ 0.6K watermark preview — login karo: 1K clean (0.3⚡) + Full HD (0.5⚡) 🪔");
+        toast(token ? "✅ Free preview mili — clean versions ke liye upgrade karo ⭐" : "✅ Free preview mili — login karo: 1K clean 0.3⚡ se 🪔");
       }, "image/jpeg", 0.7);
     } catch {
       toast("⚠️ Download failed — dobara try karo");
     }
   }
 
-  /* ---------- TIER 2: 1K CLEAN, bina watermark — 0.3⚡ ---------- */
+  /* ---------- TIER 1K CLEAN: 0.3⚡ ---------- */
   async function clean1k(item) {
     toast("⚡ 1K clean download (0.3⚡)...");
     try {
@@ -255,13 +254,13 @@ import { picsum } from "../lib/utils";
       URL.revokeObjectURL(a.href);
       toast(`✅ 1K clean download! ${d.left.toFixed(1)}⚡ baaki`);
       loadQuota();
+      renderActions();
     } catch (e) { toast("❌ " + e.message); }
   }
 
-  /* ---------- TIER 3: FULL HD clean — 0.5⚡ ---------- */
+  /* ---------- TIER FULL HD: 0.5⚡ ---------- */
   async function download(item) {
-    if (!token) return watermarkPreview(item);
-    if (!hasQuota(0.5)) { toast("❌ Murti credits khatam! Plan upgrade karo ⭐"); return; }
+    if (!hasQuota(0.5)) { toast("❌ Credits khatam — pricing par ja rahe hain ⭐"); setTimeout(() => (location.href = "/pricing"), 1200); return; }
     toast("⚡ Full HD clean download (0.5⚡)...");
     try {
       const r = await fetch("/api/murti-download", {
@@ -290,33 +289,65 @@ import { picsum } from "../lib/utils";
         toast(`✅ Full HD clean download! ${d.left.toFixed(1)}⚡ baaki`);
       }, "image/png");
       loadQuota();
+      renderActions();
     } catch (e) { toast("❌ " + e.message); }
   }
 
-  // grid download buttons
+  /* ---------- grid download button (smart) ---------- */
   $$("[data-download]").forEach((btn) =>
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
       const f = btn.closest("figure");
       const item = { id: f.dataset.id, seed: f.dataset.seed, w: f.dataset.w, h: f.dataset.h, deityId: f.dataset.deity };
       if (!token) return watermarkPreview(item);
+      if (!hasQuota(0.5)) { toast("❌ Credits khatam — pricing par ja rahe hain ⭐"); setTimeout(() => (location.href = "/pricing"), 1200); return; }
       download(item);
     })
   );
 
-  /* ---------- lightbox + related + burned watermark ---------- */
+  /* ---------- LIGHTBOX: state-based action panel ---------- */
   let current = null;
+
+  function actionBtn(cls, title, sub, fn) {
+    const b = document.createElement("button");
+    b.className = cls;
+    b.innerHTML = `<span class="block text-xs font-bold">${title}</span><span class="mt-0.5 block text-[10px] font-normal opacity-75">${sub}</span>`;
+    b.addEventListener("click", fn);
+    return b;
+  }
+
+  function renderActions() {
+    const box = $("#lb-actions");
+    const status = $("#lb-status");
+    box.innerHTML = "";
+    if (!token) {
+      status.textContent = "🔒 Guest mode";
+      status.className = "chip bg-white/10 text-cream";
+      box.appendChild(actionBtn("btn btn-glass w-full !py-2.5 !text-cream", "⬇ Free Preview", "640px • watermark • 0⚡", () => watermarkPreview(current)));
+      box.appendChild(actionBtn("btn btn-primary w-full !py-2.5", "🔑 Login / Signup", "1K clean 0.3⚡ • Full HD 0.5⚡", () => (location.href = "/login")));
+    } else if (hasQuota(0.3)) {
+      const left = (quota.murtiLimit - quota.murtiUsed).toFixed(1);
+      status.textContent = `⚡ ${left} murti credits baaki`;
+      status.className = "chip bg-golden/20 text-golden";
+      box.appendChild(actionBtn("btn btn-glass w-full !py-2.5 !text-cream", "⬇ 1K Clean — 0.3⚡", "1024px • bina watermark", () => clean1k(current)));
+      box.appendChild(actionBtn("btn btn-primary w-full !py-2.5", "⬇ Full HD — 0.5⚡", "original quality • bina watermark", () => download(current)));
+    } else {
+      status.textContent = "❌ Murti credits khatam";
+      status.className = "chip bg-red-500/15 text-red-400";
+      box.appendChild(actionBtn("btn btn-glass w-full !py-2.5 !text-cream", "⬇ Free Preview", "640px • watermark • 0⚡", () => watermarkPreview(current)));
+      box.appendChild(actionBtn("btn btn-gold w-full !py-2.5", "⭐ Upgrade Plan", "pricing dekho — credits lo", () => (location.href = "/pricing")));
+    }
+  }
 
   async function openLightbox(item) {
     current = item;
     $("#lb-title").textContent = item.title;
-    $("#lb-ratio").textContent = `Ratio ${item.ratio} • ${item.deityName} • ${hasQuota(0.3) ? "⚡ 1K clean = 0.3⚡ • Full HD = 0.5⚡" : "🛡️ Free preview 0.6K watermark"}`;
-    $("#lb-preview").textContent = hasQuota(0.3) ? "⬇ 1K Clean (0.3⚡)" : "⬇ Preview (watermark, free)";
-    $("#lb-dl-label").textContent = "Full HD (0.5⚡)";
+    $("#lb-ratio").textContent = `Ratio ${item.ratio} • ${item.deityName}`;
+    renderActions();
     renderRelated();
     $("#lightbox").showModal();
 
-    // Watermark BURN into display preview — right-click save = watermarked milegi
+    // display preview = watermarked comp (chori-proof)
     const lbImg = $("#lb-img");
     lbImg.classList.add("opacity-40");
     const maxW = hasQuota(0.3) ? 1200 : 800;
@@ -367,15 +398,13 @@ import { picsum } from "../lib/utils";
     })
   );
 
-  $("#lb-preview").addEventListener("click", () => current && (hasQuota(0.3) ? clean1k(current) : watermarkPreview(current)));
-  $("#lb-download").addEventListener("click", () => current && download(current));
   $("#lightbox").addEventListener("click", (e) => { if (e.target === $("#lightbox")) $("#lightbox").close(); });
 
   /* ---------- right-click protection (SAB users) ---------- */
   ["#gallery-grid", "#lightbox"].forEach((sel) => {
     $(sel).addEventListener("contextmenu", (e) => {
       e.preventDefault();
-      toast("🙏 Right-click save disabled — Download buttons use karo (1K=0.3⚡ • Full=0.5⚡)");
+      toast("🙏 Right-click save disabled — download options neeche buttons mein hain");
     });
   });
 })();
