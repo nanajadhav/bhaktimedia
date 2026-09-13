@@ -40,8 +40,8 @@ import Layout from "../layouts/Layout.astro";
     <div class="card relative flex flex-col p-6 shadow-soft">
       <span id="badge-starter" class="absolute -top-3 left-1/2 hidden -translate-x-1/2 rounded-full bg-green-500 px-4 py-1 text-xs font-bold text-white shadow-soft">🪔 AAPKA PLAN</span>
       <p class="eyebrow">🎨 Starter</p>
-      <p class="mt-3 font-display text-4xl font-bold">₹199<span class="text-sm font-normal text-sandal-deep/50 dark:text-cream/40">/mahina</span></p>
-      <p class="text-xs text-sandal-deep/50 dark:text-cream/40">₹10 per creation</p>
+      <p class="mt-3 font-display text-4xl font-bold">₹1<span class="text-sm font-normal text-sandal-deep/50 dark:text-cream/40">/mahina (TEST)</span></p>
+      <p class="text-xs text-sandal-deep/50 dark:text-cream/40">Testing price — launch ke baad ₹199</p>
       <p class="mt-4 rounded-xl bg-saffron/10 px-3 py-2 text-center text-sm font-bold text-saffron">60 ⚡ = 20 creations</p>
       <ul class="mt-4 grid gap-2 text-sm text-sandal-deep/70 dark:text-cream/60">
         <li>✅ 20 images/posters monthly</li>
@@ -166,7 +166,7 @@ import Layout from "../layouts/Layout.astro";
 
   const PLANS = {
     trial: { name: "Trial", price: "₹0 /mahina", amount: 0 },
-    starter: { name: "Starter", price: "₹199 /mahina", amount: 199 },
+    starter: { name: "Starter", price: "₹1 /mahina (TEST)", amount: 1 },
     growth: { name: "Growth", price: "₹599 /mahina", amount: 599 },
     scale: { name: "Scale", price: "₹1199 /mahina", amount: 1199 },
   };
