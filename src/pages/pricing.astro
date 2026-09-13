@@ -268,7 +268,7 @@ import Layout from "../layouts/Layout.astro";
       rzp.on("payment.failed", (e) => toast("❌ Payment fail: " + ((e.error && e.error.description) || "dobara try karo")));
       rzp.open();
       b.disabled = false; b.textContent = label;
-    } catch (e) { toast("❌ " + e.message); b.disabled = false; b.textContent = label; }
+      } catch (e) { $("#switch-modal").close(); toast("❌ " + e.message); b.disabled = false; b.textContent = label; }
   });
 
   document.querySelectorAll("[data-soon]").forEach((b) => b.addEventListener("click", () => toast("🚧 Packs ka payment gateway jald aa raha hai!")));
