@@ -7,7 +7,7 @@ import { picsum } from "../lib/utils";
 ---
 <Layout title="Divine Gallery" description="Deity-wise devotional gallery — stock-style downloads, ratios, related images aur watermark protection.">
   <PageHeader eyebrow="Divine Gallery" title="Darshan In Every Frame" dev="॥ दर्शन गैलरी ॥"
-    description="Deity chuno, ratio dekho, download karo. Preview = watermark free • Plan mein clean full HD (0.5⚡)." />
+    description="Deity chuno, ratio dekho, download karo. Guest = 0.6K watermark free • Plan mein 1K clean (0.3⚡) aur Full HD (0.5⚡)." />
 
   <!-- data for JS -->
   <script type="application/json" id="gallery-data" set:html={JSON.stringify(
@@ -79,9 +79,10 @@ import { picsum } from "../lib/utils";
           <span id="lb-ratio" class="text-xs text-goldsoft"></span>
         </span>
         <span class="flex items-center gap-2">
+          <button id="lb-preview" class="btn btn-glass !px-4 !py-2 !text-xs !text-cream">⬇ Preview (watermark, free)</button>
           <button id="lb-download" class="btn btn-primary !px-5 !py-2 !text-xs">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>
-            Download (0.5⚡)
+            <span id="lb-dl-label">Full HD (0.5⚡)</span>
           </button>
           <form method="dialog"><button class="btn btn-glass !py-2 !text-cream">✕</button></form>
         </span>
@@ -107,7 +108,7 @@ import { picsum } from "../lib/utils";
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const DATA = JSON.parse($("#gallery-data").textContent);
 
-  /* ---------- auth token + quota state ---------- */
+  /* ---------- auth token + murti credits ---------- */
   let token = "";
   try {
     for (let i = 0; i < localStorage.length; i++) {
@@ -116,7 +117,7 @@ import { picsum } from "../lib/utils";
     }
   } catch (e) {}
   let quota = null;
-  const hasQuota = () => !!quota && quota.murtiUsed < quota.murtiLimit;
+  const hasQuota = (cost = 0.5) => !!quota && quota.murtiUsed + cost <= quota.murtiLimit;
 
   /* ---------- toast ---------- */
   let toastTimer;
@@ -128,17 +129,17 @@ import { picsum } from "../lib/utils";
     toastTimer = setTimeout(() => el.classList.add("hidden"), 3500);
   }
 
-  /* ---------- real plan quota (server se) ---------- */
+  /* ---------- server se murti credits ---------- */
   async function loadQuota() {
     const chip = $("#plan-chip");
-    if (!token) { chip.textContent = "🆓 Preview mode — login karo, plan mein clean downloads"; return; }
+    if (!token) { chip.textContent = "🆓 Guest mode — 0.6K watermark free • login karo"; return; }
     try {
       const r = await fetch("/api/credits", { headers: { Authorization: "Bearer " + token } });
       if (r.ok) {
         quota = await r.json();
         const left = quota.murtiLimit - quota.murtiUsed;
-        chip.textContent = `🪔 ${String(quota.plan).toUpperCase()} — ${left}/${quota.murtiLimit} clean photos baaki (0.5⚡ each)`;
-        chip.className = left > 0 ? "chip bg-golden/20 text-sandal dark:text-golden" : "chip bg-red-500/15 text-red-500";
+        chip.textContent = `🪔 ${String(quota.plan).toUpperCase()} — ${left.toFixed(1)}/${quota.murtiLimit} murti credits (1K=0.3⚡ • Full=0.5⚡)`;
+        chip.className = left >= 0.3 ? "chip bg-golden/20 text-sandal dark:text-golden" : "chip bg-red-500/15 text-red-500";
       }
     } catch (e) {}
   }
@@ -176,7 +177,7 @@ import { picsum } from "../lib/utils";
     return res.blob();
   }
 
-  /* ---------- watermark (canvas) ---------- */
+  /* ---------- watermark + canvas helpers ---------- */
   function drawWatermark(ctx, w, h) {
     ctx.save();
     const size = Math.max(16, Math.floor(w / 20));
@@ -191,7 +192,14 @@ import { picsum } from "../lib/utils";
         ctx.fillText(text, x, y);
     ctx.restore();
   }
-
+  function drawScaled(i, maxW) {
+    let w = i.width, h = i.height;
+    if (w > maxW) { const s = maxW / w; w = Math.round(w * s); h = Math.round(h * s); }
+    const c = document.createElement("canvas");
+    c.width = w; c.height = h;
+    c.getContext("2d").drawImage(i, 0, 0, w, h);
+    return c;
+  }
   function loadImg(blob) {
     return new Promise((res, rej) => {
       const url = URL.createObjectURL(blob);
@@ -202,41 +210,64 @@ import { picsum } from "../lib/utils";
     });
   }
 
-  /* ---------- FREE watermark preview download ---------- */
+  /* ---------- TIER 1: FREE watermark preview (guest + quota khatam) ---------- */
   async function watermarkPreview(item) {
-    toast("⬇️ Watermark preview download ho raha hai...");
+    toast("⬇️ Watermark preview (0.6K) download ho raha hai...");
     try {
       const blob = await fetchBlob(item, 640);
       const { i, url: objUrl } = await loadImg(blob);
-      const canvas = document.createElement("canvas");
-      canvas.width = i.width; canvas.height = i.height;
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(i, 0, 0);
-      drawWatermark(ctx, canvas.width, canvas.height);
+      const canvas = drawScaled(i, 640);
+      drawWatermark(canvas.getContext("2d"), canvas.width, canvas.height);
       canvas.toBlob((b) => {
         const a = document.createElement("a");
         a.href = URL.createObjectURL(b);
-        a.download = `bhaktimedia-${item.seed}-preview-watermark.jpg`;
+        a.download = `bhaktimedia-${item.id || item.seed}-preview-640px-watermark.jpg`;
         a.click();
         URL.revokeObjectURL(a.href);
         URL.revokeObjectURL(objUrl);
-        toast("✅ Preview mili! Login karo — plan mein clean full HD downloads 🪔");
-      }, "image/jpeg", 0.92);
+        toast(token && quota && !hasQuota(0.3)
+          ? "❌ Credits khatam — 0.6K watermark preview • Upgrade karo ⭐"
+          : "✅ 0.6K watermark preview — login karo: 1K clean (0.3⚡) + Full HD (0.5⚡) 🪔");
+      }, "image/jpeg", 0.7);
     } catch {
       toast("⚠️ Download failed — dobara try karo");
     }
   }
 
-  /* ---------- GATED clean full-HD download (0.5⚡) ---------- */
-  async function download(item) {
-    if (!token) return watermarkPreview(item);
-    if (!hasQuota()) { toast("❌ Murti quota khatam! Plan upgrade karo ⭐"); return; }
-    toast("⚡ Quota check + clean download...");
+  /* ---------- TIER 2: 1K CLEAN, bina watermark — 0.3⚡ ---------- */
+  async function clean1k(item) {
+    toast("⚡ 1K clean download (0.3⚡)...");
     try {
       const r = await fetch("/api/murti-download", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
-        body: JSON.stringify({ id: item.id || item.seed, cat: item.deityId || item.cat || "ganesh" }),
+        body: JSON.stringify({ id: item.id || item.seed, cat: item.deityId || item.cat || "ganesh", kind: "1k" }),
+      });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || "Fail");
+      const res = await fetch(d.url);
+      if (!res.ok) throw new Error("File nahi mili");
+      const blob = await res.blob();
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `bhaktimedia-${item.id || item.seed}-1k-clean.png`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+      toast(`✅ 1K clean download! ${d.left.toFixed(1)}⚡ baaki`);
+      loadQuota();
+    } catch (e) { toast("❌ " + e.message); }
+  }
+
+  /* ---------- TIER 3: FULL HD clean — 0.5⚡ ---------- */
+  async function download(item) {
+    if (!token) return watermarkPreview(item);
+    if (!hasQuota(0.5)) { toast("❌ Murti credits khatam! Plan upgrade karo ⭐"); return; }
+    toast("⚡ Full HD clean download (0.5⚡)...");
+    try {
+      const r = await fetch("/api/murti-download", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+        body: JSON.stringify({ id: item.id || item.seed, cat: item.deityId || item.cat || "ganesh", kind: "full" }),
       });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error || "Download fail");
@@ -248,8 +279,7 @@ import { picsum } from "../lib/utils";
       const { i, url: objUrl } = await loadImg(blob);
       const canvas = document.createElement("canvas");
       canvas.width = i.width; canvas.height = i.height;
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(i, 0, 0);
+      canvas.getContext("2d").drawImage(i, 0, 0);
       canvas.toBlob((b) => {
         const a = document.createElement("a");
         a.href = URL.createObjectURL(b);
@@ -257,12 +287,10 @@ import { picsum } from "../lib/utils";
         a.click();
         URL.revokeObjectURL(a.href);
         URL.revokeObjectURL(objUrl);
-        toast(`✅ Clean full HD download! ${d.left} photos baaki`);
+        toast(`✅ Full HD clean download! ${d.left.toFixed(1)}⚡ baaki`);
       }, "image/png");
       loadQuota();
-    } catch (e) {
-      toast("❌ " + e.message);
-    }
+    } catch (e) { toast("❌ " + e.message); }
   }
 
   // grid download buttons
@@ -270,7 +298,9 @@ import { picsum } from "../lib/utils";
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
       const f = btn.closest("figure");
-      download({ id: f.dataset.id, seed: f.dataset.seed, w: f.dataset.w, h: f.dataset.h, deityId: f.dataset.deity });
+      const item = { id: f.dataset.id, seed: f.dataset.seed, w: f.dataset.w, h: f.dataset.h, deityId: f.dataset.deity };
+      if (!token) return watermarkPreview(item);
+      download(item);
     })
   );
 
@@ -280,27 +310,27 @@ import { picsum } from "../lib/utils";
   async function openLightbox(item) {
     current = item;
     $("#lb-title").textContent = item.title;
-    $("#lb-ratio").textContent = `Ratio ${item.ratio} • ${item.deityName} • 🛡️ Protected preview • Clean download = 0.5⚡`;
+    $("#lb-ratio").textContent = `Ratio ${item.ratio} • ${item.deityName} • ${hasQuota(0.3) ? "⚡ 1K clean = 0.3⚡ • Full HD = 0.5⚡" : "🛡️ Free preview 0.6K watermark"}`;
+    $("#lb-preview").textContent = hasQuota(0.3) ? "⬇ 1K Clean (0.3⚡)" : "⬇ Preview (watermark, free)";
+    $("#lb-dl-label").textContent = "Full HD (0.5⚡)";
     renderRelated();
     $("#lightbox").showModal();
 
-    // Watermark BURN into preview — right-click save = watermarked milegi
+    // Watermark BURN into display preview — right-click save = watermarked milegi
     const lbImg = $("#lb-img");
     lbImg.classList.add("opacity-40");
+    const maxW = hasQuota(0.3) ? 1200 : 800;
     try {
-      const blob = await fetchBlob(item, 1200);
+      const blob = await fetchBlob(item, maxW);
       const { i, url } = await loadImg(blob);
-      const canvas = document.createElement("canvas");
-      canvas.width = i.width; canvas.height = i.height;
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(i, 0, 0);
-      drawWatermark(ctx, canvas.width, canvas.height);
+      const canvas = drawScaled(i, maxW);
+      drawWatermark(canvas.getContext("2d"), canvas.width, canvas.height);
       const old = lbImg.src;
-      lbImg.src = canvas.toDataURL("image/jpeg", 0.9);
+      lbImg.src = canvas.toDataURL("image/jpeg", hasQuota(0.3) ? 0.9 : 0.75);
       if (old.startsWith("blob:")) URL.revokeObjectURL(old);
       URL.revokeObjectURL(url);
     } catch {
-      lbImg.src = srcFor(item, 1200);
+      lbImg.src = srcFor(item, maxW);
     }
     lbImg.alt = item.title;
     lbImg.classList.remove("opacity-40");
@@ -337,6 +367,7 @@ import { picsum } from "../lib/utils";
     })
   );
 
+  $("#lb-preview").addEventListener("click", () => current && (hasQuota(0.3) ? clean1k(current) : watermarkPreview(current)));
   $("#lb-download").addEventListener("click", () => current && download(current));
   $("#lightbox").addEventListener("click", (e) => { if (e.target === $("#lightbox")) $("#lightbox").close(); });
 
@@ -344,7 +375,7 @@ import { picsum } from "../lib/utils";
   ["#gallery-grid", "#lightbox"].forEach((sel) => {
     $(sel).addEventListener("contextmenu", (e) => {
       e.preventDefault();
-      toast("🙏 Right-click save disabled — Download button se clean full HD (0.5⚡)");
+      toast("🙏 Right-click save disabled — Download buttons use karo (1K=0.3⚡ • Full=0.5⚡)");
     });
   });
 })();
