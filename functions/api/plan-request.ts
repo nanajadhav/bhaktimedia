@@ -1,7 +1,7 @@
 // functions/api/plan-request.ts — user UTR submit karta hai, admin verify karega
 import { json, getToken, verifyJWT, uid } from "../_lib";
 
-const PRICES: Record<string, number> = { starter: 199, growth: 599, scale: 1199 };
+const PRICES: Record<string, number> = { starter: 1, growth: 599, scale: 1199 }; // TEST MODE: Starter ₹1
 
 export const onRequestPost = async (context: any) => {
   try {
