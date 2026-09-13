@@ -111,3 +111,32 @@ const socials = [
     </div>
   </div>
 </footer>
+
+<script is:inline>
+(function () {
+  const input = document.querySelector('input[placeholder="you@example.com"]');
+  if (!input) return;
+  const box = input.closest("form") || input.parentElement;
+  const btn = box.querySelector("button");
+  if (!btn) return;
+  const msg = document.createElement("p");
+  msg.className = "mt-2 hidden text-xs font-semibold";
+  box.parentElement.appendChild(msg);
+  function show(m, cls) { msg.textContent = m; msg.className = "mt-2 text-xs font-semibold " + cls; }
+
+  btn.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const email = input.value.trim().toLowerCase();
+    if (!/^\S+@\S+\.\S+$/.test(email)) return show("❌ Email sahi nahi hai", "text-red-400");
+    btn.disabled = true;
+    try {
+      const r = await fetch("/api/subscribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email }) });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(d.error || "Fail");
+      show("🪔 Subscribe ho gaya! Welcome email bheja hai.", "text-golden");
+      input.value = "";
+    } catch (e2) { show("❌ " + e2.message, "text-red-400"); }
+    finally { btn.disabled = false; }
+  });
+})();
+</script>
