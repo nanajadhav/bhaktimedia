@@ -8,10 +8,11 @@ import Layout from "../layouts/Layout.astro";
   <div class="text-center">
     <p class="eyebrow justify-center">💰 Pricing</p>
     <h1 class="mt-3 font-display text-4xl font-bold sm:text-5xl">Seedhi Pricing, <span class="bg-gradient-to-r from-saffron to-golden bg-clip-text text-transparent">Koi Jhol Nahi</span></h1>
-    <p class="mx-auto mt-4 max-w-xl text-sm text-sandal-deep/60 dark:text-cream/50">Credits kharido, creations banao. Na chhupe kharche, na lock-in. Festival posters, AI images — sab ek hi balance se.</p>
+    <p class="mx-auto mt-4 max-w-xl text-sm text-sandal-deep/60 dark:text-cream/50">Credits kharido, creations banao. Na chhupe kharche, na lock-in. Festival posters, AI images, murti photos — sab ek hi balance se.</p>
+    <p id="cur-plan-line" class="mx-auto mt-4 hidden max-w-md rounded-full bg-green-500/10 px-5 py-2 text-sm font-bold text-green-600 dark:text-green-400"></p>
   </div>
 
-  <div class="mx-auto mt-8 flex max-w-2xl flex-wrap justify-center gap-2">
+  <div class="mx-auto mt-6 flex max-w-2xl flex-wrap justify-center gap-2">
     <span class="chip bg-saffron/10 text-saffron">🖼️ 1 Creation = 3 ⚡</span>
     <span class="chip bg-golden/15 text-golden">🌟 HD Creation = 6 ⚡</span>
     <span class="chip bg-sandal/10 text-sandal-deep dark:bg-white/5 dark:text-cream/70">📅 Plan credits har mahine reset</span>
@@ -20,7 +21,8 @@ import Layout from "../layouts/Layout.astro";
 
   <!-- ═══ MONTHLY PLANS ═══ -->
   <div class="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-    <div class="card flex flex-col p-6 shadow-soft">
+    <div id="card-trial" class="card relative flex flex-col p-6 shadow-soft">
+      <span id="badge-trial" class="absolute -top-3 left-1/2 hidden -translate-x-1/2 rounded-full bg-green-500 px-4 py-1 text-xs font-bold text-white shadow-soft">🪔 AAPKA PLAN</span>
       <p class="eyebrow">🪔 Trial</p>
       <p class="mt-3 font-display text-4xl font-bold">₹0</p>
       <p class="text-xs text-sandal-deep/50 dark:text-cream/40">hamesha free</p>
@@ -28,14 +30,15 @@ import Layout from "../layouts/Layout.astro";
       <ul class="mt-4 grid gap-2 text-sm text-sandal-deep/70 dark:text-cream/60">
         <li>✅ 1 AI image ya poster</li>
         <li>✅ Saare festival templates</li>
-        <li>🪔 10 murti photos/mahina</li>
+        <li>🪔 10 × 1K murti photos FREE/mahina</li>
         <li>✅ Watermark-free download</li>
         <li>❌ HD (2K) quality</li>
       </ul>
-      <a href="/signup" class="btn btn-outline mt-6 w-full">Free Shuru Karo</a>
+      <button id="btn-trial" class="btn btn-outline mt-6 w-full">Free Shuru Karo</button>
     </div>
 
-    <div class="card flex flex-col p-6 shadow-soft">
+    <div id="card-starter" class="card relative flex flex-col p-6 shadow-soft">
+      <span id="badge-starter" class="absolute -top-3 left-1/2 hidden -translate-x-1/2 rounded-full bg-green-500 px-4 py-1 text-xs font-bold text-white shadow-soft">🪔 AAPKA PLAN</span>
       <p class="eyebrow">🎨 Starter</p>
       <p class="mt-3 font-display text-4xl font-bold">₹199<span class="text-sm font-normal text-sandal-deep/50 dark:text-cream/40">/mahina</span></p>
       <p class="text-xs text-sandal-deep/50 dark:text-cream/40">₹10 per creation</p>
@@ -44,14 +47,15 @@ import Layout from "../layouts/Layout.astro";
         <li>✅ 20 images/posters monthly</li>
         <li>✅ HD (2K) option (6⚡)</li>
         <li>✅ Saare festival templates</li>
-        <li>🪔 50 murti photos/mahina</li>
+        <li>🪔 50 × 1K (ya 30 Full) murti photos</li>
         <li>✅ Email support</li>
       </ul>
-      <button data-soon class="btn btn-primary mt-6 w-full">Starter Lo</button>
+      <button id="btn-starter" class="btn btn-primary mt-6 w-full">Switch Plan →</button>
     </div>
 
-    <div class="card relative flex flex-col border-2 border-saffron p-6 shadow-gold">
-      <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-saffron to-golden px-4 py-1 text-xs font-bold text-white shadow-gold">⭐ BEST VALUE</span>
+    <div id="card-growth" class="card relative flex flex-col border-2 border-saffron p-6 shadow-gold">
+      <span id="badge-growth" class="absolute -top-3 left-1/2 hidden -translate-x-1/2 rounded-full bg-green-500 px-4 py-1 text-xs font-bold text-white shadow-soft">🪔 AAPKA PLAN</span>
+      <span id="bv-growth" class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-saffron to-golden px-4 py-1 text-xs font-bold text-white shadow-gold">⭐ BEST VALUE</span>
       <p class="eyebrow">🚀 Growth</p>
       <p class="mt-3 font-display text-4xl font-bold">₹599<span class="text-sm font-normal text-sandal-deep/50 dark:text-cream/40">/mahina</span></p>
       <p class="text-xs text-sandal-deep/50 dark:text-cream/40">₹8 per creation</p>
@@ -60,13 +64,14 @@ import Layout from "../layouts/Layout.astro";
         <li>✅ 75 images/posters monthly</li>
         <li>✅ HD (2K) option (6⚡)</li>
         <li>✅ Festival packs eligibility</li>
-        <li>🪔 100 murti photos/mahina</li>
+        <li>🪔 100 × 1K (ya 60 Full) murti photos</li>
         <li>✅ WhatsApp support</li>
       </ul>
-      <button data-soon class="btn btn-primary mt-6 w-full">Growth Lo</button>
+      <button id="btn-growth" class="btn btn-primary mt-6 w-full">Switch Plan →</button>
     </div>
 
-    <div class="card flex flex-col p-6 shadow-soft">
+    <div id="card-scale" class="card relative flex flex-col p-6 shadow-soft">
+      <span id="badge-scale" class="absolute -top-3 left-1/2 hidden -translate-x-1/2 rounded-full bg-green-500 px-4 py-1 text-xs font-bold text-white shadow-soft">🪔 AAPKA PLAN</span>
       <p class="eyebrow">🏛️ Scale</p>
       <p class="mt-3 font-display text-4xl font-bold">₹1199<span class="text-sm font-normal text-sandal-deep/50 dark:text-cream/40">/mahina</span></p>
       <p class="text-xs text-sandal-deep/50 dark:text-cream/40">₹6.7 per creation</p>
@@ -75,10 +80,10 @@ import Layout from "../layouts/Layout.astro";
         <li>✅ 180 images/posters monthly</li>
         <li>✅ HD (2K) option (6⚡)</li>
         <li>✅ Monthly custom template request</li>
-        <li>🪔 200 murti photos/mahina</li>
+        <li>🪔 200 × 1K (ya 120 Full) murti photos</li>
         <li>✅ Phone support</li>
       </ul>
-      <button data-soon class="btn btn-primary mt-6 w-full">Scale Lo</button>
+      <button id="btn-scale" class="btn btn-primary mt-6 w-full">Switch Plan →</button>
     </div>
   </div>
 
@@ -119,30 +124,113 @@ import Layout from "../layouts/Layout.astro";
         <p class="mt-2 text-sm text-sandal-deep/60 dark:text-cream/50">Har AI creation (image ya poster) ke liye 3 ⚡ lagte hain. HD (2K) quality ke liye 6 ⚡. Generation fail ho to credit wapas — katta hi nahi!</p>
       </details>
       <details class="card group p-4 shadow-soft">
-        <summary class="cursor-pointer text-sm font-bold">Mahine ke beech mein credits khatam ho gaye?</summary>
-        <p class="mt-2 text-sm text-sandal-deep/60 dark:text-cream/50">Koi baat nahi — one-time pack kharido (kabhi expire nahi) ya agle mahine plan reset ho jayega. Upgrade kabhi bhi kar sakte ho.</p>
+        <summary class="cursor-pointer text-sm font-bold">Murti photos ka system kya hai?</summary>
+        <p class="mt-2 text-sm text-sandal-deep/60 dark:text-cream/50">Har plan mein murti credits milte hain: 1K clean download = 0.3⚡, Full HD = 0.5⚡. Free plan mein 10 × 1K photos har mahine FREE. Watermark preview hamesha free.</p>
+      </details>
+      <details class="card group p-4 shadow-soft">
+        <summary class="cursor-pointer text-sm font-bold">Plan switch kaise karoon?</summary>
+        <p class="mt-2 text-sm text-sandal-deep/60 dark:text-cream/50">Is page par "Switch Plan" dabao, payment karo — plan turant active ho jayega aur card par "🪔 AAPKA PLAN" badge dikhega.</p>
       </details>
       <details class="card group p-4 shadow-soft">
         <summary class="cursor-pointer text-sm font-bold">Packs expire hote hain kya?</summary>
         <p class="mt-2 text-sm text-sandal-deep/60 dark:text-cream/50">Nahi! Packs one-time hain — jab tak khatam na karo, tab tak aapke hain. Plan credits har mahine reset hote hain, packs nahi.</p>
-      </details>
-      <details class="card group p-4 shadow-soft">
-        <summary class="cursor-pointer text-sm font-bold">Payment kaise karoon?</summary>
-        <p class="mt-2 text-sm text-sandal-deep/60 dark:text-cream/50">Online payment gateway jald aa raha hai 🚧. Tab tak UPI/WhatsApp par order kar sakte ho — support par message karo.</p>
       </details>
     </div>
   </div>
 
   <div class="mt-16 rounded-3xl bg-gradient-to-r from-saffron to-golden p-10 text-center shadow-gold">
     <h2 class="font-display text-3xl font-bold text-white">Pehli Creation Free Hai! 🪔</h2>
-    <p class="mt-2 text-sm text-white/80">Trial mein 3 ⚡ milte hain — ek poora poster, watermark-free.</p>
+    <p class="mt-2 text-sm text-white/80">Trial mein 3 ⚡ + 10 × 1K murti photos — watermark-free.</p>
     <a href="/signup" class="btn mt-6 bg-white !text-saffron hover:bg-cream">🙏 Abhi Shuru Karo</a>
   </div>
 </div>
+
+<!-- ═══ SWITCH PLAN MODAL ═══ -->
+<dialog id="switch-modal" class="relative m-auto w-[min(94vw,440px)] rounded-3xl border border-golden/30 bg-temple p-6 shadow-lift dark:bg-night">
+  <form method="dialog" class="absolute right-3 top-3">
+    <button class="grid size-9 place-items-center rounded-full bg-sandal/10 transition hover:bg-sandal/20 dark:bg-white/10" aria-label="Band karo">✕</button>
+  </form>
+  <p class="eyebrow">🔄 Plan Switch</p>
+  <h3 id="sw-title" class="mt-2 font-display text-2xl font-bold"></h3>
+  <p id="sw-price" class="mt-1 text-sm text-sandal-deep/60 dark:text-cream/50"></p>
+  <div class="mt-4 rounded-2xl bg-saffron/10 p-4 text-sm font-semibold text-saffron">
+    <p>💳 Payment gateway (Razorpay) jald aa raha hai!</p>
+    <p class="mt-2 font-normal text-sandal-deep/70 dark:text-cream/60">Tab tak: UPI par payment karo → order screenshot WhatsApp karo → admin 24 ghante mein plan activate karega. Activate hote hi is page par "🪔 AAPKA PLAN" badge dikhega.</p>
+  </div>
+  <div class="mt-4 grid gap-2">
+    <a id="sw-wa" href="#" target="_blank" class="btn btn-primary w-full">📱 WhatsApp par Order Karo</a>
+    <button id="sw-upi" class="btn btn-outline w-full">💳 UPI ID Copy Karo</button>
+  </div>
+  <p class="mt-3 text-center text-[11px] text-sandal-deep/50 dark:text-cream/40">UPI: <b id="sw-upi-id">bhaktimedia@upi</b></p>
+</dialog>
+
 <script is:inline>
 (function () {
-  function toast(msg) { const t = document.querySelector("#toast"); t.textContent = msg; t.classList.remove("hidden"); setTimeout(() => t.classList.add("hidden"), 2800); }
-  document.querySelectorAll("[data-soon]").forEach((b) => b.addEventListener("click", () => toast("🚧 Payment gateway jald aa raha hai — tab tak support par UPI se order karo!")));
+  const $ = (s) => document.querySelector(s);
+  function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.remove("hidden"); setTimeout(() => t.classList.add("hidden"), 2800); }
+
+  const PLANS = {
+    trial: { name: "Trial", price: "₹0 /mahina" },
+    starter: { name: "Starter", price: "₹199 /mahina" },
+    growth: { name: "Growth", price: "₹599 /mahina" },
+    scale: { name: "Scale", price: "₹1199 /mahina" },
+  };
+  const UPI_ID = "bhaktimedia@upi";           // ← apni UPI id yahan badlo
+  const WA_NUMBER = "919822010800";            // ← apna WhatsApp number yahan badlo
+
+  let token = "";
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.indexOf("sb-") === 0 && k.indexOf("auth-token") !== -1) { token = JSON.parse(localStorage.getItem(k)).access_token; break; }
+    }
+  } catch (e) {}
+  let curPlan = null;
+
+  async function loadPlan() {
+    if (!token) return;
+    try {
+      const r = await fetch("/api/credits", { headers: { Authorization: "Bearer " + token } });
+      if (r.ok) curPlan = (await r.json()).plan || null;
+    } catch (e) {}
+  }
+
+  function renderButtons() {
+    Object.keys(PLANS).forEach((pid) => {
+      const b = document.getElementById("btn-" + pid);
+      const badge = document.getElementById("badge-" + pid);
+      if (pid === "growth") $("#bv-growth").classList.toggle("hidden", curPlan === "growth");
+      if (curPlan && pid === curPlan) {
+        badge.classList.remove("hidden");
+        b.textContent = "✅ Aapka Active Plan";
+        b.disabled = true;
+        b.className = "mt-6 w-full cursor-not-allowed rounded-full bg-green-500/15 px-5 py-2.5 text-sm font-bold text-green-600 dark:text-green-400";
+      } else if (!curPlan) {
+        if (pid === "trial") { b.textContent = "Free Shuru Karo"; b.onclick = () => (location.href = "/signup"); }
+        else { b.textContent = "🔑 Login Karo Pehle"; b.onclick = () => (location.href = "/login"); }
+      } else {
+        b.textContent = pid === "trial" ? "⬇ Downgrade — Trial" : "Switch Plan →";
+        b.onclick = () => openSwitch(pid);
+      }
+    });
+    const line = $("#cur-plan-line");
+    if (curPlan) { line.textContent = `🪔 Aapka current plan: ${PLANS[curPlan].name} — neeche se switch kar sakte ho`; line.classList.remove("hidden"); }
+  }
+
+  function openSwitch(pid) {
+    const p = PLANS[pid];
+    $("#sw-title").textContent = p.name + " Plan";
+    $("#sw-price").textContent = p.price + " — payment ke baad turant active";
+    $("#sw-wa").href = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(`Namaste! Mujhe ${p.name} plan (${p.price}) lena hai. Meri email: ${"" || "____"}`)}`;
+    $("#switch-modal").showModal();
+  }
+  $("#sw-upi").addEventListener("click", () => {
+    navigator.clipboard.writeText(UPI_ID).then(() => toast("✅ UPI ID copy ho gayi: " + UPI_ID));
+  });
+
+  document.querySelectorAll("[data-soon]").forEach((b) => b.addEventListener("click", () => toast("🚧 Packs ka payment gateway jald aa raha hai!")));
+
+  loadPlan().then(renderButtons);
 })();
 </script>
 </Layout>
