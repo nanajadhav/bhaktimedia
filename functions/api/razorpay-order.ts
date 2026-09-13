@@ -1,7 +1,7 @@
 // functions/api/razorpay-order.ts — Razorpay order create (UPI QR checkout)
 import { json, getToken, verifyJWT, uid } from "../_lib";
 
-const PRICES: Record<string, number> = { starter: 1, growth: 599, scale: 1199 }; // TEST: starter ₹1
+const PRICES: Record<string, number> = { starter: 199, growth: 599, scale: 1199 };
 
 export const onRequestPost = async (context: any) => {
   try {
