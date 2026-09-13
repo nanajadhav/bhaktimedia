@@ -10,15 +10,9 @@ const galleryPreview = deityGallery.flatMap((d) =>
   d.images.slice(0, 2).map((i) => ({ ...i, deity: d.name, deityId: d.id }))
 );
 
-const posters = [
-  { seed: "ganesh-utsav-poster", title: "Ganesh Utsav 2026", deity: "Shri Ganesh", file: "/templates/ganesh-utsav.png", fest: "ganesh" },
-  { seed: "swami-samarth-poster", title: "Swami Samarth Jayanti", deity: "Shri Swami Samarth", file: "/templates/swami-samarth-jayanti.png", fest: "swami" },
-  { seed: "datta-jayanti-poster", title: "Datta Jayanti", deity: "Shri Datta", file: "/templates/datta-jayanti.png", fest: "datta" },
-  { seed: "hanuman-chalisa-poster", title: "Hanuman Chalisa", deity: "Shri Hanuman", file: "/templates/hanuman-chalisa.png", fest: "hanuman" },
-  { seed: "navratri-garba-poster", title: "Navratri Utsav", deity: "Maa Durga", file: "/templates/navratri-utsav.png", fest: "navratri" },
-  { seed: "janmashtami-poster", title: "Janmashtami", deity: "Shri Krishna", file: "/templates/janmashtami.png", fest: "krishna" },
-  { seed: "diwali-deepotsav-poster", title: "Deepotsav", deity: "Shri Lakshmi", file: "/templates/diwali-deepotsav.png", fest: "diwali" },
-];
+import { posters as posterData } from "../data/posters";
+const recentPosters = [...posterData].sort((a, b) => +new Date(b.added) - +new Date(a.added)).slice(0, 8);
+const isRecent = (p: (typeof posterData)[number]) => Date.now() - +new Date(p.added) < 30 * 24 * 60 * 60 * 1000;
 
 const posts = (await getCollection("blog")).sort((a, b) => +b.data.pubDate - +a.data.pubDate);
 const [featuredPost, ...restPosts] = posts;
@@ -273,32 +267,51 @@ const sidePosts = restPosts.slice(0, 3);
 
 <!-- ══════════ POSTERS ══════════ -->
 <section class="section pattern-sacred bg-cream/60 dark:bg-night-soft/30">
+  <style>
+    @keyframes poster-scroll { to { transform: translateX(-50%); } }
+    .poster-marquee { animation: poster-scroll 50s linear infinite; }
+    .poster-marquee-wrap:hover .poster-marquee { animation-play-state: paused; }
+    @media (prefers-reduced-motion: reduce) { .poster-marquee { animation: none !important; } }
+  </style>
   <div class="container-x">
     <div class="flex flex-wrap items-end justify-between gap-6">
       <header data-reveal>
         <p class="eyebrow">Festival Posters</p>
         <h2 class="mt-4 font-display text-3xl font-bold tracking-tight sm:text-4xl">Posters That Devotees <span class="text-gradient">Frame</span></h2>
         <p class="mt-2 font-dev text-sandal dark:text-golden/80">॥ उत्सव घोषणा ॥</p>
-        <p class="mt-3 max-w-lg text-sm text-sandal-deep/70 dark:text-cream/60">From Ganesh Utsav to Navratri to Datta Jayanti — festival-ready, print-ready posters designed with the right colors, symbols, and reverence for every occasion.</p>
+        <p class="mt-3 max-w-lg text-sm text-sandal-deep/70 dark:text-cream/60">From Ganesh Utsav to Navratri to Datta Jayanti — festival-ready, print-ready posters designed with the right colors, symbols, and reverence for every occasion. Newest additions first!</p>
       </header>
       <a data-reveal href="/ai-services?studio=poster" class="btn btn-primary">Open Poster Studio
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
       </a>
     </div>
+  </div>
 
-    <div class="no-scrollbar -mx-1 mt-12 flex snap-x gap-5 overflow-x-auto px-1 pb-2">
-      {posters.map((p, i) => (
-        <a data-reveal style={`--rd:${(i % 4) * 80}ms`} href={`/posters?fest=${p.fest}`}
-           class="group relative w-56 shrink-0 snap-start overflow-hidden rounded-2xl border border-sandal/10 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-lift dark:border-white/10 sm:w-64">
-          <img src={p.file} onerror={`this.onerror=null;this.src='https://picsum.photos/seed/${p.seed}/480/672'`} alt={p.title} loading="lazy" class="aspect-[5/7] w-full object-cover transition duration-700 group-hover:scale-105" />
-          <span class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 to-transparent px-4 pb-3 pt-10">
-            <span class="block font-dev text-xs text-goldsoft">{p.deity}</span>
-            <span class="block font-display text-sm font-semibold text-white">{p.title}</span>
-          </span>
-          <span class="chip absolute left-3 top-3 bg-ink/60 text-[10px] text-white backdrop-blur">Print Ready</span>
-        </a>
+  <!-- slowly moving poster strip -->
+  <div class="poster-marquee-wrap relative mt-12 overflow-hidden">
+    <div class="poster-marquee flex w-max gap-5 px-5">
+      {[0, 1].map((dup) => (
+        <ul class="flex gap-5" aria-hidden={dup === 1}>
+          {recentPosters.map((p) => (
+            <li>
+              <a href={`/posters?fest=${p.fest}`} class="group relative block w-56 shrink-0 overflow-hidden rounded-2xl border border-sandal/10 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-lift dark:border-white/10 sm:w-64">
+                <img src={p.file} onerror={`this.onerror=null;this.src='https://picsum.photos/seed/${p.id}-poster/480/672'`} alt={p.title} loading="lazy" class="aspect-[5/7] w-full object-cover transition duration-700 group-hover:scale-105" />
+                {isRecent(p) && (
+                  <span class="chip absolute right-3 top-3 bg-green-500 !px-2 !py-0.5 text-[9px] font-bold text-white shadow-soft">🆕 NEW</span>
+                )}
+                <span class="chip absolute left-3 top-3 bg-ink/60 text-[10px] text-white backdrop-blur">Print Ready</span>
+                <span class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 to-transparent px-4 pb-3 pt-10">
+                  <span class="block font-dev text-xs text-goldsoft">{p.deity}</span>
+                  <span class="block font-display text-sm font-semibold text-white">{p.title}</span>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
       ))}
     </div>
+    <div class="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-cream to-transparent dark:from-night-soft"></div>
+    <div class="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-cream to-transparent dark:from-night-soft"></div>
   </div>
 </section>
 
