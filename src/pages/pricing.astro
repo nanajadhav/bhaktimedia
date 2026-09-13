@@ -21,7 +21,7 @@ import Layout from "../layouts/Layout.astro";
 
   <!-- ═══ MONTHLY PLANS ═══ -->
   <div class="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-    <div id="card-trial" class="card relative flex flex-col p-6 shadow-soft">
+    <div class="card relative flex flex-col p-6 shadow-soft">
       <span id="badge-trial" class="absolute -top-3 left-1/2 hidden -translate-x-1/2 rounded-full bg-green-500 px-4 py-1 text-xs font-bold text-white shadow-soft">🪔 AAPKA PLAN</span>
       <p class="eyebrow">🪔 Trial</p>
       <p class="mt-3 font-display text-4xl font-bold">₹0</p>
@@ -37,7 +37,7 @@ import Layout from "../layouts/Layout.astro";
       <button id="btn-trial" class="btn btn-outline mt-6 w-full">Free Shuru Karo</button>
     </div>
 
-    <div id="card-starter" class="card relative flex flex-col p-6 shadow-soft">
+    <div class="card relative flex flex-col p-6 shadow-soft">
       <span id="badge-starter" class="absolute -top-3 left-1/2 hidden -translate-x-1/2 rounded-full bg-green-500 px-4 py-1 text-xs font-bold text-white shadow-soft">🪔 AAPKA PLAN</span>
       <p class="eyebrow">🎨 Starter</p>
       <p class="mt-3 font-display text-4xl font-bold">₹199<span class="text-sm font-normal text-sandal-deep/50 dark:text-cream/40">/mahina</span></p>
@@ -53,7 +53,7 @@ import Layout from "../layouts/Layout.astro";
       <button id="btn-starter" class="btn btn-primary mt-6 w-full">Switch Plan →</button>
     </div>
 
-    <div id="card-growth" class="card relative flex flex-col border-2 border-saffron p-6 shadow-gold">
+    <div class="card relative flex flex-col border-2 border-saffron p-6 shadow-gold">
       <span id="badge-growth" class="absolute -top-3 left-1/2 hidden -translate-x-1/2 rounded-full bg-green-500 px-4 py-1 text-xs font-bold text-white shadow-soft">🪔 AAPKA PLAN</span>
       <span id="bv-growth" class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-saffron to-golden px-4 py-1 text-xs font-bold text-white shadow-gold">⭐ BEST VALUE</span>
       <p class="eyebrow">🚀 Growth</p>
@@ -70,7 +70,7 @@ import Layout from "../layouts/Layout.astro";
       <button id="btn-growth" class="btn btn-primary mt-6 w-full">Switch Plan →</button>
     </div>
 
-    <div id="card-scale" class="card relative flex flex-col p-6 shadow-soft">
+    <div class="card relative flex flex-col p-6 shadow-soft">
       <span id="badge-scale" class="absolute -top-3 left-1/2 hidden -translate-x-1/2 rounded-full bg-green-500 px-4 py-1 text-xs font-bold text-white shadow-soft">🪔 AAPKA PLAN</span>
       <p class="eyebrow">🏛️ Scale</p>
       <p class="mt-3 font-display text-4xl font-bold">₹1199<span class="text-sm font-normal text-sandal-deep/50 dark:text-cream/40">/mahina</span></p>
@@ -129,7 +129,7 @@ import Layout from "../layouts/Layout.astro";
       </details>
       <details class="card group p-4 shadow-soft">
         <summary class="cursor-pointer text-sm font-bold">Plan switch kaise karoon?</summary>
-        <p class="mt-2 text-sm text-sandal-deep/60 dark:text-cream/50">Is page par "Switch Plan" dabao, payment karo — plan turant active ho jayega aur card par "🪔 AAPKA PLAN" badge dikhega.</p>
+        <p class="mt-2 text-sm text-sandal-deep/60 dark:text-cream/50">"Switch Plan" dabao → UPI QR scan karo (amount bhara hua aayega) → payment ke baad UTR number daalo → verification ke baad plan active + invoice email par!</p>
       </details>
       <details class="card group p-4 shadow-soft">
         <summary class="cursor-pointer text-sm font-bold">Packs expire hote hain kya?</summary>
@@ -145,23 +145,29 @@ import Layout from "../layouts/Layout.astro";
   </div>
 </div>
 
-<!-- ═══ SWITCH PLAN MODAL ═══ -->
-<dialog id="switch-modal" class="relative m-auto w-[min(94vw,440px)] rounded-3xl border border-golden/30 bg-temple p-6 shadow-lift dark:bg-night">
+<!-- ═══ SWITCH PLAN MODAL — UPI QR + UTR ═══ -->
+<dialog id="switch-modal" class="relative m-auto w-[min(94vw,480px)] rounded-3xl border border-golden/30 bg-temple p-6 shadow-lift dark:bg-night">
   <form method="dialog" class="absolute right-3 top-3">
     <button class="grid size-9 place-items-center rounded-full bg-sandal/10 transition hover:bg-sandal/20 dark:bg-white/10" aria-label="Band karo">✕</button>
   </form>
-  <p class="eyebrow">🔄 Plan Switch</p>
+  <p class="eyebrow">🔄 Plan Switch — UPI Payment</p>
   <h3 id="sw-title" class="mt-2 font-display text-2xl font-bold"></h3>
   <p id="sw-price" class="mt-1 text-sm text-sandal-deep/60 dark:text-cream/50"></p>
-  <div class="mt-4 rounded-2xl bg-saffron/10 p-4 text-sm font-semibold text-saffron">
-    <p>💳 Payment gateway (Razorpay) jald aa raha hai!</p>
-    <p class="mt-2 font-normal text-sandal-deep/70 dark:text-cream/60">Tab tak: UPI par payment karo → order screenshot WhatsApp karo → admin 24 ghante mein plan activate karega. Activate hote hi is page par "🪔 AAPKA PLAN" badge dikhega.</p>
+
+  <div class="mt-4 grid gap-4 sm:grid-cols-[auto,1fr] sm:items-center">
+    <div class="mx-auto rounded-2xl bg-white p-3 shadow-soft">
+      <img id="sw-qr" alt="UPI QR" class="size-40" />
+      <p class="mt-1 text-center text-[10px] font-semibold text-ink/60">GPay / PhonePe / Paytm se scan karo</p>
+    </div>
+    <div class="grid gap-2 text-sm">
+      <p class="font-semibold">1️⃣ QR scan karo (amount bhara hua aayega)</p>
+      <button id="sw-upi" class="btn btn-outline w-full !py-2 !text-xs">💳 UPI ID Copy Karo</button>
+      <p class="font-semibold">2️⃣ Payment ke baad UTR / Ref No. daalo</p>
+      <input id="sw-utr" class="input" placeholder="12-digit UTR number" maxlength="22" />
+      <button id="sw-submit" class="btn btn-primary w-full !py-2 !text-sm">✅ Payment Confirm Karo</button>
+      <p class="text-[11px] text-sandal-deep/50 dark:text-cream/40">Verification ke baad plan active + invoice email par 📧</p>
+    </div>
   </div>
-  <div class="mt-4 grid gap-2">
-    <a id="sw-wa" href="#" target="_blank" class="btn btn-primary w-full">📱 WhatsApp par Order Karo</a>
-    <button id="sw-upi" class="btn btn-outline w-full">💳 UPI ID Copy Karo</button>
-  </div>
-  <p class="mt-3 text-center text-[11px] text-sandal-deep/50 dark:text-cream/40">UPI: <b id="sw-upi-id">bhaktimedia@upi</b></p>
 </dialog>
 
 <script is:inline>
@@ -170,13 +176,12 @@ import Layout from "../layouts/Layout.astro";
   function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.remove("hidden"); setTimeout(() => t.classList.add("hidden"), 2800); }
 
   const PLANS = {
-    trial: { name: "Trial", price: "₹0 /mahina" },
-    starter: { name: "Starter", price: "₹199 /mahina" },
-    growth: { name: "Growth", price: "₹599 /mahina" },
-    scale: { name: "Scale", price: "₹1199 /mahina" },
+    trial: { name: "Trial", price: "₹0 /mahina", amount: 0 },
+    starter: { name: "Starter", price: "₹199 /mahina", amount: 199 },
+    growth: { name: "Growth", price: "₹599 /mahina", amount: 599 },
+    scale: { name: "Scale", price: "₹1199 /mahina", amount: 1199 },
   };
   const UPI_ID = "bhaktimedia@upi";           // ← apni UPI id yahan badlo
-  const WA_NUMBER = "919822010800";            // ← apna WhatsApp number yahan badlo
 
   let token = "";
   try {
@@ -217,15 +222,35 @@ import Layout from "../layouts/Layout.astro";
     if (curPlan) { line.textContent = `🪔 Aapka current plan: ${PLANS[curPlan].name} — neeche se switch kar sakte ho`; line.classList.remove("hidden"); }
   }
 
+  let swPlan = null;
   function openSwitch(pid) {
+    swPlan = pid;
     const p = PLANS[pid];
     $("#sw-title").textContent = p.name + " Plan";
-    $("#sw-price").textContent = p.price + " — payment ke baad turant active";
-    $("#sw-wa").href = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(`Namaste! Mujhe ${p.name} plan (${p.price}) lena hai. Meri email: ${"" || "____"}`)}`;
+    $("#sw-price").textContent = p.price + " — UPI se payment karo";
+    const note = "BHM-" + pid + "-" + Date.now().toString().slice(-6);
+    const upi = `upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent("BhaktiMedia")}&am=${p.amount}&cu=INR&tn=${note}`;
+    $("#sw-qr").src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upi)}`;
+    $("#sw-utr").value = "";
     $("#switch-modal").showModal();
   }
   $("#sw-upi").addEventListener("click", () => {
     navigator.clipboard.writeText(UPI_ID).then(() => toast("✅ UPI ID copy ho gayi: " + UPI_ID));
+  });
+  $("#sw-submit").addEventListener("click", async () => {
+    const utr = $("#sw-utr").value.trim();
+    if (utr.length < 8) return toast("Sahi UTR / reference number daalo");
+    try {
+      const r = await fetch("/api/plan-request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+        body: JSON.stringify({ plan: swPlan, utr }),
+      });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || "Fail");
+      toast("✅ Request mil gayi! Verification ke baad plan active + invoice email par 📧");
+      $("#switch-modal").close();
+    } catch (e) { toast("❌ " + e.message); }
   });
 
   document.querySelectorAll("[data-soon]").forEach((b) => b.addEventListener("click", () => toast("🚧 Packs ka payment gateway jald aa raha hai!")));
