@@ -60,6 +60,10 @@ export const onRequestPost = async (context: any) => {
     if (templateBytes && photoBytes) {
       const name = cleanText(body.name);
       const msg = cleanText(body.msg);
+      const lang = String(body.lang || "mr");
+      const langLine = lang === "mr"
+        ? "render the name and the wish line in Devanagari script (Marathi), transliterating any Latin-script input"
+        : "render the name and the wish line in English using Latin script";
       const prompt = `Image 1 = our official festival poster template.
 Image 2 = the customer's photo (the person may be a child, boy, girl, man or woman).
 Edit image 1 with ONLY these changes:

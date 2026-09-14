@@ -146,13 +146,19 @@ import { posters as scannedPosters } from "../data/posters";
       </div>
 
       <div class="mt-4 rounded-2xl card p-3 shadow-soft lg:shrink-0">
-        <textarea id="prompt" rows="2" class="w-full resize-none bg-transparent p-2 text-sm outline-none" placeholder="Describe the image you want to generate... (poster mein ye optional message hai — khali chhodo to poster par extra text NAHI aayega)"></textarea>
+        <textarea id="prompt" rows="2" class="w-full resize-none bg-transparent p-2 text-sm outline-none" placeholder="Describe the image you want to generate... (for posters this becomes the wish message — leave empty for no extra text on the poster)"></textarea>
         <div class="flex items-center justify-between px-2 pb-1">
           <span class="text-xs text-sandal-deep/50 dark:text-cream/40">1 creation = 3 ⚡ • HD = 6 ⚡</span>
           <button id="gen" class="btn btn-primary !px-6 !py-2">Generate 🚀</button>
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- ══ LIGHTBOX PREVIEW ══ -->
+  <div id="lightbox" class="fixed inset-0 z-[95] hidden items-center justify-center bg-ink/90 p-6 backdrop-blur-sm">
+    <img id="lightbox-img" class="max-h-[90vh] max-w-full rounded-2xl shadow-lift" alt="Full preview" />
+    <button id="lightbox-close" class="absolute right-5 top-5 grid size-10 place-items-center rounded-full bg-white/10 text-lg text-white transition hover:bg-white/20">✕</button>
   </div>
 
   <!-- ══ MOBILE FLOATING DOCK ══ -->
@@ -343,8 +349,12 @@ import { posters as scannedPosters } from "../data/posters";
   $("#sheet-close").addEventListener("click", closeSheet);
   $("#sheet-backdrop").addEventListener("click", closeSheet);
 
-  /* generated poster par click = full preview */
-  $("#result").addEventListener("click", () => { if ($("#result").src) window.open($("#result").src, "_blank"); });
+  /* generated poster par click = in-page full preview (lightbox) */
+  function openLb() { const lb = $("#lightbox"); $("#lightbox-img").src = $("#result").src; lb.classList.remove("hidden"); lb.classList.add("flex"); }
+  function closeLb() { const lb = $("#lightbox"); lb.classList.add("hidden"); lb.classList.remove("flex"); }
+  $("#result").addEventListener("click", () => { if ($("#result").src) openLb(); });
+  $("#lightbox-close").addEventListener("click", closeLb);
+  $("#lightbox").addEventListener("click", (e) => { if (e.target.id === "lightbox") closeLb(); });
 
   async function run(body) {
     $("#empty").classList.add("hidden");
@@ -412,6 +422,7 @@ import { posters as scannedPosters } from "../data/posters";
         template: `/templates/${design.fest}/${design.id}.png`,
         name,
         msg,
+        lang: $("#p-lang").value,
         size: $("#p-ratio").value,
         hd: false,
         tag: design.name + " — " + name,
