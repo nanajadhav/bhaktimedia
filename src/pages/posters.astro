@@ -9,29 +9,23 @@ const FEST = [
   { id: "swami", name: "Swami Samarth", icon: "🙏", desc: "Shraddha aur shanti" },
   { id: "newyear", name: "New Year", icon: "🎉", desc: "Naye varsh ki shubhkamnayein" },
 ];
-const DESIGNS = [
-  { id: "ganesh-1", fest: "ganesh", name: "Golden Throne", seed: "ganesh-golden-throne" },
-  { id: "ganesh-2", fest: "ganesh", name: "Palkhi Utsav", seed: "ganesh-palkhi-procession" },
-  { id: "ganesh-3", fest: "ganesh", name: "Modak Blessing", seed: "ganesh-modak-soft" },
-  { id: "diwali-1", fest: "diwali", name: "Diya Rows", seed: "diwali-diya-rows" },
-  { id: "diwali-2", fest: "diwali", name: "Laxmi Pujan", seed: "diwali-laxmi-altar" },
-  { id: "diwali-3", fest: "diwali", name: "Fireworks Night", seed: "diwali-fireworks-kandil" },
-  { id: "navratri-1", fest: "navratri", name: "Durga Idol", seed: "navratri-durga-idol" },
-  { id: "navratri-2", fest: "navratri", name: "Garba Night", seed: "navratri-garba-dandiya" },
-  { id: "navratri-3", fest: "navratri", name: "Nine Colors", seed: "navratri-nine-colors" },
-  { id: "holi-1", fest: "holi", name: "Gulal Clouds", seed: "holi-gulal-clouds" },
-  { id: "holi-2", fest: "holi", name: "Radha Krishna", seed: "holi-radha-krishna" },
-  { id: "holi-3", fest: "holi", name: "Water Splash", seed: "holi-water-splash" },
-  { id: "hanuman-1", fest: "hanuman", name: "Saffron Flag", seed: "hanuman-saffron-flag" },
-  { id: "hanuman-2", fest: "hanuman", name: "Chalisa Pose", seed: "hanuman-chalisa-pose" },
-  { id: "hanuman-3", fest: "hanuman", name: "Gada Power", seed: "hanuman-gada-power" },
-  { id: "swami-1", fest: "swami", name: "Meditation", seed: "swami-meditation-peace" },
-  { id: "swami-2", fest: "swami", name: "Akkalkot Darbar", seed: "swami-akkalkot-darbar" },
-  { id: "swami-3", fest: "swami", name: "Blessing Hand", seed: "swami-blessing-hand" },
-  { id: "newyear-1", fest: "newyear", name: "Fireworks", seed: "newyear-fireworks-gold" },
-  { id: "newyear-2", fest: "newyear", name: "Midnight Clock", seed: "newyear-midnight-clock" },
-  { id: "newyear-3", fest: "newyear", name: "Sunrise Garlands", seed: "newyear-sunrise-garland" },
-];
+import { posters as scanned } from "../data/posters";
+
+const NICE: Record<string, string> = {
+  "ganesh-1": "Golden Throne", "ganesh-2": "Palkhi Utsav", "ganesh-3": "Modak Blessing",
+  "diwali-1": "Diya Rows", "diwali-2": "Laxmi Pujan", "diwali-3": "Fireworks Night",
+  "navratri-1": "Durga Idol", "navratri-2": "Garba Night", "navratri-3": "Nine Colors",
+  "holi-1": "Gulal Clouds", "holi-2": "Radha Krishna", "holi-3": "Water Splash",
+  "hanuman-1": "Saffron Flag", "hanuman-2": "Chalisa Pose", "hanuman-3": "Gada Power",
+  "swami-1": "Meditation", "swami-2": "Akkalkot Darbar", "swami-3": "Blessing Hand",
+  "newyear-1": "Fireworks", "newyear-2": "Midnight Clock", "newyear-3": "Sunrise Garlands",
+};
+
+const DESIGNS = scanned.map((p) => {
+  const id = p.file.split("/").pop().replace(/\.[^.]+$/, "");
+  const num = id.match(/\d+$/)?.[0] || "";
+  return { id, fest: p.fest, name: NICE[id] || `Design ${num}`, seed: p.id };
+});
 const previewsOf = (fid: string) => DESIGNS.filter((d) => d.fest === fid).slice(0, 3);
 ---
 <Layout title="Devotional Poster Templates" description="Festival wise traditional poster designs — pasand karo aur generate karo.">
