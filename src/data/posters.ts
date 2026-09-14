@@ -1,10 +1,6 @@
-// src/data/posters.ts — homepage poster strip ka data
-// Build time par public/templates ke folders AUTO-SCAN hote hain — file naam likhne ki zaroorat NAHI!
-//
-// NAYA POSTER ADD KARNA HO:
-//   1) PNG ko apne festival folder mein daalo (public/templates/navratri/...)
-//   2) Neeche FESTIVALS mein us folder ki `added` date = aaj ki date karo
-//   → Homepage strip mein sabse pehle dikhega + 🆕 NEW badge milega
+// src/data/posters.ts — poster data (build-time auto-scan)
+// public/templates/<festival>/ mein PNG daalo → git push → har jagah dikhega
+// KOI LIMIT NAHI — folder ki SAARI files uthti hain, newest number first
 
 import { readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
@@ -49,19 +45,21 @@ function scanFolder(folder: string): string[] {
 function scan(): Poster[] {
   const out: Poster[] = [];
   for (const [folder, meta] of Object.entries(FESTIVALS)) {
-    const files = scanFolder(folder).slice(0, 2); // har festival ke max 2 designs strip mein
-    files.forEach((f, i) => {
+    const files = scanFolder(folder); // ← SAARI files, koi slice/limit NAHI
+    files.forEach((f) => {
+      const base = f.replace(/\.[^.]+$/, "");        // "ganesh-13"
+      const num = base.match(/\d+$/)?.[0] || "";      // "13"
       out.push({
-        id: `${folder}-${i + 1}`,
-        title: i === 0 ? meta.title : `${meta.title} — Design ${i + 1}`,
+        id: base,                                     // unique + sahi id (filename se)
+        title: num ? `${meta.title} — Design ${num}` : meta.title,
         deity: meta.deity,
-        file: `/templates/${folder}/${f}`,   // ← asli path: folder ke andar jo file hai wahi
+        file: `/templates/${folder}/${f}`,            // asli file path
         fest: meta.fest,
         added: meta.added,
       });
     });
   }
-  return out.sort((a, b) => +new Date(b.added) - +new Date(a.added)); // newest first
+  return out.sort((a, b) => +new Date(b.added) - +new Date(a.added)); // newest festival first
 }
 
 export const posters: Poster[] = scan();
