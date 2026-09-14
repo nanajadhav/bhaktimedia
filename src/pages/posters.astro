@@ -1,13 +1,13 @@
 ---
 import Layout from "../layouts/Layout.astro";
 const FEST = [
-  { id: "ganesh", name: "Ganesh Utsav", icon: "🐘", desc: "Ganpati Bappa ke mangal designs" },
-  { id: "diwali", name: "Diwali", icon: "🪔", desc: "Roshni aur divyon ke designs" },
-  { id: "navratri", name: "Navratri", icon: "🌺", desc: "Maa Durga ke nau din" },
-  { id: "holi", name: "Holi", icon: "🎨", desc: "Rangon ka tyohar" },
-  { id: "hanuman", name: "Hanuman Jayanti", icon: "🚩", desc: "Bajrangbali ki shakti" },
-  { id: "swami", name: "Swami Samarth", icon: "🙏", desc: "Shraddha aur shanti" },
-  { id: "newyear", name: "New Year", icon: "🎉", desc: "Naye varsh ki shubhkamnayein" },
+  { id: "ganesh", name: "Ganesh Utsav", icon: "🐘", img: "/icons/ganesh.png", desc: "Ganpati Bappa designs" },
+  { id: "diwali", name: "Diwali", icon: "🪔", desc: "Designs of Light and the Divine" },
+  { id: "navratri", name: "Navratri", icon: "🌺", desc: "The Nine Days of Maa Durga" },
+  { id: "holi", name: "Holi", icon: "🎨", desc: "The Festival of Colors" },
+  { id: "hanuman", name: "Hanuman Jayanti", icon: "🚩", desc: "The Power of Bajrangbali" },
+  { id: "swami", name: "Swami Samarth", icon: "🙏", desc: "Faith and Peace" },
+  { id: "newyear", name: "New Year", icon: "🎉", desc: "Happy New Year" },
 ];
 import { posters as scanned } from "../data/posters";
 
@@ -28,12 +28,12 @@ const DESIGNS = scanned.map((p) => {
 });
 const previewsOf = (fid: string) => DESIGNS.filter((d) => d.fest === fid).slice(0, 3);
 ---
-<Layout title="Devotional Poster Templates" description="Festival wise traditional poster designs — pasand karo aur generate karo.">
+<Layout title="Devotional Poster Templates" description="Festival-themed traditional poster designs — choose and generate.">
 <div class="container-x px-4 pt-32 pb-20 sm:px-6">
   <div class="text-center">
     <p class="eyebrow">🪔 Traditional Templates</p>
     <h1 id="pg-title" class="mt-3 font-display text-3xl font-bold sm:text-5xl">Devotional Poster Templates</h1>
-    <p id="pg-sub" class="mx-auto mt-4 max-w-xl text-sandal-deep/70 dark:text-cream/60">Festival chuno — andar ke saare designs dekho, pasand ka design Studio mein kholo!</p>
+    <p id="pg-sub" class="mx-auto mt-4 max-w-xl text-sandal-deep/70 dark:text-cream/60">Choose a festival — browse all the designs inside, and open your favorite one in the design studio!</p>
   </div>
 
   <div id="fest-grid" class="mx-auto mt-12 grid max-w-6xl gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -65,7 +65,7 @@ const previewsOf = (fid: string) => DESIGNS.filter((d) => d.fest === fid).slice(
 
   {FEST.map((f) => (
     <section id={`designs-${f.id}`} data-name={`${f.icon} ${f.name}`} class="hidden mx-auto mt-10 max-w-6xl">
-      <a href="/posters" class="inline-flex items-center gap-2 text-sm font-semibold text-saffron hover:underline">← Sab Festivals</a>
+      <a href="/posters" class="inline-flex items-center gap-2 text-sm font-semibold text-saffron hover:underline">← All Festivals</a>
       <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {DESIGNS.filter((d) => d.fest === f.id).map((d) => (
           <a href={`/studio?view=poster&tpl=${d.id}`} class="group relative overflow-hidden rounded-3xl shadow-soft transition duration-500 hover:-translate-y-1.5 hover:shadow-lift">
@@ -90,7 +90,7 @@ const previewsOf = (fid: string) => DESIGNS.filter((d) => d.fest === fid).slice(
     document.getElementById("fest-grid").style.display = "none";
     sec.classList.remove("hidden");
     document.getElementById("pg-title").textContent = sec.getAttribute("data-name") + " Designs";
-    document.getElementById("pg-sub").textContent = "Pasand ka design chuno — Studio usi design ke saath khulega.";
+    document.getElementById("pg-sub").textContent = "Choose your preferred design — the Studio will open with that design.";
   }
 })();
 </script>
