@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import { posters as scannedPosters } from "../data/posters";
 ---
 <Layout title="AI Studio" description="BhaktiMedia AI Studio — image & poster generation.">
 <style>
@@ -43,6 +44,7 @@ import Layout from "../layouts/Layout.astro";
             <option value="1024x1024">1:1 (Square)</option>
             <option value="1024x1536">2:3 (Portrait)</option>
             <option value="1536x1024">3:2 (Landscape)</option>
+            <option value="1024x1792">9:16 (Reels / Story)</option>
           </select>
         </label>
         <label class="block text-sm font-semibold">Resolution
@@ -86,6 +88,7 @@ import Layout from "../layouts/Layout.astro";
             <option value="1024x1536">4:5 (Poster)</option>
             <option value="1024x1024">1:1 (Square)</option>
             <option value="1536x1024">3:2 (Landscape)</option>
+            <option value="1024x1792">9:16 (Reels / Story)</option>
           </select>
         </label>
         <div class="text-sm font-semibold">User photo (zaroori)
@@ -167,6 +170,7 @@ import Layout from "../layouts/Layout.astro";
   </div>
 </div>
 
+<script id="scan-data" type="application/json" set:html={JSON.stringify(scannedPosters)}></script>
 <script is:inline>
 (function () {
   const $ = (s) => document.querySelector(s);
@@ -254,21 +258,35 @@ import Layout from "../layouts/Layout.astro";
     { id: "diwali-2", fest: "diwali", name: "Laxmi Pujan", scene: "Goddess Laxmi idol on decorated altar at LEFT side, gold coins, kalash, marigold flowers, warm candlelight, rich red velvet backdrop" },
     { id: "diwali-3", fest: "diwali", name: "Fireworks Night", scene: "colorful fireworks over temple skyline on LEFT side, hanging kandil lanterns, family silhouettes holding diyas, deep blue night sky" },
     { id: "navratri-1", fest: "navratri", name: "Durga Idol", scene: "Goddess Durga idol with garlands on LEFT side, red and gold drapes, dandiya sticks, marigold decoration, festive warm glow" },
-    { id: "navratri-2", fest: "navratri", name: "Garba Night", scene: "circular garba dancers with dandiya sticks on LEFT side, colorful chaniya choli swirls, stage lights bokeh, festive energy" },
-    { id: "navratri-3", fest: "navratri", name: "Nine Colors", scene: "nine colored ornate panels with deity silhouette on LEFT side, traditional border patterns, gold foil accents, devotional glow" },
+    { id: "navratri-2", fest: "navratri", name: "Garba Night", scene: "circular garba dancers with dandiya sticks at LEFT side, colorful chaniya choli swirls, stage lights bokeh, festive energy" },
+    { id: "navratri-3", fest: "navratri", name: "Nine Colors", scene: "nine colored ornate panels with deity silhouette at LEFT side, traditional border patterns, gold foil accents, devotional glow" },
     { id: "holi-1", fest: "holi", name: "Gulal Clouds", scene: "colorful gulal powder clouds and water splashes around, temple silhouette, vibrant pink yellow green colors, joyful festive bokeh" },
-    { id: "holi-2", fest: "holi", name: "Radha Krishna", scene: "Radha Krishna playing with pichkari colors on LEFT side, Vrindavan garden backdrop, pastel color mist, playful divine mood" },
-    { id: "holi-3", fest: "holi", name: "Water Splash", scene: "vibrant water balloon splash frozen in motion on LEFT side, rainbow colors, laughing crowd bokeh, sunny festive day" },
-    { id: "hanuman-1", fest: "hanuman", name: "Saffron Flag", scene: "Lord Hanuman with mace and saffron flag on LEFT side, mountain temple backdrop, saffron orange glow, powerful divine aura" },
-    { id: "hanuman-2", fest: "hanuman", name: "Chalisa Pose", scene: "Lord Hanuman in prayer pose with open chalisa book on LEFT side, mountain cave temple, divine light rays, humble devotion" },
-    { id: "hanuman-3", fest: "hanuman", name: "Gada Power", scene: "Lord Hanuman lifting his gada mace in powerful stance on LEFT side, stormy dramatic sky, orange energy aura, muscular devotion" },
-    { id: "swami-1", fest: "swami", name: "Meditation", scene: "Swami Samarth seated in meditation on LEFT side, akkalkot temple backdrop, soft saffron and cream glow, peaceful divine aura" },
-    { id: "swami-2", fest: "swami", name: "Akkalkot Darbar", scene: "Akkalkot temple courtyard darbar scene on LEFT side, Swami seated on wooden paduka, devotees offering flowers, warm lamplight" },
-    { id: "swami-3", fest: "swami", name: "Blessing Hand", scene: "close-up of Swami's blessing hand with vibhuti on LEFT side, soft cream background, peacock feather, serene sacred mood" },
+    { id: "holi-2", fest: "holi", name: "Radha Krishna", scene: "Radha Krishna playing with pichkari colors at LEFT side, Vrindavan garden backdrop, pastel color mist, playful divine mood" },
+    { id: "holi-3", fest: "holi", name: "Water Splash", scene: "vibrant water balloon splash frozen in motion at LEFT side, rainbow colors, laughing crowd bokeh, sunny festive day" },
+    { id: "hanuman-1", fest: "hanuman", name: "Saffron Flag", scene: "Lord Hanuman with mace and saffron flag at LEFT side, mountain temple backdrop, saffron orange glow, powerful divine aura" },
+    { id: "hanuman-2", fest: "hanuman", name: "Chalisa Pose", scene: "Lord Hanuman in prayer pose with open chalisa book at LEFT side, mountain cave temple, divine light rays, humble devotion" },
+    { id: "hanuman-3", fest: "hanuman", name: "Gada Power", scene: "Lord Hanuman lifting his gada mace in powerful stance at LEFT side, stormy dramatic sky, orange energy aura, muscular devotion" },
+    { id: "swami-1", fest: "swami", name: "Meditation", scene: "Swami Samarth seated in meditation at LEFT side, akkalkot temple backdrop, soft saffron and cream glow, peaceful divine aura" },
+    { id: "swami-2", fest: "swami", name: "Akkalkot Darbar", scene: "Akkalkot temple courtyard darbar scene at LEFT side, Swami seated on wooden paduka, devotees offering flowers, warm lamplight" },
+    { id: "swami-3", fest: "swami", name: "Blessing Hand", scene: "close-up of Swami's blessing hand with vibhuti at LEFT side, soft cream background, peacock feather, serene sacred mood" },
     { id: "newyear-1", fest: "newyear", name: "Fireworks", scene: "golden fireworks and confetti in night sky, elegant champagne glasses, clock tower at midnight, warm golden glow" },
-    { id: "newyear-2", fest: "newyear", name: "Midnight Clock", scene: "ornate golden clock tower striking midnight on LEFT side, confetti rain, champagne glow, elegant art deco frame" },
-    { id: "newyear-3", fest: "newyear", name: "Sunrise Garlands", scene: "sunrise over temple spire with fresh marigold garland on LEFT side, calendar-style ornate frame, hopeful golden morning" },
+    { id: "newyear-2", fest: "newyear", name: "Midnight Clock", scene: "ornate golden clock tower striking midnight at LEFT side, confetti rain, champagne glow, elegant art deco frame" },
+    { id: "newyear-3", fest: "newyear", name: "Sunrise Garlands", scene: "sunrise over temple spire with fresh marigold garland at LEFT side, calendar-style ornate frame, hopeful golden morning" },
   ];
+
+  /* uploaded templates auto-add — newest first */
+  try {
+    const SCANNED = JSON.parse($("#scan-data").textContent || "[]");
+    const adds = [];
+    SCANNED.forEach((p) => {
+      const id = decodeURIComponent(p.file).split("/").pop().replace(/\.[^.]+$/, "");
+      if (!DESIGNS.some((d) => d.id === id && d.fest === p.fest)) {
+        const num = id.match(/\d+$/)?.[0] || "";
+        adds.push({ id, fest: p.fest, name: "📤 Design " + num });
+      }
+    });
+    DESIGNS.unshift(...adds);
+  } catch (e) {}
 
   $("#p-tpl").innerHTML = Object.keys(FEST).map((fid) =>
     `<optgroup label="${FEST[fid].name}">${DESIGNS.filter((d) => d.fest === fid).map((d) => `<option value="${d.id}">${d.name}</option>`).join("")}</optgroup>`
@@ -388,12 +406,22 @@ import Layout from "../layouts/Layout.astro";
       $("#loader-hint").textContent = hints[Math.min(hints.length - 1, Math.floor(sec / 6))];
     }, 1000);
     try {
-      const r = await fetch("/api/generate-image", {
+      let r = await fetch("/api/generate-image", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
         body: JSON.stringify(body),
       });
-      const d = await r.json();
+      let d = await r.json();
+      if (!r.ok && body.size === "1024x1792" && /size|invalid/i.test(d.error || "")) {
+        toast("ℹ️ 9:16 is model mein supported nahi — 2:3 portrait use kar rahe hain");
+        body = Object.assign({}, body, { size: "1024x1536" });
+        r = await fetch("/api/generate-image", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+          body: JSON.stringify(body),
+        });
+        d = await r.json();
+      }
       if (!r.ok || !d.image) throw new Error(d.error || "Generation fail");
       $("#result").src = d.image;
       $("#dl").href = d.image;
@@ -456,9 +484,15 @@ import Layout from "../layouts/Layout.astro";
   });
 
   const params = new URLSearchParams(location.search);
-  setView(params.get("view") === "poster" ? "poster" : "image");
+  setView(params.get("view") === "poster" || params.get("studio") === "poster" ? "poster" : "image");
   const tplParam = params.get("tpl");
+  const tplFile = params.get("template");
   if (tplParam && DESIGNS.some((d) => d.id === tplParam)) $("#p-tpl").value = tplParam;
+  else if (tplFile) {
+    const parts = decodeURIComponent(tplFile).split("/");
+    const id = parts.pop().replace(/\.[^.]+$/, "");
+    if (DESIGNS.some((d) => d.id === id)) $("#p-tpl").value = id;
+  }
   renderSugg();
   renderRecent();
 })();
