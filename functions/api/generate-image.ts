@@ -69,6 +69,7 @@ Image 2 = the customer's photo (the person may be a child, boy, girl, man or wom
 Edit image 1 with ONLY these changes:
 1. Completely REMOVE the existing person/figure from image 1. Place the person from image 2 in that freed area (or a suitable prominent side area if the space is tight), keeping the person's OWN face, appearance, clothing and natural pose from image 2. Blend the person cleanly into the poster's lighting, color grade and art style. The face must be clearly recognizable, respectful and dignified.
 2. Write the name text exactly as: "${name}" and the wish line exactly as: "${msg}" in the template's existing decorative name-block style (create a matching decorative name block at the bottom if the template has none).
+3. Language rule: ${langLine}.
 Everything else must remain EXACTLY as image 1 — same layout, same deity artwork, same background, same colors, same borders, same ornaments, all other existing text unchanged and correctly spelled. Clean print-quality output, no extra watermarks or logos.`;
       const form = new FormData();
       form.append("model", MODEL);
