@@ -83,6 +83,9 @@ import { posters as scannedPosters } from "../data/posters";
         <label class="block text-sm font-semibold">Design
           <select id="p-tpl" class="input mt-1.5"></select>
         </label>
+        <div id="tpl-prev-wrap" class="hidden">
+          <img id="tpl-prev" class="mx-auto max-h-44 rounded-xl border border-sandal/20 object-contain shadow-soft dark:border-cream/20" alt="Design preview" />
+        </div>
         <label class="block text-sm font-semibold">Aspect ratio
           <select id="p-ratio" class="input mt-1.5">
             <option value="1024x1536">4:5 (Poster)</option>
@@ -110,9 +113,6 @@ import { posters as scannedPosters } from "../data/posters";
             <option value="en">English</option>
           </select>
         </label>
-        <div class="text-sm font-semibold">Message suggestions
-          <div id="p-sugg" class="mt-1.5 flex flex-wrap gap-1.5"></div>
-        </div>
       </div>
     </aside>
     <div id="sheet-backdrop" class="pointer-events-none fixed inset-0 z-[60] bg-ink/60 opacity-0 backdrop-blur-sm transition-opacity duration-300 [&.open]:pointer-events-auto [&.open]:opacity-100"></div>
@@ -139,23 +139,18 @@ import { posters as scannedPosters } from "../data/posters";
           <p id="loader-count" class="mt-2 font-display text-3xl font-bold text-saffron">0s</p>
           <p id="loader-hint" class="mt-1 text-xs text-sandal-deep/50 dark:text-cream/40">Photo sajai ja rahi hai...</p>
         </div>
-        <img id="result" class="hidden max-h-[62vh] rounded-2xl shadow-lift lg:max-h-full" alt="Generated" />
+        <img id="result" class="hidden max-h-[62vh] cursor-zoom-in rounded-2xl shadow-lift lg:max-h-full" alt="Generated" title="Click karo — full preview" />
         <div id="actions" class="absolute bottom-4 right-4 hidden gap-2">
           <a id="dl" class="btn btn-primary !py-2 !text-sm" download="bhaktimedia-creation.png">⬇ Download</a>
         </div>
       </div>
 
       <div class="mt-4 rounded-2xl card p-3 shadow-soft lg:shrink-0">
-        <textarea id="prompt" rows="2" class="w-full resize-none bg-transparent p-2 text-sm outline-none" placeholder="Describe the image you want to generate... (poster mein ye optional message hai)"></textarea>
+        <textarea id="prompt" rows="2" class="w-full resize-none bg-transparent p-2 text-sm outline-none" placeholder="Describe the image you want to generate... (poster mein ye optional message hai — khali chhodo to poster par extra text NAHI aayega)"></textarea>
         <div class="flex items-center justify-between px-2 pb-1">
           <span class="text-xs text-sandal-deep/50 dark:text-cream/40">1 creation = 3 ⚡ • HD = 6 ⚡</span>
           <button id="gen" class="btn btn-primary !px-6 !py-2">Generate 🚀</button>
         </div>
-      </div>
-
-      <div id="recent-wrap" class="mt-5 hidden lg:shrink-0">
-        <p class="eyebrow">Recent creations</p>
-        <div id="recent" class="mt-2 flex gap-2 overflow-x-auto pb-1"></div>
       </div>
     </div>
   </div>
@@ -207,48 +202,13 @@ import { posters as scannedPosters } from "../data/posters";
     Watercolor: ", soft pastel watercolor illustration style",
   };
   const FEST = {
-    ganesh: { name: "🐘 Ganesh Utsav", shloka: "॥ श्री गणेशाय नमः ॥",
-      title: { mr: "श्री गणेश जयंती", en: "Ganesh Jayanti" },
-      sub: { mr: "निमित्त सर्व भक्तांना मंगलमय शुभेच्छा...!", en: "Warm wishes to all devotees...!" },
-      para: { mr: "विघ्नांचे नाशक, मंगलमूर्ती, बुद्धीचे दाता श्री गणेशाच्या कृपेने आपल्या जीवनात सुख, शांती, समृद्धी व सचुखी नांदो...", en: "May Lord Ganesha's blessings bring peace, prosperity and success to your life..." },
-      bold: { mr: "गणपती बाप्पा मोरया मंगलमूर्ती मोरया..!", en: "Ganpati Bappa Morya!" },
-      sugg: { mr: ["सुख, समृद्धी आणि आरोग्य लाभो!", "बाप्पाची कृपा सदैव राहो!"], en: ["May Bappa bless your home!", "Wishing you prosperity!"] } },
-    diwali: { name: "🪔 Diwali", shloka: "॥ शुभ दीपावली ॥",
-      title: { mr: "शुभ दीपावली", en: "Happy Diwali" },
-      sub: { mr: "प्रकाशाचा सण, आनंदाचा क्षण!", en: "Festival of lights, moment of joy!" },
-      para: { mr: "दिव्यांच्या प्रकाशाने तुमचे जीवन उजळून निघो, घरोघरी सुख आणि समृद्धी नांदो.", en: "May the light of diyas brighten your life with joy and prosperity." },
-      bold: { mr: "शुभ दीपावली!", en: "Happy Diwali!" },
-      sugg: { mr: ["प्रकाश आणि आनंद लाभो!", "दिवाळी शुभेच्छा!"], en: ["Lights and joy to your home!", "Have a sparkling Diwali!"] } },
-    navratri: { name: "🌺 Navratri", shloka: "॥ जय माता दी ॥",
-      title: { mr: "नवरात्रि शुभेच्छा", en: "Happy Navratri" },
-      sub: { mr: "माईच्या कृपेने मंगलमय वर्ष!", en: "Blessings of Maa Durga!" },
-      para: { mr: "नऊ दिवसांची भक्ती, माईचा आशीर्वाद — तुमच्या जीवनात सुख, समृद्धी आणि आरोग्य नांदो.", en: "May Maa Durga's nine nights of devotion bring health, wealth and joy to you." },
-      bold: { mr: "जय माता दी!", en: "Jai Mata Di!" },
-      sugg: { mr: ["नवरात्री शुभेच्छा!", "माईचा आशीर्वाद लाभो!"], en: ["Happy Navratri!", "Blessings of Maa Durga!"] } },
-    holi: { name: "🎨 Holi", shloka: "॥ राधे राधे ॥",
-      title: { mr: "होळी शुभेच्छा", en: "Happy Holi" },
-      sub: { mr: "रंगांचा सण, आनंदाचा क्षण!", en: "Festival of colors and joy!" },
-      para: { mr: "रंगांनी तुमचे जीवन भरून जावो, प्रत्येक दिवस आनंदाने उजळून निघो.", en: "May your life be filled with colors and every day shine with joy." },
-      bold: { mr: "होली मुबारक!", en: "Happy Holi!" },
-      sugg: { mr: ["रंगभर शुभेच्छा!", "होळी शुभेच्छा!"], en: ["Wishing you a colorful Holi!", "Holi greetings!"] } },
-    hanuman: { name: "🚩 Hanuman Jayanti", shloka: "॥ जय हनुमान ॥",
-      title: { mr: "हनुमान जयंती", en: "Hanuman Jayanti" },
-      sub: { mr: "बळ आणि भक्तीचे प्रतीक!", en: "Symbol of strength and devotion!" },
-      para: { mr: "हनुमंताच्या कृपेने तुम्हाला बळ, धैर्य आणि विजय लाभो.", en: "May Hanuman bless you with strength, courage and victory." },
-      bold: { mr: "जय श्री राम! जय हनुमान!", en: "Jai Shri Ram! Jai Hanuman!" },
-      sugg: { mr: ["बजरंगबली की जय!", "हनुमंत आशीर्वाद!"], en: ["Jai Bajrangbali!", "Hanuman's blessings!"] } },
-    swami: { name: "🙏 Swami Samarth", shloka: "॥ श्री स्वामी समर्थ ॥",
-      title: { mr: "स्वामी समर्थ", en: "Swami Samarth" },
-      sub: { mr: "भक्ती आणि शरणागतीचे प्रतीक!", en: "Faith and surrender!" },
-      para: { mr: "स्वामींच्या कृपेने तुमचे जीवन शांत, सुखी आणि समृद्ध होवो.", en: "May Swami's grace keep your life peaceful and prosperous." },
-      bold: { mr: "श्री स्वामी समर्थ!", en: "Shri Swami Samarth!" },
-      sugg: { mr: ["स्वामी समर्थ!", "भय नको, स्वामी आहेत!"], en: ["Swami Samarth!", "Fear not, Swami is with you!"] } },
-    newyear: { name: "🎉 New Year", shloka: "॥ शुभ नववर्ष ॥",
-      title: { mr: "नववर्ष शुभेच्छा", en: "Happy New Year" },
-      sub: { mr: "नवे स्वप्न, नवी सुरुवात!", en: "New dreams, new beginnings!" },
-      para: { mr: "नवे वर्ष तुम्हाला सुख, समृद्धी आणि यश घेऊन येवो.", en: "May the new year bring you joy, prosperity and success." },
-      bold: { mr: "नववर्षाच्या शुभेच्छा!", en: "Happy New Year!" },
-      sugg: { mr: ["नववर्ष शुभेच्छा!", "यशस्वी नवे वर्ष!"], en: ["Cheers to the new year!", "Wishing you a great year!"] } },
+    ganesh: { name: "🐘 Ganesh Utsav", shloka: "॥ श्री गणेशाय नमः ॥" },
+    diwali: { name: "🪔 Diwali", shloka: "॥ शुभ दीपावली ॥" },
+    navratri: { name: "🌺 Navratri", shloka: "॥ जय माता दी ॥" },
+    holi: { name: "🎨 Holi", shloka: "॥ राधे राधे ॥" },
+    hanuman: { name: "🚩 Hanuman Jayanti", shloka: "॥ जय हनुमान ॥" },
+    swami: { name: "🙏 Swami Samarth", shloka: "॥ श्री स्वामी समर्थ ॥" },
+    newyear: { name: "🎉 New Year", shloka: "॥ शुभ नववर्ष ॥" },
   };
   const DESIGNS = [
     { id: "ganesh-1", fest: "ganesh", name: "Golden Throne", scene: "Lord Ganesha seated majestically on an ornate golden throne at LEFT side, carved temple backdrop, hanging brass oil lamps, marigold garlands, modak plate, warm golden glow" },
@@ -291,15 +251,18 @@ import { posters as scannedPosters } from "../data/posters";
   $("#p-tpl").innerHTML = Object.keys(FEST).map((fid) =>
     `<optgroup label="${FEST[fid].name}">${DESIGNS.filter((d) => d.fest === fid).map((d) => `<option value="${d.id}">${d.name}</option>`).join("")}</optgroup>`
   ).join("");
-  function renderSugg() {
-    const design = DESIGNS.find((d) => d.id === $("#p-tpl").value) || DESIGNS[0];
-    const t = FEST[design.fest], lang = $("#p-lang").value;
-    $("#p-sugg").innerHTML = (t.sugg[lang] || []).map((s) =>
-      `<button data-sugg="${s}" class="filter-btn !px-2 !py-1 !text-[11px]">${s}</button>`).join("");
-    $$("#p-sugg [data-sugg]").forEach((b) => b.addEventListener("click", () => { $("#prompt").value = b.dataset.sugg; }));
+
+  /* design select karne par template preview */
+  function renderTplPrev() {
+    const d = DESIGNS.find((x) => x.id === $("#p-tpl").value) || DESIGNS[0];
+    const img = $("#tpl-prev");
+    img.onload = () => $("#tpl-prev-wrap").classList.remove("hidden");
+    img.onerror = () => $("#tpl-prev-wrap").classList.add("hidden");
+    img.src = `/templates/${d.fest}/${d.id}.png`;
   }
-  $("#p-tpl").addEventListener("change", () => { renderSugg(); updateStrip(); });
-  $("#p-lang").addEventListener("change", () => { renderSugg(); updateStrip(); });
+
+  $("#p-tpl").addEventListener("change", () => { renderTplPrev(); updateStrip(); });
+  $("#p-lang").addEventListener("change", updateStrip);
   ["i-ratio", "i-res", "i-style", "p-ratio"].forEach((id) => document.getElementById(id).addEventListener("change", updateStrip));
 
   let photoData = "";
@@ -380,16 +343,8 @@ import { posters as scannedPosters } from "../data/posters";
   $("#sheet-close").addEventListener("click", closeSheet);
   $("#sheet-backdrop").addEventListener("click", closeSheet);
 
-  function loadH() { try { return JSON.parse(localStorage.getItem("bm-studio-hist") || "[]"); } catch (e) { return []; } }
-  function saveH(h) { localStorage.setItem("bm-studio-hist", JSON.stringify(h.slice(0, 12))); }
-  function renderRecent() {
-    const h = loadH();
-    $("#recent-wrap").classList.toggle("hidden", h.length === 0);
-    $("#recent").innerHTML = h.map((x) =>
-      `<img src="${x.thumb}" title="${(x.prompt || "").replace(/"/g, "")}" class="h-20 w-16 shrink-0 cursor-pointer rounded-xl object-cover shadow-soft transition hover:scale-105" />`
-    ).join("");
-    $$("#recent img").forEach((im, i) => im.addEventListener("click", () => window.open(h[i].thumb, "_blank")));
-  }
+  /* generated poster par click = full preview */
+  $("#result").addEventListener("click", () => { if ($("#result").src) window.open($("#result").src, "_blank"); });
 
   async function run(body) {
     $("#empty").classList.add("hidden");
@@ -423,12 +378,11 @@ import { posters as scannedPosters } from "../data/posters";
         d = await r.json();
       }
       if (!r.ok || !d.image) throw new Error(d.error || "Generation fail");
+      $("#empty").classList.add("hidden");
       $("#result").src = d.image;
       $("#dl").href = d.image;
       $("#result").classList.remove("hidden");
       $("#actions").classList.remove("hidden");
-      saveH([{ prompt: body.tag || "creation", thumb: d.image, t: Date.now() }, ...loadH()]);
-      renderRecent();
       loadCredits();
     } catch (e) {
       $("#empty").classList.remove("hidden");
@@ -452,8 +406,7 @@ import { posters as scannedPosters } from "../data/posters";
       const name = $("#p-name").value.trim();
       if (!name) return toast("Shubhchintak ka naam likho!");
       const design = DESIGNS.find((d) => d.id === $("#p-tpl").value) || DESIGNS[0];
-      const t = FEST[design.fest], lang = $("#p-lang").value;
-      const msg = extra || (t.sugg[lang] || [])[0] || "";
+      const msg = extra; /* prompt khali = poster par koi extra text NAHI */
       run({
         photo: photoData,
         template: `/templates/${design.fest}/${design.id}.png`,
@@ -479,7 +432,7 @@ import { posters as scannedPosters } from "../data/posters";
     $("#actions").classList.add("hidden");
     $("#empty").classList.remove("hidden");
     ["i-ratio", "i-res", "i-style", "p-tpl", "p-ratio", "p-lang"].forEach((id) => { document.getElementById(id).selectedIndex = 0; });
-    renderSugg(); updateStrip();
+    renderTplPrev(); updateStrip();
     toast("🗑️ Sab reset ho gaya!");
   });
 
@@ -493,8 +446,7 @@ import { posters as scannedPosters } from "../data/posters";
     const id = parts.pop().replace(/\.[^.]+$/, "");
     if (DESIGNS.some((d) => d.id === id)) $("#p-tpl").value = id;
   }
-  renderSugg();
-  renderRecent();
+  renderTplPrev();
 })();
 </script>
 </Layout>
