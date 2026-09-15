@@ -27,12 +27,16 @@ const DESIGNS = scanned.map((p) => {
   return { id, fest: p.fest, name: NICE[id] || `Design ${num}`, seed: p.id };
 });
 const previewsOf = (fid: string) => DESIGNS.filter((d) => d.fest === fid).slice(0, 3);
+const countOf = (fid: string) => DESIGNS.filter((d) => d.fest === fid).length;
 ---
 <Layout title="Devotional Poster Templates" description="Festival-themed traditional poster designs — choose and generate.">
 <div class="container-x px-4 pt-32 pb-20 sm:px-6">
   <div class="text-center">
     <p class="eyebrow">🪔 Traditional Templates</p>
-    <h1 id="pg-title" class="mt-3 font-display text-3xl font-bold sm:text-5xl">Devotional Poster Templates</h1>
+    <h1 class="mt-3 flex flex-wrap items-center justify-center gap-3 font-display text-3xl font-bold sm:text-5xl">
+      <img id="pg-icon" alt="" class="hidden size-12 rounded-2xl bg-cream object-contain p-1.5 shadow-soft sm:size-14" />
+      <span id="pg-title">Devotional Poster Templates</span>
+    </h1>
     <p id="pg-sub" class="mx-auto mt-4 max-w-xl text-sandal-deep/70 dark:text-cream/60">Choose a festival — browse all the designs inside, and open your favorite one in the design studio!</p>
   </div>
 
@@ -48,10 +52,14 @@ const previewsOf = (fid: string) => DESIGNS.filter((d) => d.fest === fid).slice(
               <img src={`/templates/${pre[2]?.fest}/${pre[2]?.id}.png`} onerror={`this.onerror=null;this.src='https://picsum.photos/seed/${pre[2]?.seed}/300/300'`} alt="" class="h-full w-full object-cover" />
             </div>
             <div class="absolute inset-0 bg-gradient-to-t from-ink/95 via-ink/30 to-transparent" />
-            <span class="absolute right-3 top-3 chip bg-white/15 text-white backdrop-blur-md">{pre.length} designs</span>
+            <span class="absolute right-3 top-3 chip bg-white/15 text-white backdrop-blur-md">{countOf(f.id)} designs</span>
             <div class="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-5">
               <div>
-                <span class="text-2xl drop-shadow">{f.icon}</span>
+                {f.img ? (
+                  <span class="grid size-10 place-items-center rounded-xl bg-cream shadow-soft"><img src={f.img} alt="" class="size-8 object-contain" /></span>
+                ) : (
+                  <span class="text-2xl drop-shadow">{f.icon}</span>
+                )}
                 <h2 class="mt-1 font-display text-xl font-bold text-white sm:text-2xl">{f.name}</h2>
                 <p class="mt-0.5 text-xs text-white/70 sm:text-sm">{f.desc}</p>
               </div>
@@ -64,14 +72,14 @@ const previewsOf = (fid: string) => DESIGNS.filter((d) => d.fest === fid).slice(
   </div>
 
   {FEST.map((f) => (
-    <section id={`designs-${f.id}`} data-name={`${f.icon} ${f.name}`} class="hidden mx-auto mt-10 max-w-6xl">
+    <section id={`designs-${f.id}`} data-name={f.name} data-img={f.img || ""} class="hidden mx-auto mt-10 max-w-6xl">
       <a href="/posters" class="inline-flex items-center gap-2 text-sm font-semibold text-saffron hover:underline">← All Festivals</a>
       <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {DESIGNS.filter((d) => d.fest === f.id).map((d) => (
           <a href={`/studio?view=poster&tpl=${d.id}`} class="group relative overflow-hidden rounded-3xl shadow-soft transition duration-500 hover:-translate-y-1.5 hover:shadow-lift">
             <img src={`/templates/${d.fest}/${d.id}.png`} onerror={`this.onerror=null;this.src='https://picsum.photos/seed/${d.seed}/480/600'`} alt={d.name} class="aspect-[4/5] w-full object-cover transition duration-700 group-hover:scale-110" />
             <div class="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/20 to-transparent" />
-            <span class="absolute left-3 top-3 chip bg-white/15 text-white backdrop-blur-md">{f.icon} {f.name}</span>
+            <span class="absolute left-3 top-3 chip bg-white/15 text-white backdrop-blur-md">{f.img ? <img src={f.img} alt="" class="inline-block size-4 rounded bg-cream object-contain" /> : f.icon} {f.name}</span>
             <div class="absolute inset-x-0 bottom-0 p-4">
               <h2 class="font-display text-lg font-bold text-white">{d.name}</h2>
               <span class="mt-2 inline-flex translate-y-3 items-center gap-2 rounded-full bg-gradient-to-r from-saffron to-golden px-4 py-1.5 text-xs font-bold text-white opacity-0 shadow-gold transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">Design Chuno →</span>
@@ -90,6 +98,8 @@ const previewsOf = (fid: string) => DESIGNS.filter((d) => d.fest === fid).slice(
     document.getElementById("fest-grid").style.display = "none";
     sec.classList.remove("hidden");
     document.getElementById("pg-title").textContent = sec.getAttribute("data-name") + " Designs";
+    var pgImg = sec.getAttribute("data-img");
+    if (pgImg) { var ic = document.getElementById("pg-icon"); ic.src = pgImg; ic.classList.remove("hidden"); }
     document.getElementById("pg-sub").textContent = "Choose your preferred design — the Studio will open with that design.";
   }
 })();
