@@ -1,20 +1,15 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { posters } from "../data/posters";
-import { existsSync } from "node:fs";
-
-/* icon file hai to wahi, warna emoji fallback */
-const GANESH_ICON = existsSync("public/icons/ganesh.png") ? "/icons/ganesh.png" : "";
-
-const FESTS = [
-  { id: "ganesh", name: "Ganesh Utsav", icon: "🐘", img: GANESH_ICON },
-  { id: "diwali", name: "Diwali", icon: "🪔", img: "" },
-  { id: "navratri", name: "Navratri", icon: "🌺", img: "" },
-  { id: "holi", name: "Holi", icon: "🎨", img: "" },
-  { id: "hanuman", name: "Hanuman Jayanti", icon: "🚩", img: "" },
-  { id: "swami", name: "Swami Samarth", icon: "🙏", img: "" },
-  { id: "newyear", name: "New Year", icon: "🎉", img: "" },
+const FEST = [
+  { id: "ganesh", name: "Ganesh Utsav", icon: "🐘", img: "/icons/ganesh.png", desc: "Ganpati Bappa designs" },
+  { id: "diwali", name: "Diwali", icon: "🪔", desc: "Designs of Light and the Divine" },
+  { id: "navratri", name: "Navratri", icon: "🌺", desc: "The Nine Days of Maa Durga" },
+  { id: "holi", name: "Holi", icon: "🎨", desc: "The Festival of Colors" },
+  { id: "hanuman", name: "Hanuman Jayanti", icon: "🚩", desc: "The Power of Bajrangbali" },
+  { id: "swami", name: "Swami Samarth", icon: "🙏", desc: "Faith and Peace" },
+  { id: "newyear", name: "New Year", icon: "🎉", desc: "Happy New Year" },
 ];
+import { posters as scanned } from "../data/posters";
 
 const NICE: Record<string, string> = {
   "ganesh-1": "Golden Throne", "ganesh-2": "Palkhi Utsav", "ganesh-3": "Modak Blessing",
@@ -26,87 +21,77 @@ const NICE: Record<string, string> = {
   "newyear-1": "Fireworks", "newyear-2": "Midnight Clock", "newyear-3": "Sunrise Garlands",
 };
 
-const fest = Astro.url.searchParams.get("fest") || "";
-const meta = FESTS.find((f) => f.id === fest);
-
-const designs = posters
-  .filter((p) => (fest ? p.fest === fest : true))
-  .map((p) => {
-    const id = p.file.split("/").pop().replace(/\.[^.]+$/, "");
-    const num = id.match(/\d+$/)?.[0] || "";
-    return { id, fest: p.fest, name: NICE[id] || `Design ${num}`, file: p.file };
-  });
+const DESIGNS = scanned.map((p) => {
+  const id = p.file.split("/").pop().replace(/\.[^.]+$/, "");
+  const num = id.match(/\d+$/)?.[0] || "";
+  return { id, fest: p.fest, name: NICE[id] || `Design ${num}`, seed: p.id };
+});
+const previewsOf = (fid: string) => DESIGNS.filter((d) => d.fest === fid).slice(0, 3);
 ---
-<Layout title={meta ? `${meta.name} Designs` : "Festival Posters"} description="Festival-ready, print-ready devotional poster designs.">
-<div class="container-x px-4 pb-20 pt-28 sm:px-6">
+<Layout title="Devotional Poster Templates" description="Festival-themed traditional poster designs — choose and generate.">
+<div class="container-x px-4 pt-32 pb-20 sm:px-6">
+  <div class="text-center">
+    <p class="eyebrow">🪔 Traditional Templates</p>
+    <h1 id="pg-title" class="mt-3 font-display text-3xl font-bold sm:text-5xl">Devotional Poster Templates</h1>
+    <p id="pg-sub" class="mx-auto mt-4 max-w-xl text-sandal-deep/70 dark:text-cream/60">Choose a festival — browse all the designs inside, and open your favorite one in the design studio!</p>
+  </div>
 
-  {meta ? (
-    <div>
-      <div class="text-center">
-        <h1 class="flex items-center justify-center gap-3 font-display text-4xl font-bold sm:text-5xl">
-          {meta.img ? (
-            <img src={meta.img} alt="" class="size-14 object-contain mix-blend-multiply dark:mix-blend-normal dark:rounded-2xl dark:bg-cream dark:p-1.5" />
-          ) : (
-            <span>{meta.icon}</span>
-          )}
-          <span>{meta.name} Designs</span>
-        </h1>
-        <p class="mt-3 text-sm text-sandal-deep/60 dark:text-cream/50">Pasand ka design chuno — Studio usi design ke saath khulega.</p>
-      </div>
+  <div id="fest-grid" class="mx-auto mt-12 grid max-w-6xl gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    {FEST.map((f, i) => {
+      const pre = previewsOf(f.id);
+      return (
+        <a href={`/posters?fest=${f.id}`} class={`group relative overflow-hidden rounded-3xl shadow-soft transition duration-500 hover:-translate-y-1.5 hover:shadow-lift ${i === 0 ? "lg:col-span-2" : ""}`}>
+          <div class={`relative overflow-hidden ${i === 0 ? "aspect-[16/9]" : "aspect-[4/3]"}`}>
+            <div class="grid h-full w-full grid-cols-3 grid-rows-2 gap-1 transition duration-700 group-hover:scale-105">
+              <img src={`/templates/${pre[0]?.fest}/${pre[0]?.id}.png`} onerror={`this.onerror=null;this.src='https://picsum.photos/seed/${pre[0]?.seed}/600/600'`} alt="" class="col-span-2 row-span-2 h-full w-full object-cover" />
+              <img src={`/templates/${pre[1]?.fest}/${pre[1]?.id}.png`} onerror={`this.onerror=null;this.src='https://picsum.photos/seed/${pre[1]?.seed}/300/300'`} alt="" class="h-full w-full object-cover" />
+              <img src={`/templates/${pre[2]?.fest}/${pre[2]?.id}.png`} onerror={`this.onerror=null;this.src='https://picsum.photos/seed/${pre[2]?.seed}/300/300'`} alt="" class="h-full w-full object-cover" />
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-t from-ink/95 via-ink/30 to-transparent" />
+            <span class="absolute right-3 top-3 chip bg-white/15 text-white backdrop-blur-md">{pre.length} designs</span>
+            <div class="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-5">
+              <div>
+                <span class="text-2xl drop-shadow">{f.icon}</span>
+                <h2 class="mt-1 font-display text-xl font-bold text-white sm:text-2xl">{f.name}</h2>
+                <p class="mt-0.5 text-xs text-white/70 sm:text-sm">{f.desc}</p>
+              </div>
+              <span class="grid size-11 shrink-0 translate-y-2 place-items-center rounded-full bg-gradient-to-br from-saffron to-golden text-lg text-white opacity-0 shadow-gold transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">→</span>
+            </div>
+          </div>
+        </a>
+      );
+    })}
+  </div>
 
-      <a href="/posters" class="mt-8 inline-flex items-center gap-1.5 text-sm font-bold text-saffron hover:underline">← Sab Festivals</a>
-
-      {designs.length === 0 ? (
-        <div class="mt-16 text-center">
-          <p class="text-4xl">🪔</p>
-          <p class="mt-3 font-display text-lg font-bold">Is festival ke designs jald aa rahe hain</p>
-          <a href="/studio?view=poster" class="btn btn-primary mt-5">Studio mein banaiye →</a>
-        </div>
-      ) : (
-        <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {designs.map((d) => {
-            const f = FESTS.find((x) => x.id === d.fest);
-            return (
-              <a href={`/studio?view=poster&tpl=${d.id}`} class="group relative overflow-hidden rounded-3xl border border-sandal/10 shadow-soft transition hover:-translate-y-1 hover:shadow-lift dark:border-white/10">
-                <img src={d.file} onerror={`this.onerror=null;this.src='https://picsum.photos/seed/${d.id}/480/672'`} alt={d.name} loading="lazy" class="aspect-[3/4] w-full object-cover transition duration-700 group-hover:scale-105" />
-                <span class="chip absolute left-3 top-3 bg-ink/50 !px-2.5 !py-1 text-[10px] text-white backdrop-blur">
-                  {f?.img ? <img src={f.img} alt="" class="inline-block size-3.5 object-contain mix-blend-screen" /> : f?.icon} {f?.name}
-                </span>
-                <span class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/90 to-transparent px-4 pb-4 pt-12">
-                  <span class="block font-display text-lg font-bold text-white">{d.name}</span>
-                </span>
-                <span class="absolute bottom-4 right-4 grid size-9 place-items-center rounded-full bg-gradient-to-br from-saffron to-golden text-white opacity-0 shadow-gold transition group-hover:opacity-100">→</span>
-              </a>
-            );
-          })}
-        </div>
-      )}
-    </div>
-    ) : (
-    <div>
-      <div class="text-center">
-        <p class="eyebrow justify-center">Festival Posters</p>
-        <h1 class="mt-3 font-display text-4xl font-bold sm:text-5xl">Posters That Devotees <span class="bg-gradient-to-r from-saffron to-golden bg-clip-text text-transparent">Frame</span></h1>
-        <p class="mt-2 font-dev text-sm text-goldsoft">॥ उत्सव घोषणा ॥</p>
-        <p class="mx-auto mt-3 max-w-xl text-sm text-sandal-deep/60 dark:text-cream/50">Festival chuniye — saare designs dekhiye, pasand ka click karte hi Studio usi design ke saath khulega.</p>
+  {FEST.map((f) => (
+    <section id={`designs-${f.id}`} data-name={`${f.icon} ${f.name}`} class="hidden mx-auto mt-10 max-w-6xl">
+      <a href="/posters" class="inline-flex items-center gap-2 text-sm font-semibold text-saffron hover:underline">← All Festivals</a>
+      <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {DESIGNS.filter((d) => d.fest === f.id).map((d) => (
+          <a href={`/studio?view=poster&tpl=${d.id}`} class="group relative overflow-hidden rounded-3xl shadow-soft transition duration-500 hover:-translate-y-1.5 hover:shadow-lift">
+            <img src={`/templates/${d.fest}/${d.id}.png`} onerror={`this.onerror=null;this.src='https://picsum.photos/seed/${d.seed}/480/600'`} alt={d.name} class="aspect-[4/5] w-full object-cover transition duration-700 group-hover:scale-110" />
+            <div class="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/20 to-transparent" />
+            <span class="absolute left-3 top-3 chip bg-white/15 text-white backdrop-blur-md">{f.icon} {f.name}</span>
+            <div class="absolute inset-x-0 bottom-0 p-4">
+              <h2 class="font-display text-lg font-bold text-white">{d.name}</h2>
+              <span class="mt-2 inline-flex translate-y-3 items-center gap-2 rounded-full bg-gradient-to-r from-saffron to-golden px-4 py-1.5 text-xs font-bold text-white opacity-0 shadow-gold transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">Design Chuno →</span>
+            </div>
+          </a>
+        ))}
       </div>
-      <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {FESTS.map((f) => {
-          const count = posters.filter((p) => p.fest === f.id).length;
-          return (
-            <a href={`/posters?fest=${f.id}`} class="group card p-6 text-center shadow-soft transition hover:-translate-y-1 hover:shadow-lift">
-              {f.img ? (
-                <img src={f.img} alt="" class="mx-auto size-16 object-contain mix-blend-multiply transition group-hover:scale-110 dark:mix-blend-normal dark:rounded-2xl dark:bg-cream dark:p-2" />
-              ) : (
-                <span class="block text-5xl transition group-hover:scale-110">{f.icon}</span>
-              )}
-              <p class="mt-3 font-display text-lg font-bold">{f.name}</p>
-              <p class="mt-1 text-xs text-sandal-deep/60 dark:text-cream/50">{count} designs</p>
-            </a>
-          );
-        })}
-      </div>
-    </div>
-  )}
+    </section>
+  ))}
 </div>
+<script is:inline>
+(function () {
+  var fest = new URLSearchParams(location.search).get("fest");
+  var sec = fest ? document.getElementById("designs-" + fest) : null;
+  if (sec) {
+    document.getElementById("fest-grid").style.display = "none";
+    sec.classList.remove("hidden");
+    document.getElementById("pg-title").textContent = sec.getAttribute("data-name") + " Designs";
+    document.getElementById("pg-sub").textContent = "Choose your preferred design — the Studio will open with that design.";
+  }
+})();
+</script>
 </Layout>
