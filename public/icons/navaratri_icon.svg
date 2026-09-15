@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff1a6"/><stop offset=".45" stop-color="#f5b72b"/><stop offset="1" stop-color="#a85b08"/></linearGradient>
+    <linearGradient id="red" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ff6652"/><stop offset="1" stop-color="#a70d24"/></linearGradient>
+    <radialGradient id="halo"><stop stop-color="#fff6c7"/><stop offset=".7" stop-color="#ffd54a"/><stop offset="1" stop-color="#e58b12"/></radialGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="5" stdDeviation="5" flood-opacity=".25"/></filter>
+  </defs>
+  <circle cx="256" cy="244" r="224" fill="url(#halo)" stroke="url(#gold)" stroke-width="12"/>
+  <g fill="url(#red)" stroke="url(#gold)" stroke-width="7">
+    <path d="M256 28c-30 35-35 64 0 92 35-28 30-57 0-92z"/>
+    <path d="M150 54c-8 45 4 72 47 78 17-42-2-65-47-78z"/>
+    <path d="M362 54c8 45-4 72-47 78-17-42 2-65 47-78z"/>
+    <path d="M76 132c18 41 42 57 80 38-6-43-35-54-80-38z"/>
+    <path d="M436 132c-18 41-42 57-80 38 6-43 35-54 80-38z"/>
+  </g>
+  <circle cx="256" cy="246" r="160" fill="#fff4c8" stroke="url(#gold)" stroke-width="8"/>
+  <!-- trident -->
+  <g fill="none" stroke="url(#gold)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M104 328V118"/><path d="M104 150c-28-23-30-49-13-70 10 25 24 35 39 45"/><path d="M104 150c28-23 30-49 13-70-10 25-24 35-39 45"/><path d="M76 118h56"/>
+  </g>
+  <!-- goddess face and crown -->
+  <path d="M256 118l-30 30 12 20h36l12-20z" fill="url(#gold)" stroke="#9b5609" stroke-width="5"/>
+  <path d="M190 166 Q256 122 322 166 L310 264 Q298 319 256 334 Q214 319 202 264z" fill="#f4b184" stroke="#8b3d20" stroke-width="6"/>
+  <path d="M204 178 Q256 132 308 178 L298 205 Q256 184 214 205z" fill="url(#red)" stroke="url(#gold)" stroke-width="6"/>
+  <path d="M226 232q15-14 30 0M256 232q15-14 30 0" fill="none" stroke="#54251d" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="241" cy="238" r="5" fill="#54251d"/><circle cx="271" cy="238" r="5" fill="#54251d"/>
+  <path d="M256 238v28m-15 13q15 12 30 0" fill="none" stroke="#8b3d20" stroke-width="5" stroke-linecap="round"/>
+  <path d="M249 202l7-13 7 13-7 17z" fill="#c9232d"/>
+  <!-- hair -->
+  <path d="M202 190q-42 38-22 119 14 38 47 47l-12-70 15-94zM310 190q42 38 22 119-14 38-47 47l12-70-15-94z" fill="#3c1d24" stroke="#26131a" stroke-width="5"/>
+  <!-- arms -->
+  <g fill="#f4b184" stroke="#8b3d20" stroke-width="6" stroke-linecap="round">
+    <path d="M205 230q-55 5-78 53l22 18q33-30 70-33z"/>
+    <path d="M307 230q55 5 78 53l-22 18q-33-30-70-33z"/>
+    <path d="M210 274q-50 30-58 77l28 8q19-35 49-50z"/>
+    <path d="M302 274q50 30 58 77l-28 8q-19-35-49-50z"/>
+  </g>
+  <!-- lotus -->
+  <g fill="#e52e55" stroke="#a51635" stroke-width="4">
+    <path d="M105 390q22-52 44 0-22 30-44 0z"/><path d="M130 390q35-67 52 0-26 33-52 0z"/><path d="M156 390q45-56 45 0-23 31-45 0z"/><path d="M181 390q30-45 44 0-22 25-44 0z"/>
+  </g>
+  <!-- kalash -->
+  <g filter="url(#shadow)">
+    <path d="M207 350h98l-10 86q-39 28-78 0z" fill="url(#gold)" stroke="#9b5609" stroke-width="6"/>
+    <path d="M195 348h122l-8 18H203z" fill="#f7c642" stroke="#9b5609" stroke-width="5"/>
+    <path d="M256 348q-28-33-5-58 10 22 5 36 7-20 25-31 10 28-9 53" fill="#3b9b43" stroke="#286a30" stroke-width="5"/>
+    <path d="M216 390h80M220 410h72" stroke="#a85b08" stroke-width="5"/>
+    <text x="256" y="416" font-family="serif" font-size="48" text-anchor="middle" fill="#a70d24">ॐ</text>
+  </g>
+  <!-- bottom title -->
+  <path d="M94 462 Q256 500 418 462" fill="none" stroke="url(#gold)" stroke-width="9" stroke-linecap="round"/>
+  <text x="256" y="485" font-family="Noto Sans Devanagari, sans-serif" font-size="28" font-weight="700" text-anchor="middle" fill="#a70d24">नवरात्रि</text>
+</svg>
