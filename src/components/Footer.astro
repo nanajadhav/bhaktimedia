@@ -3,10 +3,21 @@ import { site, services } from "../data/site";
 
 const quick = [
   { label: "Home", href: "/" }, { label: "About", href: "/about" },
-  { label: "Services", href: "/services" }, { label: "Gallery", href: "/gallery" },
+  { label: "Services", href: "/services" }, { label: "Devotional Images", href: "/gallery" },
   { label: "Blog", href: "/blog" }, { label: "Pricing", href: "/pricing" },
-  { label: "AI Services", href: "/ai-services" }, { label: "Contact", href: "/contact" },
+  { label: "Contact", href: "/contact" },
 ];
+
+// ── Services column: navbar dropdown jaisi hi list ──
+// Titles wahi hone chahiye jo ../data/site ke `services` mein hain.
+const rename: Record<string, string> = { "Video Editing": "Video Generation" };
+const footerServices = [
+  "Devotional Posters", "AI Image Generation", "Video Editing",
+  "Voiceovers", "Social Media", "Website Design",
+]
+  .map((t) => services.find((s) => s.title === t))
+  .filter((s): s is NonNullable<typeof s> => Boolean(s))
+  .map((s) => ({ ...s, title: rename[s.title] ?? s.title }));
 
 // Inline SVG icons as HTML strings
 const icons = {
@@ -30,7 +41,8 @@ const socials = [
        class="block h-24 w-full text-night sm:h-32 dark:text-night-soft">
     <g fill="currentColor">
       <rect x="0" y="140" width="1440" height="20" />
-      <rect x="0" y="128" width="1440" height="8" opacity="0.6" />
+      <!-- ledge: ab base se bilkul chipka hua (pehle beech mein gap tha) -->
+      <rect x="0" y="132" width="1440" height="8" opacity="0.5" />
       <path d="M720 16C700 44 688 68 688 96v44h64V96c0-28-12-52-32-80z" />
       <circle cx="720" cy="12" r="5" />
       <path d="M724 2l30 8-30 8z" />
@@ -78,8 +90,8 @@ const socials = [
       <nav aria-label="Services">
         <h3 class="font-display text-sm font-semibold uppercase tracking-[0.2em] text-golden">Services</h3>
         <ul class="mt-5 grid gap-2.5 text-sm">
-          {services.slice(0, 6).map((s) => (
-            <li><a href="/services" class="text-cream/60 transition hover:translate-x-1 hover:text-golden inline-block">{s.title}</a></li>
+          {footerServices.map((s) => (
+            <li><a href={s.href || "/services"} class="text-cream/60 transition hover:translate-x-1 hover:text-golden inline-block">{s.title}</a></li>
           ))}
         </ul>
       </nav>
@@ -90,7 +102,7 @@ const socials = [
         <form data-demo-form class="mt-4 flex gap-2">
           <label for="nl-email" class="sr-only">Email address</label>
           <input id="nl-email" type="email" required placeholder="you@example.com"
-                 class="input !rounded-full !bg-white/5 !text-cream placeholder:!text-cream/30" />
+                 class="input !rounded-full !border !border-white/20 !bg-white/5 !text-cream placeholder:!text-cream/50 focus:!border-golden" />
           <button type="submit" class="btn btn-gold shrink-0 !px-4" aria-label="Subscribe">
             <span set:html={icons.send} />
           </button>
