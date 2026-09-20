@@ -7,8 +7,23 @@ const pages = [
   { label: "Contact", href: "/contact" },
 ];
 const media = [
-  { label: "Gallery", href: "/gallery" },
+  { label: "Gallery", href: "/gallery" }, { label: "Reels", href: "/reels" },
+  { label: "YouTube", href: "/youtube" }, { label: "AI Services", href: "/ai-services" },
 ];
+
+// ── Services dropdown: kaunsi service kis side dikhegi ──
+// Titles wahi hone chahiye jo ../data/site ke `services` mein hain.
+// Order yahin se control hota hai; href/icon/desc data file se hi aate hain.
+const rename: Record<string, string> = { "Video Editing": "Video Generation" };
+const pick = (titles: string[]) =>
+  titles
+    .map((t) => services.find((s) => s.title === t))
+    .filter((s): s is NonNullable<typeof s> => Boolean(s))
+    .map((s) => ({ ...s, title: rename[s.title] ?? s.title }));
+
+const leftServices = pick(["Devotional Posters", "AI Image Generation", "Video Editing", "Voiceovers"]);
+const rightServices = pick(["Social Media", "Website Design"]);
+const menuServices = [...leftServices, ...rightServices]; // mobile drawer ke liye
 
 const icons = {
   menu: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>',
@@ -48,21 +63,41 @@ const icons = {
             <button class="nav-link" aria-haspopup="true">
               Services <span set:html={icons.chevronDown} class="inline-block align-middle" />
             </button>
-            <div class="invisible absolute left-1/2 top-full z-50 w-[420px] -translate-x-1/2 pt-4 opacity-0 transition-all duration-300 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-              <div class="card overflow-hidden p-3 shadow-lift">
-                <div class="grid grid-cols-1 gap-1">
-                  {services.map((s) => (
-                   <a href={s.href || "/services"} class="flex items-start gap-3 rounded-xl p-3 transition hover:bg-cream dark:hover:bg-white/5">
-                      <span class="mt-0.5 grid size-9 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-saffron to-golden text-white">
-                        <span set:html={icons[s.icon as keyof typeof icons]} />
-                      </span>
-                      <span>
-                        <span class="block text-sm font-semibold">{s.title}</span>
-                        <span class="mt-0.5 block text-xs leading-snug text-sandal-deep/60 dark:text-cream/50">{s.desc}</span>
-                      </span>
-                    </a>
-                  ))}
+            <div class="invisible absolute left-1/2 top-full z-50 w-[580px] -translate-x-1/2 pt-4 opacity-0 transition-all duration-300 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+              <!-- opaque + blur so hero text never shows through the menu -->
+              <div class="card overflow-hidden !bg-white/95 p-3 shadow-lift backdrop-blur-xl dark:!bg-night-soft/95">
+                <div class="grid grid-cols-2 gap-x-2">
+                  <!-- LEFT: Posters, AI Image, Video, Voiceovers -->
+                  <div class="flex flex-col gap-1">
+                    {leftServices.map((s) => (
+                      <a href={s.href || "/services"} class="flex items-start gap-3 rounded-xl p-3 transition hover:bg-cream dark:hover:bg-white/5">
+                        <span class="mt-0.5 grid size-9 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-saffron to-golden text-white">
+                          <span set:html={icons[s.icon as keyof typeof icons]} />
+                        </span>
+                        <span>
+                          <span class="block text-sm font-semibold">{s.title}</span>
+                          <span class="mt-0.5 block text-xs leading-snug text-sandal-deep/70 dark:text-cream/60">{s.desc}</span>
+                        </span>
+                      </a>
+                    ))}
+                  </div>
+
+                  <!-- RIGHT: Social Media, Website Design -->
+                  <div class="flex flex-col gap-1">
+                    {rightServices.map((s) => (
+                      <a href={s.href || "/services"} class="flex items-start gap-3 rounded-xl p-3 transition hover:bg-cream dark:hover:bg-white/5">
+                        <span class="mt-0.5 grid size-9 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-saffron to-golden text-white">
+                          <span set:html={icons[s.icon as keyof typeof icons]} />
+                        </span>
+                        <span>
+                          <span class="block text-sm font-semibold">{s.title}</span>
+                          <span class="mt-0.5 block text-xs leading-snug text-sandal-deep/70 dark:text-cream/60">{s.desc}</span>
+                        </span>
+                      </a>
+                    ))}
+                  </div>
                 </div>
+
                 <a href="/studio" class="mt-2 flex items-center justify-between rounded-xl bg-gradient-to-r from-saffron/10 to-golden/10 px-4 py-3 text-sm font-semibold text-saffron">
                   <span class="flex items-center gap-2"><span set:html={icons.sparkles} /> New: AI Devotional Studio</span>
                   <span aria-hidden="true">→</span>
@@ -139,8 +174,8 @@ const icons = {
     </ul>
     <p class="eyebrow mt-8">Services</p>
     <ul class="mt-3 grid grid-cols-2 gap-1 text-sm">
-     {services.map((s) => (
-  <li>
+      {menuServices.map((s) => (
+        <li>
           <a href={s.href || "/services"} class="flex items-center gap-2 rounded-lg px-3 py-2 text-sandal-deep/80 transition hover:bg-saffron/10 hover:text-saffron dark:text-cream/70">
             <span class="text-saffron"><span set:html={icons[s.icon as keyof typeof icons]} /></span> {s.title}
           </a>
