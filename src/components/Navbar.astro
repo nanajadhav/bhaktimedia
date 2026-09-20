@@ -7,8 +7,7 @@ const pages = [
   { label: "Contact", href: "/contact" },
 ];
 const media = [
-  { label: "Gallery", href: "/gallery" }, { label: "Reels", href: "/reels" },
-  { label: "YouTube", href: "/youtube" }, { label: "AI Services", href: "/ai-services" },
+  { label: "Devotional Images", href: "/gallery", icon: "image" },
 ];
 
 // ── Services dropdown: kaunsi service kis side dikhegi ──
@@ -110,10 +109,17 @@ const icons = {
             <button class="nav-link" aria-haspopup="true">
               Media <span set:html={icons.chevronDown} class="inline-block align-middle" />
             </button>
-            <div class="invisible absolute left-1/2 top-full z-50 w-52 -translate-x-1/2 pt-4 opacity-0 transition-all duration-300 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-              <ul class="card p-2 shadow-lift">
+            <div class="invisible absolute left-1/2 top-full z-50 w-60 -translate-x-1/2 pt-4 opacity-0 transition-all duration-300 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+              <ul class="card !bg-white/95 p-2 shadow-lift backdrop-blur-xl dark:!bg-night-soft/95">
                 {media.map((m) => (
-                  <li><a class="nav-link w-full" href={m.href}>{m.label}</a></li>
+                  <li>
+                    <a class="nav-link w-full !justify-start gap-2.5" href={m.href}>
+                      <span class="grid size-7 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-saffron to-golden text-white">
+                        <span set:html={icons[m.icon as keyof typeof icons]} />
+                      </span>
+                      {m.label}
+                    </a>
+                  </li>
                 ))}
               </ul>
             </div>
