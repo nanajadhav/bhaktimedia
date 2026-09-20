@@ -48,9 +48,9 @@ const icons = {
             <button class="nav-link" aria-haspopup="true">
               Services <span set:html={icons.chevronDown} class="inline-block align-middle" />
             </button>
-            <div class="invisible absolute left-1/2 top-full z-50 w-[580px] -translate-x-1/2 pt-4 opacity-0 transition-all duration-300 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+            <div class="invisible absolute left-1/2 top-full z-50 w-[420px] -translate-x-1/2 pt-4 opacity-0 transition-all duration-300 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
               <div class="card overflow-hidden p-3 shadow-lift">
-                <div class="grid grid-cols-2 gap-1">
+                <div class="grid grid-cols-1 gap-1">
                   {services.map((s) => (
                    <a href={s.href || "/services"} class="flex items-start gap-3 rounded-xl p-3 transition hover:bg-cream dark:hover:bg-white/5">
                       <span class="mt-0.5 grid size-9 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-saffron to-golden text-white">
