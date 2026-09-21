@@ -420,57 +420,6 @@ const sidePosts = restPosts.slice(0, 3);
   </div>
 </section>
 
-<!-- ══════════ BLOG ══════════ -->
-<section class="section bg-cream/50 dark:bg-night-soft/30">
-  <div class="container-x">
-    <div class="flex flex-wrap items-end justify-between gap-6">
-      <header data-reveal>
-        <p class="eyebrow">From the Blog</p>
-        <h2 class="mt-4 font-display text-3xl font-bold tracking-tight sm:text-4xl">Latest <span class="text-gradient">Wisdom</span></h2>
-        <p class="mt-2 font-dev text-sandal dark:text-golden/80">॥ ज्ञानदीपः ॥</p>
-        <p class="mt-3 max-w-lg text-sm text-sandal-deep/70 dark:text-cream/60">Thoughts on devotional design, AI art ethics, temple growth, and building content that actually reaches people — written from inside the work, not around it.</p>
-      </header>
-      <a data-reveal href="/blog" class="btn btn-ghost">All Articles</a>
-    </div>
-
-    <div class="mt-12 grid gap-8 lg:grid-cols-2">
-      <!-- featured -->
-      {featuredPost && (
-        <a data-reveal href={`/blog/${featuredPost.id}`} class="card group overflow-hidden transition duration-300 hover:-translate-y-1 hover:shadow-lift">
-          <div class="overflow-hidden">
-            <img src={featuredPost.data.image} alt={featuredPost.data.title} class="aspect-video w-full object-cover transition duration-700 group-hover:scale-[1.04]" />
-          </div>
-          <div class="p-7">
-            <div class="flex flex-wrap items-center gap-2 text-xs">
-              <span class="chip bg-saffron/10 font-semibold text-saffron">{featuredPost.data.category}</span>
-              <span class="text-sandal/70 dark:text-cream/50">{readTime(featuredPost.body)} min read</span>
-              <span class="text-sandal/70 dark:text-cream/50">{fmtDate(featuredPost.data.pubDate)}</span>
-            </div>
-            <h3 class="mt-4 font-display text-2xl font-bold leading-snug transition group-hover:text-saffron">{featuredPost.data.title}</h3>
-            <p class="mt-3 text-sm leading-relaxed text-sandal-deep/75 dark:text-cream/65">{featuredPost.data.description}</p>
-          </div>
-        </a>
-      )}
-
-      <!-- side list -->
-      <div class="flex flex-col gap-6">
-        {sidePosts.map((p, i) => (
-          <a data-reveal style={`--rd:${i * 100}ms`} href={`/blog/${p.id}`} class="card group flex gap-5 p-4 transition duration-300 hover:-translate-y-1 hover:shadow-lift">
-            <div class="w-32 shrink-0 overflow-hidden rounded-xl sm:w-40">
-              <img src={p.data.image} alt="" loading="lazy" class="aspect-[4/3] h-full w-full object-cover transition duration-700 group-hover:scale-105" />
-            </div>
-            <div class="py-1">
-              <span class="chip bg-golden/15 text-[11px] font-semibold text-sandal dark:text-golden">{p.data.category}</span>
-              <h3 class="mt-2 font-display font-semibold leading-snug transition group-hover:text-saffron sm:text-lg">{p.data.title}</h3>
-              <p class="mt-2 text-xs text-sandal/70 dark:text-cream/50">{readTime(p.body)} min • {fmtDate(p.data.pubDate)}</p>
-            </div>
-          </a>
-        ))}
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- ══════════ TESTIMONIALS ══════════ -->
 <section class="section overflow-hidden">
   <div class="container-x">
