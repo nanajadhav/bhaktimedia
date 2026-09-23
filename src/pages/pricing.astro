@@ -1,6 +1,7 @@
 ---
+import Layout from "../layouts/Layout.astro";
 import { Check, Sparkle } from "@lucide/astro";
-import SectionHeading from "./SectionHeading.astro";
+import SectionHeading from "../components/SectionHeading.astro";
 import { plans, site } from "../data/site";
 
 const inr = (n: number) => n.toLocaleString("en-IN");
@@ -12,6 +13,7 @@ const packs = [
   { id: "pack-899", price: 899, credits: 300, creations: 100, tag: "Bulk" },
 ];
 ---
+<Layout title="Pricing" description="BhaktiMedia pricing — simple plans and one-time packs.">
 <section id="pricing" class="section bg-cream/50 dark:bg-night-soft/30">
   <div class="container-x">
     <SectionHeading align="center" eyebrow="Pricing"
@@ -90,3 +92,4 @@ const packs = [
     </div>
   </div>
 </section>
+</Layout>
