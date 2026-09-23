@@ -1,4 +1,6 @@
 // functions/api/razorpay-order.ts — Razorpay order create (UPI QR checkout)
+// Consent shield: checkout ke checkbox se aaya policy consent
+// Razorpay order notes mein record hota hai (har payment ka permanent proof)
 import { json, getToken, verifyJWT, uid } from "../_lib";
 
 const PRICES: Record<string, number> = { starter: 199, growth: 599, scale: 1199 };
@@ -13,11 +15,28 @@ export const onRequestPost = async (context: any) => {
     const body = await context.request.json();
     const plan = String(body.plan || "");
     if (!PRICES[plan]) return json({ error: "Galat plan" }, 400);
+
+    // ── consent record (checkout ke checkbox se aata hai) ──
+    const consent = body.consent || {};
+    const consentAccepted = consent.accepted === true;
+    const consentAt = String(consent.at || "");
+    const consentVersion = String(consent.version || "v1");
+
     const DB = context.env.DB;
     const r = await fetch("https://api.razorpay.com/v1/orders", {
       method: "POST",
       headers: { Authorization: "Basic " + btoa(KEY + ":" + SECRET), "Content-Type": "application/json" },
-      body: JSON.stringify({ amount: PRICES[plan] * 100, currency: "INR", receipt: uid(), notes: { plan, user_id: payload.sub } }),
+      body: JSON.stringify({
+        amount: PRICES[plan] * 100,
+        currency: "INR",
+        receipt: uid(),
+        notes: {
+          plan,
+          user_id: payload.sub,
+          policy_consent: consentAccepted ? "accepted-" + consentVersion : "not-accepted",
+          consent_at: consentAt,
+        },
+      }),
     });
     const order = await r.json();
     if (!order.id) return json({ error: order.error?.description || "Order fail" }, 502);
