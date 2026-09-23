@@ -5,6 +5,12 @@ import SectionHeading from "../components/SectionHeading.astro";
 import { plans, site } from "../data/site";
 
 const inr = (n: number) => n.toLocaleString("en-IN");
+const selfPlans = [
+  { id: "trial", name: "Free", desc: "Try the studio — no credit card needed.", price: 0, featured: false, features: ["3 AI creations / month", "3 murti photos / month", "Standard (1K) quality", "Community support"] },
+  { id: "starter", name: "Starter", desc: "For creators beginning their digital seva.", price: 199, featured: false, features: ["60 ⚡ = 20 AI creations / month", "HD (2K) quality option", "50 × 1K murti photos (or 30 Full)", "Email support"] },
+  { id: "growth", name: "Growth", desc: "For serious channels & growing temples.", price: 599, featured: true, features: ["225 ⚡ = 75 AI creations / month", "HD (2K) quality option", "100 × 1K murti photos (or 60 Full)", "WhatsApp support"] },
+  { id: "scale", name: "Scale", desc: "Complete digital temple & enterprise care.", price: 1199, featured: false, features: ["540 ⚡ = 180 AI creations / month", "HD (2K) quality option", "200 × 1K murti photos (or 120 Full)", "Phone support + custom template"] },
+];
 
 const packs = [
   { id: "pack-30", price: 30, credits: 9, creations: 3, tag: "Try It" },
@@ -21,9 +27,9 @@ const packs = [
       <Fragment slot="title">Choose Your <span class="text-gradient">Seva Plan</span></Fragment>
     </SectionHeading>
 
-    <div class="mt-16 grid items-stretch gap-8 lg:grid-cols-3">
-      {plans.map((p, i) => (
-        <article data-reveal style={`--rd:${i * 120}ms`}
+    <div class="mt-16 grid items-stretch gap-6 lg:grid-cols-4">
+      {selfPlans.map((p, i) => (
+         <article data-reveal data-plan={p.id} style={`--rd:${i * 120}ms`}
                  class:list={[
                    "relative flex flex-col",
                    p.featured
@@ -39,8 +45,8 @@ const packs = [
             <h3 class="font-display text-2xl font-bold">{p.name}</h3>
             <p class="mt-2 text-sm text-sandal-deep/70 dark:text-cream/60">{p.desc}</p>
             <p class="mt-6 font-display">
-              <span class="text-5xl font-bold">₹{inr(p.price)}</span>
-              <span class="text-sm text-sandal/70 dark:text-cream/50"> /month</span>
+              <span class="text-5xl font-bold">{p.price === 0 ? "Free" : `₹${inr(p.price)}`}</span>
+              {p.price > 0 && <span class="text-sm text-sandal/70 dark:text-cream/50"> /month</span>}
             </p>
             <ul class="mt-7 grid flex-1 gap-3 text-sm">
               {p.features.map((f) => (
@@ -50,8 +56,8 @@ const packs = [
                 </li>
               ))}
             </ul>
-            <a href={`/checkout?plan=${p.id}`} class:list={["btn mt-8 w-full", p.featured ? "btn-primary" : "btn-ghost"]}>
-              Begin with {p.name}
+            <a href={p.id === "trial" ? "/signup" : `/checkout?plan=${p.id}`} class:list={["plan-btn btn mt-8 w-full", p.featured ? "btn-primary" : "btn-ghost"]}>
+              {p.id === "trial" ? "Start Free" : `Begin with ${p.name}`}
             </a>
           </div>
         </article>
@@ -92,4 +98,31 @@ const packs = [
     </div>
   </div>
 </section>
+
+<script is:inline>
+(function () {
+  var token = "";
+  try {
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (k && k.indexOf("sb-") === 0 && k.indexOf("auth-token") !== -1) { token = JSON.parse(localStorage.getItem(k)).access_token; break; }
+    }
+  } catch (e) {}
+  if (!token) return;
+  fetch("/api/credits", { headers: { Authorization: "Bearer " + token } })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (d) {
+      if (!d || !d.plan) return;
+      var card = document.querySelector('[data-plan="' + d.plan + '"]');
+      if (!card) return;
+      var badge = document.createElement("span");
+      badge.className = "absolute right-3 top-3 z-10 rounded-full bg-green-600 px-3 py-1 text-[10px] font-bold text-white shadow-soft";
+      badge.textContent = "✓ CURRENT PLAN — ACTIVE";
+      card.appendChild(badge);
+      var btn = card.querySelector(".plan-btn");
+      if (btn) { btn.textContent = "Current Plan ✓"; btn.classList.add("opacity-60", "pointer-events-none"); }
+    })
+    .catch(function () {});
+})();
+</script>
 </Layout>
