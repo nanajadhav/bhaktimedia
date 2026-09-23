@@ -101,28 +101,48 @@ const packs = [
 
 <script is:inline>
 (function () {
-  var token = "";
-  try {
-    for (var i = 0; i < localStorage.length; i++) {
-      var k = localStorage.key(i);
-      if (k && k.indexOf("sb-") === 0 && k.indexOf("auth-token") !== -1) { token = JSON.parse(localStorage.getItem(k)).access_token; break; }
-    }
-  } catch (e) {}
-  if (!token) return;
-  fetch("/api/credits", { headers: { Authorization: "Bearer " + token } })
-    .then(function (r) { return r.ok ? r.json() : null; })
-    .then(function (d) {
-      if (!d || !d.plan) return;
-      var card = document.querySelector('[data-plan="' + d.plan + '"]');
-      if (!card) return;
-      var badge = document.createElement("span");
-      badge.className = "absolute right-3 top-3 z-10 rounded-full bg-green-600 px-3 py-1 text-[10px] font-bold text-white shadow-soft";
-      badge.textContent = "✓ CURRENT PLAN — ACTIVE";
-      card.appendChild(badge);
-      var btn = card.querySelector(".plan-btn");
-      if (btn) { btn.textContent = "Current Plan ✓"; btn.classList.add("opacity-60", "pointer-events-none"); }
-    })
-    .catch(function () {});
+  function highlight() {
+    var token = "";
+    try {
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        if (k && k.indexOf("sb-") === 0 && k.indexOf("auth-token") !== -1) { token = JSON.parse(localStorage.getItem(k)).access_token; break; }
+      }
+    } catch (e) {}
+    if (!token) return;
+    fetch("/api/credits", { headers: { Authorization: "Bearer " + token } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (!d || !d.plan) return;
+        var card = document.querySelector('[data-plan="' + d.plan + '"]');
+        if (!card) return;
+        /* ── green border glow ── */
+        card.style.boxShadow = "0 0 0 3px #16a34a, 0 18px 40px -18px rgba(22,163,74,.45)";
+        card.style.borderColor = "#16a34a";
+        /* ── badge ─ */
+        if (!card.querySelector(".current-badge")) {
+          var badge = document.createElement("span");
+          badge.className = "current-badge absolute right-3 top-3 z-10 rounded-full bg-green-600 px-3 py-1 text-[10px] font-bold text-white shadow-soft";
+          badge.textContent = "✓ ACTIVE PLAN";
+          card.appendChild(badge);
+        }
+        /* ── green button ── */
+        var btn = card.querySelector(".plan-btn");
+        if (btn) {
+          btn.textContent = "✓ Current Plan — Active";
+          btn.style.background = "#16a34a";
+          btn.style.borderColor = "#16a34a";
+          btn.style.color = "#fff";
+          btn.style.backgroundImage = "none";
+          btn.classList.add("pointer-events-none");
+          btn.removeAttribute("href");
+        }
+      })
+      .catch(function () {});
+  }
+  /* purane scripts ke BAAD chale taaki overwrite ho jaye */
+  if (document.readyState === "complete") setTimeout(highlight, 80);
+  else window.addEventListener("load", function () { setTimeout(highlight, 80); });
 })();
 </script>
 </Layout>
