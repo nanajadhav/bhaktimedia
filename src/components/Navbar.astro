@@ -10,9 +10,9 @@ const media = [
   { label: "Devotional Images", href: "/gallery", icon: "image" },
 ];
 
-// ── Services dropdown: kaunsi service kis side dikhegi ──
-// Titles wahi hone chahiye jo ../data/site ke `services` mein hain.
-// Order yahin se control hota hai; href/icon/desc data file se hi aate hain.
+// ── Services dropdown: which service appears on which side ──
+// Titles must match those in ../data/site `services`.
+// Order is controlled here; href/icon/desc come from the data file.
 const rename: Record<string, string> = { "Video Editing": "Video Generation" };
 const pick = (titles: string[]) =>
   titles
@@ -22,7 +22,7 @@ const pick = (titles: string[]) =>
 
 const leftServices = pick(["Devotional Posters", "AI Image Generation", "Video Editing", "Voiceovers"]);
 const rightServices = pick(["Social Media", "Website Design"]);
-const menuServices = [...leftServices, ...rightServices]; // mobile drawer ke liye
+const menuServices = [...leftServices, ...rightServices]; // for mobile drawer
 
 const icons = {
   menu: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>',
@@ -138,13 +138,13 @@ const icons = {
 
         <div id="auth-guest-d" class="flex items-center gap-1.5">
           <a href="/login" class="hidden rounded-lg px-3 py-1.5 text-sm font-semibold text-sandal-deep transition hover:bg-golden/10 hover:text-saffron sm:block dark:text-cream/80">Login</a>
-          <a href="/signup" class="rounded-full bg-gradient-to-r from-saffron to-golden px-4 py-2 text-sm font-bold text-white shadow-gold transition hover:scale-105">Get Start</a>
+          <a href="/signup" class="rounded-full bg-gradient-to-r from-saffron to-golden px-4 py-2 text-sm font-bold text-white shadow-gold transition hover:scale-105">Get Started</a>
         </div>
 
         <div id="auth-user-d" class="hidden items-center gap-1.5">
           <a href="/dashboard" class="flex items-center gap-2 rounded-full py-1 pl-1 pr-3 transition hover:bg-golden/15" title="Dashboard">
             <span id="user-avatar" class="grid size-8 place-items-center rounded-full bg-gradient-to-br from-saffron to-golden text-sm font-bold text-white">M</span>
-            <span id="user-name-d" class="hidden max-w-[110px] truncate text-sm font-semibold md:inline">Mera Account</span>
+            <span id="user-name-d" class="hidden max-w-[110px] truncate text-sm font-semibold md:inline">My Account</span>
           </a>
           <button id="logout-btn-d" class="icon-btn" aria-label="Logout" title="Logout">
             <span set:html={icons.logout} />
@@ -191,12 +191,12 @@ const icons = {
 
   <div id="auth-guest" class="mt-8 items-center gap-2" style="display:flex">
     <a href="/login" class="rounded-full px-4 py-2 text-sm font-semibold text-sandal-deep transition hover:text-saffron dark:text-cream/80">Login</a>
-    <a href="/signup" class="btn btn-primary !py-2 !text-sm">Get Start</a>
+    <a href="/signup" class="btn btn-primary !py-2 !text-sm">Get Started</a>
   </div>
 
   <div id="auth-user" class="mt-8 items-center gap-2" style="display:none">
     <a href="/dashboard" class="flex items-center gap-2 rounded-full bg-golden/15 px-4 py-2 text-sm font-semibold text-saffron transition hover:bg-golden/25">
-      🪔 <span id="user-name">Mera Account</span>
+      🪔 <span id="user-name">My Account</span>
     </a>
     <button id="logout-btn" class="rounded-full px-3 py-2 text-xs font-semibold text-sandal-deep/70 transition hover:text-red-500 dark:text-cream/60">Logout</button>
   </div>
@@ -212,7 +212,7 @@ const icons = {
     }
   } catch (e) {}
   var logged = !!raw;
-  var name = "Mera Account";
+  var name = "My Account";
   if (raw) {
     try {
       var s = JSON.parse(raw);
@@ -241,14 +241,14 @@ const icons = {
     if (un) un.textContent = name;
   }
 
-  // logout — dono jagah
+  // logout — both locations
   document.addEventListener("click", function (e) {
     if (e.target.closest("#logout-btn, #logout-btn-d")) {
       for (var j = 0; j < localStorage.length; j++) {
         var key = localStorage.key(j);
         if (key && key.indexOf("sb-") === 0) { localStorage.removeItem(key); j--; }
       }
-      localStorage.setItem("bm-welcome", "👋 Logout ho gaya. Phir milenge!");
+      localStorage.setItem("bm-welcome", "👋 Logged out. See you soon!");
       window.location.href = "/";
     }
   });
