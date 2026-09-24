@@ -1,21 +1,21 @@
 ---
 import Layout from "../layouts/Layout.astro";
 ---
-<Layout title="Checkout" description="Plan or pack checkout — UPI payment via Razorpay.">
+<Layout title="Checkout" description="Plan checkout — UPI payment via Razorpay.">
 <div class="container-x px-4 pb-20 pt-28 sm:px-6">
   <div class="mx-auto max-w-4xl">
     <p class="eyebrow">🛒 Checkout</p>
     <h1 class="mt-2 font-display text-3xl font-bold sm:text-4xl">Complete Your Payment</h1>
 
     <div class="mt-8 grid gap-6 lg:grid-cols-[1fr,360px]">
-      <!-- ═══ LEFT: SUMMARY + POLICY ═══ -->
+      <!-- ═══ LEFT: SUMMARY + POLICIES ═══ -->
       <div class="grid gap-6">
         <div class="card p-6 shadow-soft">
           <p class="eyebrow">📦 Order Summary</p>
           <div class="mt-4 flex items-center justify-between gap-4">
             <div>
               <p id="c-plan" class="font-display text-2xl font-bold">—</p>
-              <p id="c-type" class="mt-1 text-sm text-sandal-deep/60 dark:text-cream/50">Monthly subscription — active instantly after payment</p>
+              <p id="c-note" class="mt-1 text-sm text-sandal-deep/60 dark:text-cream/50">—</p>
             </div>
             <p id="c-price" class="font-display text-3xl font-bold text-saffron">—</p>
           </div>
@@ -25,21 +25,21 @@ import Layout from "../layouts/Layout.astro";
         <div class="card p-6 shadow-soft">
           <p class="eyebrow">📜 Policies & Terms</p>
           <div class="mt-3 max-h-44 overflow-y-auto rounded-xl bg-sandal/10 p-4 text-xs leading-relaxed text-sandal-deep/70 dark:bg-white/5 dark:text-cream/60">
-            <p>1. Payment successful hote hi plan/pack turant active ho jata hai aur invoice aapke email par bheja jata hai.</p>
-            <p class="mt-2">2. Subscription monthly hai — credits har mahine reset hote hain; koi auto-cut nahi hota, renew aapki marzi se.</p>
-            <p class="mt-2">3. AI generation fail hone par credit wapas milta hai — katta hi nahi.</p>
-            <p class="mt-2">4. Digital goods (AI images, posters, videos) delivery ke baad refund sirf <a href="/refund" target="_blank" class="font-bold text-saffron underline">Refund Policy</a> ke anusar milega.</p>
-            <p class="mt-2">5. Payment Razorpay ke secure gateway se hoti hai — BhaktiMedia aapki UPI/card details store nahi karta.</p>
-            <p class="mt-2">6. Galat plan chun liya? 24 ghante ke andar support se switch karwa sakte ho.</p>
-            <p class="mt-3 text-[11px] text-sandal-deep/50 dark:text-cream/40">Complete details: <a href="/terms" target="_blank" class="font-bold text-saffron underline">Terms of Service</a> • <a href="/privacy" target="_blank" class="font-bold text-saffron underline">Privacy Policy</a> • <a href="/refund" target="_blank" class="font-bold text-saffron underline">Refund Policy</a></p>
+            <p>1. Your plan or pack activates instantly on successful payment, and the invoice is emailed to you.</p>
+            <p class="mt-2">2. Subscriptions are monthly — credits reset every month; there is no auto-debit, renewal is entirely your choice.</p>
+            <p class="mt-2">3. If an AI generation fails, the credit is returned in full — nothing is deducted.</p>
+            <p class="mt-2">4. For digital goods (AI images, posters, videos), refunds after delivery are governed by the <a href="/refund" target="_blank" class="font-bold text-saffron underline">Refund Policy</a>.</p>
+            <p class="mt-2">5. Payments are processed through Razorpay's secure gateway — BhaktiMedia never stores your UPI/card details.</p>
+            <p class="mt-2">6. Chose the wrong plan? Contact support within 24 hours and we will switch it for you.</p>
+            <p class="mt-3 text-[11px] text-sandal-deep/50 dark:text-cream/40">Full details: <a href="/terms" target="_blank" class="font-bold text-saffron underline">Terms of Service</a> • <a href="/privacy" target="_blank" class="font-bold text-saffron underline">Privacy Policy</a> • <a href="/refund" target="_blank" class="font-bold text-saffron underline">Refund Policy</a></p>
           </div>
           <label class="mt-4 flex cursor-pointer items-start gap-3 rounded-2xl border border-sandal/20 bg-white/60 p-4 text-xs dark:border-white/10 dark:bg-white/5">
             <input id="c-agree" type="checkbox" class="mt-0.5 size-4 accent-saffron" />
             <span class="leading-relaxed text-sandal-deep/80 dark:text-cream/70">
-              Maine <a href="/terms" target="_blank" class="font-bold text-saffron underline">Terms of Service</a>,
-              <a href="/privacy" target="_blank" class="font-bold text-saffron underline">Privacy Policy</a> aur
-              <a href="/refund" target="_blank" class="font-bold text-saffron underline">Refund Policy</a> padh li hai aur main accept karta/karti hoon.
-              <span class="mt-1 block text-[10px] text-sandal-deep/50 dark:text-cream/40">Digital goods: delivery ke baad refund sirf Refund Policy ke anusar milega.</span>
+              I have read and accept the <a href="/terms" target="_blank" class="font-bold text-saffron underline">Terms of Service</a>,
+              <a href="/privacy" target="_blank" class="font-bold text-saffron underline">Privacy Policy</a> and
+              <a href="/refund" target="_blank" class="font-bold text-saffron underline">Refund Policy</a>.
+              <span class="mt-1 block text-[10px] text-sandal-deep/50 dark:text-cream/40">Digital goods: refunds after delivery are governed by the Refund Policy only.</span>
             </span>
           </label>
         </div>
@@ -51,20 +51,20 @@ import Layout from "../layouts/Layout.astro";
         <div class="mt-4 grid gap-2 text-sm">
           <div class="flex justify-between gap-3"><span class="text-sandal-deep/60 dark:text-cream/50">Item</span><b id="p-plan">—</b></div>
           <div class="flex justify-between gap-3"><span class="text-sandal-deep/60 dark:text-cream/50">Billing email</span><b id="p-email" class="truncate">—</b></div>
-          <div class="flex justify-between gap-3"><span class="text-sandal-deep/60 dark:text-cream/50">Validity</span><b id="p-validity">1 month</b></div>
+          <div class="flex justify-between gap-3"><span class="text-sandal-deep/60 dark:text-cream/50">Validity</span><b id="p-validity">—</b></div>
           <div class="mt-2 flex justify-between border-t border-sandal/10 pt-3 dark:border-white/10">
             <span class="font-semibold">Amount Payable</span>
             <b id="p-amount" class="font-display text-xl text-saffron">—</b>
           </div>
         </div>
         <p id="p-msg" class="mt-3 hidden rounded-xl bg-red-500/10 px-3 py-2 text-center text-xs font-semibold text-red-500"></p>
-          <button id="p-pay" class="btn btn-primary mt-4 w-full !py-3 cursor-not-allowed opacity-40">📱 UPI QR se Pay Karo</button>
+        <button id="p-pay" class="btn btn-primary mt-4 w-full !py-3 cursor-not-allowed opacity-40">📱 Pay with UPI QR</button>
         <p class="mt-2 text-center text-[11px] text-sandal-deep/50 dark:text-cream/40">Razorpay secure checkout • GPay / PhonePe / Paytm</p>
 
         <div id="p-success" class="mt-4 hidden text-center">
           <p class="text-4xl">🎉</p>
           <p class="mt-2 font-display text-xl font-bold">Payment Successful!</p>
-          <p class="mt-1 text-xs text-sandal-deep/60 dark:text-cream/50">Your purchase is active — invoice sent to email 📧</p>
+          <p class="mt-1 text-xs text-sandal-deep/60 dark:text-cream/50">Your plan/pack is now active — the invoice has been sent to your email 📧</p>
           <div class="mt-4 grid gap-2">
             <a href="/dashboard" class="btn btn-primary w-full">Go to Dashboard</a>
             <a href="/pricing" class="btn btn-outline w-full">View Pricing</a>
@@ -85,17 +85,17 @@ import Layout from "../layouts/Layout.astro";
   }
 
   const PLANS = {
-    starter: { name: "Starter", price: "₹199", per: " /month", amount: 199, feats: ["60 ⚡ = 20 AI creations", "HD (2K) quality option", "50 × 1K murti photos (or 30 Full)", "Email support"] },
-    growth: { name: "Growth", price: "₹599", per: " /month", amount: 599, feats: ["225 ⚡ = 75 AI creations", "HD (2K) quality option", "100 × 1K murti photos (or 60 Full)", "WhatsApp support"] },
-    scale: { name: "Scale", price: "₹1199", per: " /month", amount: 1199, feats: ["540 ⚡ = 180 AI creations", "HD (2K) quality option", "200 × 1K murti photos (or 120 Full)", "Phone support + custom template"] },
+    starter: { name: "Starter", price: "₹199", per: " /month", amount: 199, validity: "1 month", note: "Monthly subscription — active instantly after payment", feats: ["60 ⚡ = 20 AI creations", "HD (2K) quality option", "50 × 1K murti photos (or 30 Full)", "Email support"] },
+    growth: { name: "Growth", price: "₹599", per: " /month", amount: 599, validity: "1 month", note: "Monthly subscription — active instantly after payment", feats: ["225 ⚡ = 75 AI creations", "HD (2K) quality option", "100 × 1K murti photos (or 60 Full)", "WhatsApp support"] },
+    scale: { name: "Scale", price: "₹1199", per: " /month", amount: 1199, validity: "1 month", note: "Monthly subscription — active instantly after payment", feats: ["540 ⚡ = 180 AI creations", "HD (2K) quality option", "200 × 1K murti photos (or 120 Full)", "Phone support + custom template"] },
   };
-
   const PACKS = {
-    "pack-30": { name: "Try Pack", price: "₹30", amount: 30, credits: 9, creations: 3 },
-    "pack-99": { name: "Starter Pack", price: "₹99", amount: 99, credits: 24, creations: 8 },
-    "pack-299": { name: "Best Pack", price: "₹299", amount: 299, credits: 90, creations: 30 },
-    "pack-899": { name: "Bulk Pack", price: "₹899", amount: 899, credits: 300, creations: 100 },
+    "pack-30": { name: "Try Pack", price: "₹30", amount: 30, credits: 9, creations: 3, validity: "Forever", note: "One-time pack — credits never expire" },
+    "pack-99": { name: "Starter Pack", price: "₹99", amount: 99, credits: 24, creations: 8, validity: "Forever", note: "One-time pack — credits never expire" },
+    "pack-299": { name: "Best Pack", price: "₹299", amount: 299, credits: 90, creations: 30, validity: "Forever", note: "One-time pack — credits never expire" },
+    "pack-899": { name: "Bulk Pack", price: "₹899", amount: 899, credits: 300, creations: 100, validity: "Forever", note: "One-time pack — credits never expire" },
   };
+  const ITEMS = { ...PLANS, ...PACKS };
 
   let token = "";
   try {
@@ -106,31 +106,18 @@ import Layout from "../layouts/Layout.astro";
   } catch (e) {}
   if (!token) location.href = "/login";
 
-  const params = new URLSearchParams(location.search);
-  const planId = params.get("plan");
-  const packId = params.get("pack");
+  const plan = new URLSearchParams(location.search).get("plan");
+  const P = ITEMS[plan];
+  if (!P) location.href = "/pricing";
+  const isPlan = !!PLANS[plan];
 
-  let bodyPayload, display;
-  if (planId && PLANS[planId]) {
-    bodyPayload = { plan: planId };
-    display = { ...PLANS[planId], type: "plan", id: planId };
-    $("#c-type").textContent = "Monthly subscription — active instantly after payment";
-    $("#p-validity").textContent = "1 month";
-  } else if (packId && PACKS[packId]) {
-    const pk = PACKS[packId];
-    bodyPayload = { pack: packId };
-    display = { name: pk.name, price: pk.price, per: "", amount: pk.amount, feats: [`${pk.credits} ⚡ credits`, `${pk.creations} AI creations`, "Credits never expire", "Instant delivery"], type: "pack", id: packId };
-    $("#c-type").textContent = "One-time pack — credits never expire";
-    $("#p-validity").textContent = "Forever";
-  } else {
-    location.href = "/pricing";
-  }
-
-  $("#c-plan").textContent = display.name + (display.type === "plan" ? " Plan" : "");
-  $("#c-price").textContent = display.price + display.per;
-  $("#c-feats").innerHTML = display.feats.map((f) => `<li>✅ ${f}</li>`).join("");
-  $("#p-plan").textContent = display.name;
-  $("#p-amount").textContent = display.price;
+  $("#c-plan").textContent = P.name + (isPlan ? " Plan" : "");
+  $("#c-note").textContent = P.note;
+  $("#c-price").textContent = P.price + (P.per || "");
+  $("#c-feats").innerHTML = (P.feats || [`${P.credits} ⚡ bonus credits`, `${P.creations} AI creations`, "One-time purchase — no expiry"]).map((f) => `<li>✅ ${f}</li>`).join("");
+  $("#p-plan").textContent = P.name;
+  $("#p-validity").textContent = P.validity;
+  $("#p-amount").textContent = P.price;
 
   (async () => {
     try {
@@ -155,16 +142,16 @@ import Layout from "../layouts/Layout.astro";
       const s = document.createElement("script");
       s.src = "https://checkout.razorpay.com/v1/checkout.js";
       s.onload = res;
-      s.onerror = () => rej(new Error("Checkout script failed to load — check adblocker/internet"));
+      s.onerror = () => rej(new Error("Checkout script failed to load — check your adblocker or internet connection"));
       document.head.appendChild(s);
     });
   }
 
-  $("#p-pay").addEventListener("click", async () => {
-    const b = $("#p-pay");
-    const label = "📱 UPI QR se Pay Karo";
+  payBtn.addEventListener("click", async () => {
+    const b = payBtn;
+    const label = "📱 Pay with UPI QR";
     if (!agreeBox.checked) {
-      msg("🙏 Pehle Policies & Terms accept karo — checkbox tick karo, phir payment khulegi!", false);
+      msg("🙏 Please accept the Policies & Terms first — tick the checkbox to enable payment.", false);
       const card = agreeBox.closest(".card");
       if (card) {
         card.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -175,39 +162,37 @@ import Layout from "../layouts/Layout.astro";
     }
     msg("");
     try {
-      b.disabled = true; b.textContent = "⏳ Creating order...";
-      const consent = {
-        accepted: $("#c-agree").checked,
-        at: new Date().toISOString(),
-        version: "v1-2026-09-23",
-      };
+      b.disabled = true; b.textContent = "⏳ Creating your order...";
       const r = await fetch("/api/razorpay-order", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
-        body: JSON.stringify({ ...bodyPayload, consent }),
+        body: JSON.stringify({
+          plan,
+          consent: { accepted: true, at: new Date().toISOString(), version: "v1-2026-09-23" },
+        }),
       });
       const d = await r.json().catch(() => ({}));
-      if (!r.ok) throw new Error(d.error || ("Server error " + r.status + " — please redeploy"));
+      if (!r.ok) throw new Error(d.error || ("Server error " + r.status + " — please try again shortly"));
       await loadCheckout();
-      if (!window.Razorpay) throw new Error("Razorpay checkout not ready");
+      if (!window.Razorpay) throw new Error("Razorpay checkout did not initialize");
       const rzp = new window.Razorpay({
         key: d.key,
         amount: d.amount,
         currency: "INR",
         name: "BhaktiMedia.in",
-        description: display.name + (display.type === "plan" ? " plan — monthly" : " — one-time pack"),
+        description: P.name + (isPlan ? " plan — monthly" : " pack — one-time"),
         order_id: d.orderId,
         theme: { color: "#f97316" },
         method: { upi: { flow: "qr_code" }, card: false, netbanking: false, wallet: false },
         handler: () => { b.classList.add("hidden"); $("#p-msg").classList.add("hidden"); $("#p-success").classList.remove("hidden"); },
         modal: { ondismiss: () => { b.disabled = false; gatePay(); b.textContent = label; } },
       });
-      rzp.on("payment.failed", (e) => { msg("❌ Payment failed: " + ((e.error && e.error.description) || "please try again")); b.disabled = false; b.textContent = label; });
+      rzp.on("payment.failed", (e) => { msg("❌ Payment failed: " + ((e.error && e.error.description) || "please try again")); b.disabled = false; gatePay(); b.textContent = label; });
       rzp.open();
       b.disabled = false; b.textContent = label;
     } catch (e) {
       msg("❌ " + e.message);
-      b.disabled = false; b.textContent = label;
+      b.disabled = false; gatePay(); b.textContent = label;
     }
   });
 })();
