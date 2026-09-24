@@ -16,7 +16,7 @@ export const onRequestPost = async (context: any) => {
     const SECRET = context.env.RAZORPAY_KEY_SECRET || "";
     if (!KEY || !SECRET) return json({ error: "Razorpay setup baaki hai" }, 500);
     const body = await context.request.json();
-    const plan = String(body.plan || "");
+    const plan = String(body.plan || body.pack || "");
     if (!PRICES[plan]) return json({ error: "Galat plan" }, 400);
 
     // ── consent record (checkout ke checkbox se aata hai) ──
