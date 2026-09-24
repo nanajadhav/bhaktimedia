@@ -3,7 +3,10 @@
 // Razorpay order notes mein record hota hai (har payment ka permanent proof)
 import { json, getToken, verifyJWT, uid } from "../_lib";
 
-const PRICES: Record<string, number> = { starter: 199, growth: 599, scale: 1199 };
+const PRICES: Record<string, number> = {
+    starter: 199, growth: 599, scale: 1199,
+  "pack-30": 30, "pack-99": 99, "pack-299": 299, "pack-899": 899,
+};
 
 export const onRequestPost = async (context: any) => {
   try {
