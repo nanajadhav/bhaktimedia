@@ -161,7 +161,7 @@ import Layout from "../layouts/Layout.astro";
       const c = await api("/api/credits");
       const limit = c.limit || LIMITS[profile ? profile.plan : "trial"] || 3;
       const left = Math.max(0, limit - (c.used || 0));
-      $("#d-credits").textContent = (limit > 9999 ? "∞" : left) + " / " + (limit > 9999 ? "∞" : limit);
+      $("#d-credits").textContent = limit > 9999 ? "∞" : (Number.isInteger(left) ? String(left) : left.toFixed(1));
       $("#d-bar").style.width = (limit > 9999 ? 100 : Math.min(100, (left / limit) * 100)) + "%";
       if (c.murtiLimit != null) {
         const ml = c.murtiLimit - (c.murtiUsed || 0);
