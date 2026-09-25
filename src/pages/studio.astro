@@ -74,7 +74,7 @@ import { posters as scannedPosters } from "../data/posters";
               <span id="i-ref2-ico" class="text-xl">📤</span>
             </label>
           </div>
-          <p class="mt-1.5 text-xs font-normal text-sandal-deep/50 dark:text-cream/40">Reference = us photo par transformation • bina reference = nayi image</p>
+          <p class="mt-1.5 text-xs font-normal text-sandal-deep/50 dark:text-cream/40">Reference = Transform the photo • No reference = Create a new image</p>
         </div>
       </div>
 
@@ -320,7 +320,7 @@ import { posters as scannedPosters } from "../data/posters";
     $("#empty").querySelector("h3").textContent = v === "poster" ? "Start creating posters" : "Start generating images";
     $("#empty-text").textContent = v === "poster"
       ? "Choose. Personalize. Celebrate! Create your stunning festival poster in seconds."
-      : "Describe your imagination in the prompt below — **BhaktiMedia AI Engine will bring it to life!";
+      : "Describe your imagination in the prompt below — BhaktiMedia AI Engine will bring it to life!";
     updateStrip();
   }
   $$(".vtab").forEach((b) => b.addEventListener("click", () => {
