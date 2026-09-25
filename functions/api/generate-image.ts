@@ -32,13 +32,17 @@ export const onRequestPost = async (context: any) => {
     const plan = (prof?.plan as string) || "trial";
     const limit = LIMITS[plan] ?? 3;
     const period = new Date().toISOString().slice(0, 7);
+    const prof = await DB.prepare("SELECT bonus_credits FROM profiles WHERE user_id = ?").bind(payload.sub).first();
+    const bonus = (prof?.bonus_credits as number) || 0;
+    const totalLimit = limit + bonus;
+
     const row = await DB.prepare("SELECT id, used FROM usage WHERE user_id = ? AND feature = 'images' AND period = ?").bind(payload.sub, period).first();
     const used = (row?.used as number) || 0;
 
     const body = await context.request.json();
     const hd = !!body.hd;
     const cost = hd ? 6 : 3;
-    if (used + cost > limit) return json({ error: "Credits khatam! Plan upgrade karo." }, 402);
+    if (used + cost > totalLimit) return json({ error: "Credits exhausted! Purchase a pack or upgrade your plan." }, 402);
     const quality = hd ? "high" : "medium";
 
     let photoBytes: Uint8Array | null = null;

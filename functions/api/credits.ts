@@ -20,6 +20,7 @@ export const onRequestGet = async (context: any) => {
     monthlyLimit,
     bonus,
     murtiUsed: (mrow?.used as number) || 0,
-    murtiLimit: MURTI_LIMITS[plan] ?? 3,
+    murtiLimit: (MURTI_LIMITS[plan] ?? 3) + bonus,  // bonus added here too
+    murtiMonthlyLimit: MURTI_LIMITS[plan] ?? 3,
   });
 };
