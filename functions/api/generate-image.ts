@@ -28,11 +28,10 @@ export const onRequestPost = async (context: any) => {
     if (!payload) return json({ error: "Pehle login karo" }, 401);
 
     const DB = context.env.DB;
-    const prof = await DB.prepare("SELECT plan FROM profiles WHERE user_id = ?").bind(payload.sub).first();
+    const prof = await DB.prepare("SELECT plan, bonus_credits FROM profiles WHERE user_id = ?").bind(payload.sub).first();
     const plan = (prof?.plan as string) || "trial";
     const limit = LIMITS[plan] ?? 3;
     const period = new Date().toISOString().slice(0, 7);
-    const prof = await DB.prepare("SELECT bonus_credits FROM profiles WHERE user_id = ?").bind(payload.sub).first();
     const bonus = (prof?.bonus_credits as number) || 0;
     const totalLimit = limit + bonus;
 
