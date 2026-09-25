@@ -160,8 +160,9 @@ import Layout from "../layouts/Layout.astro";
     try {
       const c = await api("/api/credits");
       const limit = c.limit || LIMITS[profile ? profile.plan : "trial"] || 3;
-      $("#d-credits").textContent = (c.used || 0) + " / " + (limit > 9999 ? "∞" : limit);
-      $("#d-bar").style.width = Math.min(100, ((c.used || 0) / limit) * 100) + "%";
+      const left = Math.max(0, limit - (c.used || 0));
+      $("#d-credits").textContent = (limit > 9999 ? "∞" : left) + " / " + (limit > 9999 ? "∞" : limit);
+      $("#d-bar").style.width = (limit > 9999 ? 100 : Math.min(100, (left / limit) * 100)) + "%";
       if (c.murtiLimit != null) {
         const ml = c.murtiLimit - (c.murtiUsed || 0);
         $("#d-murti").textContent = `🪔 Murti: ${Math.floor(ml / 0.3)} × 1K ya ${Math.floor(ml / 0.5)} × Full baaki (${ml.toFixed(1)}⚡)`;
