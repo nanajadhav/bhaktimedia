@@ -197,7 +197,7 @@ import { posters as scannedPosters } from "../data/posters";
     if (isLocal) { $("#credits-chip").textContent = "⚡ DEV / ∞"; return; }
     try {
       const r = await fetch("/api/credits", { headers: { Authorization: "Bearer " + token } });
-      if (r.ok) { const d = await r.json(); $("#credits-chip").textContent = "⚡ " + d.used + " / " + d.limit; }
+            if (r.ok) { const d = await r.json(); const left = Math.max(0, (d.limit || 0) - (d.used || 0)); $("#credits-chip").textContent = "⚡ " + (d.limit > 9999 ? "∞" : (Number.isInteger(left) ? left : left.toFixed(1))); }
     } catch (e) {}
   }
   loadCredits();
