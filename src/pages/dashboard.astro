@@ -1,14 +1,14 @@
 ---
 import Layout from "../layouts/Layout.astro";
 ---
-<Layout title="Dashboard" description="Aapka BhaktiMedia dashboard — plan, credits, profile.">
+<Layout title="Dashboard" description="Your BhaktiMedia Dashboard — plan, credits, profile.">
 <div class="container-x px-4 pb-16 pt-28 sm:px-6">
   <div id="toast" class="pointer-events-none fixed left-1/2 top-20 z-[90] hidden -translate-x-1/2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-cream shadow-lift dark:bg-white dark:text-ink"></div>
 
   <div class="flex flex-wrap items-center justify-between gap-3">
     <div>
-      <p class="eyebrow">🪔 Mera Dashboard</p>
-      <h1 id="d-hello" class="mt-2 font-display text-3xl font-bold sm:text-4xl">Namaste!</h1>
+      <p class="eyebrow">🪔 My Dashboard</p>
+      <h1 id="d-hello" class="mt-2 font-display text-3xl font-bold sm:text-4xl">Hi!</h1>
     </div>
     <button id="d-logout" class="btn btn-outline !py-2 !text-sm">🚪 Logout</button>
   </div>
@@ -17,8 +17,8 @@ import Layout from "../layouts/Layout.astro";
     <div class="card p-6 shadow-soft">
       <p class="eyebrow">📦 Plan</p>
       <p id="d-plan" class="mt-3 font-display text-2xl font-bold">—</p>
-      <p class="mt-1 text-sm text-sandal-deep/60 dark:text-cream/50">Mahine ka subscription</p>
-      <a href="/pricing" class="mt-4 inline-flex items-center gap-1 text-sm font-bold text-saffron">Upgrade karo →</a>
+      <p class="mt-1 text-sm text-sandal-deep/60 dark:text-cream/50">Monthly Subscription</p>
+      <a href="/pricing" class="mt-4 inline-flex items-center gap-1 text-sm font-bold text-saffron">Upgrade Now →</a>
     </div>
     <div class="card p-6 shadow-soft">
       <p class="eyebrow">⚡ AI Credits (generation)</p>
@@ -26,14 +26,14 @@ import Layout from "../layouts/Layout.astro";
       <div class="mt-3 h-2 overflow-hidden rounded-full bg-sandal/15 dark:bg-white/10">
         <div id="d-bar" class="h-full rounded-full bg-gradient-to-r from-saffron to-golden transition-all" style="width:0%"></div>
       </div>
-      <p class="mt-2 text-xs text-sandal-deep/60 dark:text-cream/50">Har mahine ki 1 tarikh ko reset</p>
+      <p class="mt-2 text-xs text-sandal-deep/60 dark:text-cream/50">Resets on the 1st of every month</p>
       <p id="d-murti" class="mt-3 rounded-xl bg-saffron/10 px-3 py-2 text-xs font-semibold text-saffron">🪔 Murti: … / …</p>
     </div>
     <div class="card p-6 shadow-soft">
       <p class="eyebrow">🎨 Creations</p>
       <p id="d-count" class="mt-3 font-display text-2xl font-bold">0</p>
-      <p class="mt-1 text-sm text-sandal-deep/60 dark:text-cream/50">Is device par bani creations</p>
-      <a href="/studio" class="mt-4 inline-flex items-center gap-1 text-sm font-bold text-saffron">Studio kholo →</a>
+      <p class="mt-1 text-sm text-sandal-deep/60 dark:text-cream/50">Creations made on this device</p>
+      <a href="/studio" class="mt-4 inline-flex items-center gap-1 text-sm font-bold text-saffron">Open Studio  →</a>
     </div>
   </div>
 
@@ -42,24 +42,24 @@ import Layout from "../layouts/Layout.astro";
       <div class="flex items-center justify-between">
         <p class="eyebrow">👤 Profile</p>
         <div class="flex gap-1.5">
-          <button id="cp-toggle" class="chip bg-saffron/10 text-saffron">🔐 Password</button>
+          <button id="cp-toggle" class="chip bg-saffron/10 text-saffron">🔒 Password</button>
           <button id="p-edit" class="chip bg-golden/15 text-golden">✏️ Edit</button>
         </div>
       </div>
       <div id="cp-box" class="mt-4 hidden gap-3 rounded-2xl bg-saffron/5 p-4">
-        <p class="text-xs font-semibold text-sandal-deep/60 dark:text-cream/50">Password badalne ke liye pehle email par code bhejo.</p>
-        <button id="cp-send" class="btn btn-outline w-full !py-2 !text-sm">📬 Code Bhejo</button>
+        <p class="text-xs font-semibold text-sandal-deep/60 dark:text-cream/50">To change your password, first we'll email you a 6-digit code.</p>
+        <button id="cp-send" class="btn btn-outline w-full !py-2 !text-sm">📬 Send Code</button>
         <label class="block text-sm font-semibold">6-digit Code
           <input id="cp-code" class="input mt-1.5 text-center text-xl font-bold tracking-[6px]" maxlength="6" inputmode="numeric" placeholder="------" />
         </label>
-        <label class="block text-sm font-semibold">Naya Password
-          <input id="cp-pass" type="password" class="input mt-1.5" placeholder="Kam se kam 6 characters" />
+        <label class="block text-sm font-semibold">New Password
+          <input id="cp-pass" type="password" class="input mt-1.5" placeholder="At least 6 characters" />
         </label>
-        <button id="cp-go" class="btn btn-primary w-full !py-2 !text-sm">🔓 Password Badlo</button>
-        <button id="cp-resend" class="text-xs font-semibold text-sandal-deep/60 underline dark:text-cream/50" disabled>Code dobara bhejo (60s)</button>
+        <button id="cp-go" class="btn btn-primary w-full !py-2 !text-sm">🔓 Change Password</button>
+        <button id="cp-resend" class="text-xs font-semibold text-sandal-deep/60 underline dark:text-cream/50" disabled>Resend code (60s)</button>
       </div>
       <div class="mt-4 grid gap-3">
-        <label class="block text-sm font-semibold">Naam
+        <label class="block text-sm font-semibold">Name
           <input id="d-name" class="input mt-1.5" disabled />
         </label>
         <label class="block text-sm font-semibold">Email
@@ -77,14 +77,14 @@ import Layout from "../layouts/Layout.astro";
           <input id="d-city" class="input mt-1.5" disabled />
         </label>
         <div id="p-save-row" class="hidden gap-2">
-          <button id="p-save" class="btn btn-primary flex-1 !py-2 !text-sm">💾 Save Karo</button>
+          <button id="p-save" class="btn btn-primary flex-1 !py-2 !text-sm">💾 Save</button>
           <button id="p-cancel" class="btn btn-outline flex-1 !py-2 !text-sm">Cancel</button>
         </div>
       </div>
     </div>
 
     <div class="card p-6 shadow-soft">
-      <p class="eyebrow">📅 Aane Wale Festivals</p>
+      <p class="eyebrow">📅 Upcoming Festivals</p>
       <div class="mt-4 grid gap-2">
         <a href="/posters?fest=ganesh" class="flex items-center gap-3 rounded-xl px-3 py-2.5 transition hover:bg-saffron/10">
           <span class="text-xl">🐘</span>
@@ -111,7 +111,7 @@ import Layout from "../layouts/Layout.astro";
           <span class="text-sm font-bold text-saffron">Poster →</span>
         </a>
       </div>
-      <p class="mt-4 text-xs text-sandal-deep/50 dark:text-cream/40">Festival par click karo — saare designs dekho!</p>
+      <p class="mt-4 text-xs text-sandal-deep/50 dark:text-cream/40">Click a festival to explore all its designs!</p>
     </div>
   </div>
 
@@ -142,7 +142,7 @@ import Layout from "../layouts/Layout.astro";
   async function api(url, opts = {}) {
     const r = await fetch(url, Object.assign({ headers: { "Content-Type": "application/json", Authorization: "Bearer " + token } }, opts));
     const d = await r.json().catch(() => ({}));
-    if (!r.ok) throw new Error(d.error || "Kuch galat ho gaya");
+    if (!r.ok) throw new Error(d.error || "Something went wrong");
     return d;
   }
 
@@ -165,10 +165,10 @@ import Layout from "../layouts/Layout.astro";
       $("#d-bar").style.width = (limit > 9999 ? 100 : Math.min(100, (left / limit) * 100)) + "%";
       if (c.murtiLimit != null) {
         const ml = c.murtiLimit - (c.murtiUsed || 0);
-        $("#d-murti").textContent = `🪔 Murti: ${Math.floor(ml / 0.3)} × 1K ya ${Math.floor(ml / 0.5)} × Full baaki (${ml.toFixed(1)}⚡)`;
+        $("#d-murti").textContent = `🪔 Murti: ${Math.floor(ml / 0.3)} × 1K or ${Math.floor(ml / 0.5)} × Full remaining (${ml.toFixed(1)}⚡)`;
         $("#d-murti").className = ml >= 0.3 ? "mt-3 rounded-xl bg-saffron/10 px-3 py-2 text-xs font-semibold text-saffron" : "mt-3 rounded-xl bg-red-500/10 px-3 py-2 text-xs font-semibold text-red-500";
       } else {
-        $("#d-murti").textContent = "🪔 Murti: credits.ts backend update baaki";
+        $("#d-murti").textContent = "🪔 Murti: credits.ts backend update remaining";
       }
     } catch (e) {}
   }
@@ -179,36 +179,36 @@ import Layout from "../layouts/Layout.astro";
     ["#d-name", "#d-phone", "#d-pin", "#d-city"].forEach((id) => { $(id).disabled = editing; });
     $("#p-save-row").classList.toggle("hidden", editing);
     $("#p-save-row").classList.toggle("grid", !editing);
-    $("#p-edit").textContent = editing ? "✏️ Edit" : "Band karo";
+    $("#p-edit").textContent = editing ? "✏️ Edit" : "Close";
   });
   $("#p-cancel").addEventListener("click", () => { load(); if (!$("#d-name").disabled) $("#p-edit").click(); });
   $("#p-save").addEventListener("click", async () => {
     try {
       await api("/api/profile", { method: "PUT", body: JSON.stringify({ name: $("#d-name").value.trim(), phone: $("#d-phone").value.trim(), city: $("#d-city").value.trim(), pincode: $("#d-pin").value.trim() }) });
-      toast("✅ Profile save ho gayi!");
+      toast("✅ Profile saved successfully!");
       await load();
       $("#p-edit").click();
     } catch (e) { toast("❌ " + e.message); }
   });
 
   let timer = null;
-  function startTimer() { let s = 60; const b = $("#cp-resend"); b.disabled = true; clearInterval(timer); timer = setInterval(() => { s--; b.textContent = "Code dobara bhejo (" + s + "s)"; if (s <= 0) { clearInterval(timer); b.disabled = false; b.textContent = "Code dobara bhejo"; } }, 1000); }
+  function startTimer() { let s = 60; const b = $("#cp-resend"); b.disabled = true; clearInterval(timer); timer = setInterval(() => { s--; b.textContent = "Resend code (" + s + "s)"; if (s <= 0) { clearInterval(timer); b.disabled = false; b.textContent = "Resend code"; } }, 1000); }
   $("#cp-toggle").addEventListener("click", () => { const b = $("#cp-box"); const open = b.classList.contains("hidden"); b.classList.toggle("hidden", !open); b.classList.toggle("grid", open); });
   $("#cp-send").addEventListener("click", async () => {
     try {
       await api("/api/auth/otp", { method: "POST", body: JSON.stringify({ purpose: "change" }) });
-      toast("📬 Code email par gaya!");
+      toast("📬 The code has been sent to your email!");
       startTimer();
     } catch (e) { toast("❌ " + e.message); }
   });
   $("#cp-resend").addEventListener("click", async () => { try { await api("/api/auth/otp", { method: "POST", body: JSON.stringify({ purpose: "change" }) }); startTimer(); } catch (e) { toast("❌ " + e.message); } });
   $("#cp-go").addEventListener("click", async () => {
     const code = $("#cp-code").value.trim(), pass = $("#cp-pass").value;
-    if (code.length !== 6) return toast("6-digit code daalo");
-    if (pass.length < 6) return toast("Password kam se kam 6 characters");
+    if (code.length !== 6) return toast("Please enter the 6-digit code");
+    if (pass.length < 6) return toast("Password must be at least 6 characters long.");
     try {
       await api("/api/auth/change-pass", { method: "POST", body: JSON.stringify({ code, password: pass }) });
-      toast("✅ Password badal gaya!");
+      toast("✅ Password changed!");
       $("#cp-code").value = ""; $("#cp-pass").value = "";
       $("#cp-box").classList.add("hidden"); $("#cp-box").classList.remove("grid");
     } catch (e) { toast("❌ " + e.message); }
@@ -229,7 +229,7 @@ import Layout from "../layouts/Layout.astro";
       const k = localStorage.key(i);
       if (k && k.indexOf("sb-") === 0) { localStorage.removeItem(k); i--; }
     }
-    localStorage.setItem("bm-welcome", "👋 Logout ho gaya. Phir milenge!");
+    localStorage.setItem("bm-welcome", "👋 You've been logged out. See you again soon!!");
     location.href = "/";
   });
 })();
