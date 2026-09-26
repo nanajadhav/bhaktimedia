@@ -4,6 +4,17 @@ import { services } from "../data/site";
 
 const hrefFor = (t) => (t === "Social Media" ? "/social-media" : t === "Website Design" ? "/website-design" : "/services");
 
+// ── Sirf yeh 6 services dikhani hain — navbar aur footer jaisi hi list ──
+// Order yahin se control hota hai; href/icon/desc/tags data file se hi aate hain.
+const rename: Record<string, string> = { "Video Editing": "Video Generation" };
+const kept = [
+  "Devotional Posters", "AI Image Generation", "Video Editing",
+  "Voiceovers", "Social Media", "Website Design",
+]
+  .map((t) => services.find((s) => s.title === t))
+  .filter((s): s is NonNullable<typeof s> => Boolean(s))
+  .map((s) => ({ ...s, title: rename[s.title] ?? s.title }));
+
 // Inline SVG icons as HTML strings
 const icons = {
   palette: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>',
@@ -19,11 +30,14 @@ const icons = {
   arrowUpRight: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>',
 };
 ---
-<section id="services" class="section">
-  <div class="container-x">
+<section id="services" class="section relative overflow-hidden">
+  <div class="pointer-events-none absolute -left-32 top-24 h-96 w-96 rounded-full bg-saffron/10 blur-3xl"></div>
+  <div class="pointer-events-none absolute -right-32 bottom-0 h-96 w-96 rounded-full bg-golden/10 blur-3xl"></div>
+
+  <div class="container-x relative">
     <div class="flex flex-wrap items-end justify-between gap-6">
       <SectionHeading eyebrow="Our Seva" dev="॥ सेवा परमो धर्मः ॥"
-        description="Ten disciplines, one intention — to make devotion beautiful in every digital form.">
+        description="Six disciplines, one intention — to make devotion beautiful in every digital form.">
         <Fragment slot="title">Crafted With Devotion,<br /> Delivered With <span class="text-gradient">Precision</span></Fragment>
       </SectionHeading>
       <a data-reveal style="--rd:150ms" href="/services" class="btn btn-ghost">
@@ -31,25 +45,29 @@ const icons = {
       </a>
     </div>
 
-    <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-      {services.map((s, i) => (
-        <a href={hrefFor(s.title)} data-reveal style={`--rd:${(i % 4) * 80}ms`}
-           class={`card group relative block overflow-hidden p-6 transition-all duration-300 hover:-translate-y-1.5 hover:border-saffron/40 hover:shadow-glow ${s.featured ? "lg:col-span-2" : ""}`}>
-          <div class="pointer-events-none absolute -right-16 -top-16 size-44 rounded-full bg-saffron/10 opacity-0 blur-2xl transition duration-500 group-hover:opacity-100" aria-hidden="true"></div>
-          <div class="flex items-start justify-between">
-            <span class="grid size-12 place-items-center rounded-xl bg-gradient-to-br from-saffron to-golden text-white shadow-gold transition duration-300 group-hover:rotate-3 group-hover:scale-110">
-              <span set:html={icons[s.icon as keyof typeof icons]} />
+    <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {kept.map((s, i) => (
+        <a href={s.href || hrefFor(s.title)} data-reveal data-spot style={`--rd:${(i % 6) * 80}ms`}
+           class={`card group relative block overflow-hidden p-7 transition-all duration-300 hover:-translate-y-1.5 hover:border-saffron/40 hover:shadow-glow ${s.featured ? "lg:col-span-2" : ""}`}>
+          <span class="spot pointer-events-none absolute inset-0"></span>
+          <div class="pointer-events-none absolute -right-16 -top-16 size-52 rounded-full bg-gradient-to-br from-saffron/20 to-golden/5 opacity-0 blur-2xl transition duration-500 group-hover:opacity-100" aria-hidden="true"></div>
+
+          <div class="relative flex items-start justify-between">
+            <span class="icon-float relative grid size-20 place-items-center rounded-2xl bg-gradient-to-br from-saffron to-golden text-white shadow-gold transition duration-300 group-hover:rotate-3 group-hover:scale-110">
+              <span class="[&_svg]:size-9" set:html={icons[s.icon as keyof typeof icons]} />
             </span>
-            <span class="size-5 text-sandal/30 transition duration-300 group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-saffron dark:text-cream/30">
+            <span class="mt-1 size-5 text-sandal/40 transition duration-300 group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-saffron dark:text-cream/30">
               <span set:html={icons.arrowUpRight} />
             </span>
           </div>
-          <h3 class="mt-5 font-display text-lg font-semibold">{s.title}</h3>
-          <p class="mt-2 text-sm leading-relaxed text-sandal-deep/75 dark:text-cream/65">{s.desc}</p>
+
+          <h3 class="relative mt-6 font-display text-xl font-bold">{s.title}</h3>
+          <p class="relative mt-2 text-sm leading-relaxed text-sandal-deep/80 dark:text-cream/70">{s.desc}</p>
+
           {s.tags && (
-            <ul class="mt-4 flex flex-wrap gap-2">
+            <ul class="relative mt-5 flex flex-wrap gap-2">
               {s.tags.map((t) => (
-                <li class="chip bg-golden/15 font-dev text-sandal dark:text-golden/90">{t}</li>
+                <li class="chip bg-golden/15 font-dev text-[#8A5A00] dark:text-golden/90">{t}</li>
               ))}
             </ul>
           )}
@@ -58,3 +76,31 @@ const icons = {
     </div>
   </div>
 </section>
+
+<style>
+  .icon-float { animation: icon-float 6s ease-in-out infinite; }
+  @keyframes icon-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  .spot {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 170, 60, 0.14), transparent 60%);
+  }
+  [data-spot]:hover .spot { opacity: 1; }
+  @media (prefers-reduced-motion: reduce) {
+    .icon-float { animation: none; }
+    .spot { display: none; }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-spot]').forEach((card) => {
+    card.addEventListener('pointermove', (e) => {
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', `${e.clientX - r.left}px`);
+      card.style.setProperty('--my', `${e.clientY - r.top}px`);
+    });
+  });
+</script>
