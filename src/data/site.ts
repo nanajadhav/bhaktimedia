@@ -37,9 +37,9 @@ export const services: Service[] = [
     desc: "Warm, studio-grade narration in Marathi, Hindi, Sanskrit and English." },
   { key: "thumbs", title: "Thumbnail Design", icon: "image", href: "/services",
     desc: "High-CTR thumbnails tuned for spiritual audiences and YouTube's algorithm." },
-  { key: "social", title: "Social Media", icon: "megaphone", href: "/services",
+  { key: "social", title: "Social Media", icon: "megaphone", href: "/social-media",
     desc: "Calendars, captions and community management for temples and creators." },
-  { key: "web", title: "Website Design", icon: "globe", href: "/services",
+  { key: "web", title: "Website Design", icon: "globe", href: "/website-design",
     desc: "Fast, SEO-ready temple and creator websites built on modern stacks." },
 ];
 
