@@ -1,3 +1,6 @@
-User-agent: *
+﻿User-agent: *
 Allow: /
+Disallow: /dashboard
+Disallow: /checkout
+
 Sitemap: https://bhaktimedia.in/sitemap-index.xml
