@@ -35,15 +35,6 @@ const icons = {
   <div class="pointer-events-none absolute -right-32 bottom-0 h-96 w-96 rounded-full bg-golden/10 blur-3xl"></div>
 
   <div class="container-x relative">
-    <div class="flex flex-wrap items-end justify-between gap-6">
-      <SectionHeading eyebrow="Our Seva" dev="॥ सेवा परमो धर्मः ॥"
-        description="Six disciplines, one intention — to make devotion beautiful in every digital form.">
-        <Fragment slot="title">Crafted With Devotion,<br /> Delivered With <span class="text-gradient">Precision</span></Fragment>
-      </SectionHeading>
-      <a data-reveal style="--rd:150ms" href="/services" class="btn btn-ghost">
-        All services <span set:html={icons.arrowUpRight} />
-      </a>
-    </div>
 
     <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {kept.map((s, i) => (
